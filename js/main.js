@@ -171,7 +171,8 @@
     : `href="${esc(g.url)}" target="_blank" rel="noopener"`);
 
   function renderGames(filter) {
-    const games = sortedGames().filter((g) => filter === "all" || typesOf(g).includes(filter));
+    // The portal lists games in the order they're written in data.js ("Latest 5" goes by date).
+    const games = D.games.filter((g) => filter === "all" || typesOf(g).includes(filter));
     if (!games.length) {
       $("#gameList").innerHTML = `<li class="game-empty">Nothing here yet... something is still sprouting!</li>`;
       return;

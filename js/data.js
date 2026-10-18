@@ -54,37 +54,37 @@ window.YVY = {
   ],
 
   /*
-   * GAMES
+   * GAMES (the portal shows them in this order: move an entry up or down to reorder)
    *  type:     "garden", "silly", "story" or "mystery", or a list like ["silly", "story"]
    *  url:      link to play it (Vercel, itch.io, etc.). "" shows "coming soon".
    *  play:     for mini games that live right here on YvyGrounds, the folder in arcade/,
    *            e.g. "arcade/tomato-tussle/". Opens in the pop-up arcade instead of a new tab.
    *  thumb:    optional image, e.g. "images/games/tomato.png". "" uses a pixel icon.
    *  icon:     optional pixel icon from js/pixels.js (e.g. "tomato") when there's no thumb.
-   *  date:     "YYYY-MM-DD", newest show first. Games from the last 45 days get a NEW! tag.
+   *  date:     "YYYY-MM-DD". "Latest 5 Sprouts" lists newest first; games from the last 45 days get a NEW! tag.
    *  featured: true puts it on the Game of the Week TV (first one wins).
    *  badge:    optional extra tag, e.g. "rough draft" or "still updating ✨"
    */
   games: [
-    { title: "??? Mystery Game ???", type: "mystery", date: "2026-10-18", url: "", thumb: "",
-      blurb: "Something is sprouting... and it's a secret. Check back soon!" },
-    { title: "Tomato Tussle", type: ["garden", "silly"], date: "2026-10-18", play: "arcade/tomato-tussle/", icon: "tomato",
-      blurb: "Squirrels, crows and raccoons are raiding the garden. Splat them with tomatoes, but don't splat Riot or Beyonce!" },
-    { title: "Who is my wife cheating with!?", type: ["silly", "story"], date: "2026-10-18",
-      url: "https://who-is-my-wife-cheating-with.vercel.app/", thumb: "images/games/who-is-my-wife-cheating-with.jpg",
-      blurb: "A crime of passion, investigated entirely in MS Paint. Made with ALCaline. Play in English or Español!" },
     { title: "Rabbit & Frog: Gardenbound", type: "garden", date: "2026-10-18", featured: true, badge: "still updating ✨",
       url: "https://seed-game-pi.vercel.app/", thumb: "images/games/rabbit-and-frog.png",
       blurb: "A watercolor garden adventure all about seeds: how they pop, travel and get saved for next year. Play in English or Español!" },
+    { title: "Tomato Tussle", type: ["garden", "silly"], date: "2026-10-18", play: "arcade/tomato-tussle/", icon: "tomato",
+      blurb: "Squirrels, crows and raccoons are raiding the garden. Splat them with tomatoes, but don't splat Riot or Beyonce!" },
     { title: "Master Composter Quest", type: "garden", date: "2026-10-07",
       url: "https://master-composter.vercel.app/", thumb: "images/games/master-composter.jpg",
       blurb: "Doze off in compost class, wake up in a dream world, and follow Wallace the worm through soil-science challenges." },
+    { title: "Who is my wife cheating with!?", type: ["silly", "story"], date: "2026-10-18",
+      url: "https://who-is-my-wife-cheating-with.vercel.app/", thumb: "images/games/who-is-my-wife-cheating-with.jpg",
+      blurb: "A crime of passion, investigated entirely in MS Paint. Made with ALCaline. Play in English or Español!" },
     { title: "Tijuana Estuary Explorer", type: "garden", date: "2026-10-06", badge: "rough draft",
       url: "https://tijuana-estuary-game.vercel.app/", thumb: "images/games/tijuana-estuary.jpg",
       blurb: "Walk a park ranger through ten estuary zones, collect field data, and battle oil spills and invasive species." },
     { title: "Mike & Yvy's Love Adventure", type: "story", date: "2026-10-06", badge: "still updating ✨",
       url: "https://mike-yvy-love-adventure.vercel.app/", thumb: "images/games/mike-yvy-love-story.jpg",
       blurb: "A retro pixel RPG about how Mike and Yvy fell in love, from a chaotic airport trip all the way to moving in." },
+    { title: "??? Mystery Game ???", type: "mystery", date: "2026-10-18", url: "", thumb: "",
+      blurb: "Something is sprouting... and it's a secret. Check back soon!" },
   ],
 
   // Background photo wall: share of photo frames that stay as cute emoji frames
