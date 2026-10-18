@@ -6,8 +6,10 @@
  * Anything marked SAMPLE is placeholder content. Swap it for the real thing.
  */
 
-// Sticker-sheet poses. Each sheet is cropped into images/me/<prefix><file>.jpg
-// (sheet 1 has no prefix, sheet 2 is "s2-", sheet 3 is "s3-").
+// Yvy feelings folder: sticker-sheet poses, saved but NOT shown on the site.
+// Files live in images/yvy-feelings/<sheet>/<pose>.jpg
+// (sheets: "sheet-1-sailor-mars", "sheet-2", "sheet-3"; same 16 poses each).
+// To show a whole sheet in the Yvy album again, add ...stickerSet("sheet-2") to photos.me below.
 const STICKER_POSES = [
   ["hello", "Hello!"], ["hahaha", "Hahaha"], ["wow", "Wow~"], ["muah", "Muah~"],
   ["i-love-you", "I love you"], ["so-cute", "So cute"], ["thinking", "Thinking.."],
@@ -15,8 +17,8 @@ const STICKER_POSES = [
   ["dazed", "Dazed~"], ["sleepy", "Sleepy..."], ["hmph", "Hmph!"], ["ew", "Ew!!"],
   ["sob", "Sob"], ["the-best", "The best!"],
 ];
-const stickerSet = (prefix) =>
-  STICKER_POSES.map(([file, caption]) => ({ src: `images/me/${prefix}${file}.jpg`, caption }));
+const stickerSet = (sheet) =>
+  STICKER_POSES.map(([file, caption]) => ({ src: `images/yvy-feelings/${sheet}/${file}.jpg`, caption }));
 
 window.YVY = {
 
@@ -75,6 +77,10 @@ window.YVY = {
       blurb: "A retro pixel RPG about how Mike and Yvy fell in love, from a chaotic airport trip all the way to moving in." },
   ],
 
+  // Background photo wall: share of photo frames that stay as cute emoji frames
+  // so it doesn't feel crowded. 0 = all photos, 0.3 = about 1 in 3, 1 = all emoji.
+  wallEmojiShare: 0.3,
+
   /*
    * PHOTOS
    * Drop image files into the matching images/ folder, then list them here.
@@ -113,9 +119,6 @@ window.YVY = {
       { src: "images/me/dress-burgundy.jpg", caption: "Dress hunting", focus: "50% 15%" },
       { src: "images/me/dress-blue.jpg",     caption: "Feeling blue (the good kind)", focus: "50% 15%" },
       { src: "images/me/gingham.jpg",        caption: "Sunny gingham day", focus: "50% 15%" },
-      ...stickerSet("").slice(0, -1),       // sheet 1 ("The best!" is already first)
-      ...stickerSet("s2-"),
-      ...stickerSet("s3-"),
     ],
     club:     [],   // images/club/      garden club
     students: [],   // images/students/  garden students

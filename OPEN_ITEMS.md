@@ -28,7 +28,7 @@ Live now at **https://ybresciani1.github.io/yvygrounds/**
 - [ ] "This Day in Yvy History" facts
 - [x] About letter text and contact email
 - [ ] Other links in the letter (itch.io, GitHub, etc.)
-- [x] Photos of Yvy (64 in the album)
+- [x] Photos of Yvy (17 in the album; 48 feelings stickers saved in images/yvy-feelings, not shown)
 - [ ] Photos for garden club, garden students and pets (get a parent/guardian OK for photos of kids)
 
 ## 3. Double-checks

@@ -23,6 +23,7 @@ Keep new work in that retro-but-cute style. It's meant to feel 2000s-maximalist,
 | `js/pixels.js` | Pixel-art sprites defined as letter grids → inline SVG (`Pixel.svg(name, scale, colorOverrides)`) |
 | `js/main.js` | Renders everything from `data.js`; no framework |
 | `images/<album>/` | Photos: `me`, `club`, `students`, `pets`, `chickens`; game thumbnails in `games` |
+| `images/yvy-feelings/` | Yvy's sticker-sheet "feelings" poses, saved for later. **Not shown** on the site and excluded from Pages in `_config.yml`; `stickerSet()` in `data.js` can bring a sheet back |
 | `OPEN_ITEMS.md` | Running to-do list for the project |
 
 ## Conventions

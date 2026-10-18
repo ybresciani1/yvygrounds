@@ -68,6 +68,9 @@
     const pattern = ["me", "chickens", "me", "pets"];
     ["club", "students"].forEach((key) => { if (photosIn(key).length) pattern.push("me", key); });
     const used = {};
+    // Share of photo frames that stay as cute emoji frames, so the wall doesn't feel crowded.
+    const emojiShare = Math.min(1, Math.max(0, Number(D.wallEmojiShare ?? 0.3)));
+    const isBreather = (i) => ((Math.imul(i + 1, 2654435761) >>> 16) % 100) < emojiShare * 100;
 
     const cols = Math.ceil((window.innerWidth + 80) / 130) + 1;
     const rows = Math.ceil((window.innerHeight + 80) / 166) + 1;
@@ -78,6 +81,11 @@
       const row = Math.floor(i / cols);
       const style = `--dy:${col % 2 ? 80 : 0}px;--rot:${((i * 37) % 11) - 5}deg;--h:${(i * 47) % 360}`;
       const album = pattern[(col + row * 3) % pattern.length];
+      if (isBreather(i)) {
+        const pool = placeholders[album];
+        html += `<div class="oval oval-empty" style="${style}"><span>${pool[(i * 7) % pool.length]}</span></div>`;
+        continue;
+      }
       const n = (used[album] = (used[album] || 0) + 1) - 1;
       const photos = photosIn(album).filter((p) => p.wall !== false); // wall: false keeps a photo off the wall
       const emoji = placeholders[album][n % placeholders[album].length];
