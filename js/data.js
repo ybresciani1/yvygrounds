@@ -55,7 +55,7 @@ window.YVY = {
 
   /*
    * GAMES
-   *  type:     "garden", "silly", "story" or "mystery"
+   *  type:     "garden", "silly", "story" or "mystery", or a list like ["silly", "story"]
    *  url:      link to play it (Vercel, itch.io, etc.). "" shows "coming soon".
    *  thumb:    optional image, e.g. "images/games/tomato.png". "" uses a pixel icon.
    *  date:     "YYYY-MM-DD", newest show first. Games from the last 45 days get a NEW! tag.
@@ -65,7 +65,7 @@ window.YVY = {
   games: [
     { title: "??? Mystery Game ???", type: "mystery", date: "2026-10-18", url: "", thumb: "",
       blurb: "Something is sprouting... and it's a secret. Check back soon!" },
-    { title: "Who is my wife cheating with!?", type: "silly", date: "2026-10-18",
+    { title: "Who is my wife cheating with!?", type: ["silly", "story"], date: "2026-10-18",
       url: "https://who-is-my-wife-cheating-with.vercel.app/", thumb: "images/games/who-is-my-wife-cheating-with.jpg",
       blurb: "A crime of passion, investigated entirely in MS Paint. Made with ALCaline. Play in English or Español!" },
     { title: "Rabbit & Frog: Gardenbound", type: "garden", date: "2026-10-18", featured: true, badge: "still updating ✨",

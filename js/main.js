@@ -151,13 +151,18 @@
     story:  { label: "💖 story",  icon: "heart",  emoji: "💖" },
     mystery: { label: "❓ mystery", icon: "mystery", emoji: "❓" },
   };
-  const typeKey = (g) => (TYPES[g.type] ? g.type : "silly");
+  // type can be one key or a list (e.g. ["silly", "story"]); the first one picks the icon.
+  const typesOf = (g) => {
+    const list = [].concat(g.type || []).filter((t) => TYPES[t]);
+    return list.length ? list : ["silly"];
+  };
+  const typeKey = (g) => typesOf(g)[0];
   const sortedGames = () => [...D.games].sort((a, b) => String(b.date).localeCompare(String(a.date)));
   const isNew = (g) => g.date && (Date.now() - new Date(g.date + "T00:00:00")) / 864e5 < 45;
   const gameIcon = (g) => (g.thumb ? imgTag(g.thumb, "", TYPES[typeKey(g)].emoji, g.focus) : px(TYPES[typeKey(g)].icon, 5));
 
   function renderGames(filter) {
-    const games = sortedGames().filter((g) => filter === "all" || typeKey(g) === filter);
+    const games = sortedGames().filter((g) => filter === "all" || typesOf(g).includes(filter));
     if (!games.length) {
       $("#gameList").innerHTML = `<li class="game-empty">Nothing here yet... something is still sprouting!</li>`;
       return;
@@ -165,7 +170,7 @@
     $("#gameList").innerHTML = games.map((g) => {
       const type = typeKey(g);
       const tags =
-        `<span class="tag tag-${type}">${TYPES[type].label}</span>` +
+        typesOf(g).map((t) => `<span class="tag tag-${t}">${TYPES[t].label}</span>`).join("") +
         (isNew(g) ? `<span class="tag tag-new">NEW!</span>` : "") +
         (g.badge ? `<span class="tag tag-badge">${esc(g.badge)}</span>` : "") +
         (g.url ? "" : `<span class="tag tag-soon">coming soon</span>`);
@@ -179,7 +184,7 @@
   }
 
   function buildGames() {
-    const present = Object.keys(TYPES).filter((t) => D.games.some((g) => typeKey(g) === t));
+    const present = Object.keys(TYPES).filter((t) => D.games.some((g) => typesOf(g).includes(t)));
     $("#filters").innerHTML = `<button type="button" class="filter is-on" data-filter="all">All</button>` +
       (present.length > 1 ? present.map((t) => `<button type="button" class="filter" data-filter="${t}">${TYPES[t].label}</button>`).join("") : "");
     renderGames("all");

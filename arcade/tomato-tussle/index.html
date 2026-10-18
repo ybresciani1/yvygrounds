@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Tomato Tussle ★ YvyGrounds Arcade</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍅</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../arcade.css">
+</head>
+<body>
+  <p class="arcade-back"><a href="../../#games">« Back to YvyGrounds</a></p>
+  <h1 class="arcade-title">Tomato Tussle</h1>
+
+  <div class="stage">
+    <canvas id="game" width="960" height="720" tabindex="0"
+      aria-label="Tomato Tussle. Pests pop out of the garden: click or tap them, or press 1 to 9, to throw a tomato. Don't hit the chickens."></canvas>
+    <button class="mute" id="mute" type="button" aria-pressed="false" aria-label="Mute sound">🔊</button>
+  </div>
+
+  <p class="arcade-help">Click or tap pests to splat them with a tomato. Keyboard: <kbd>Q W E</kbd> <kbd>A S D</kbd> <kbd>Z X C</kbd> (or the number pad) throws at each hole, <kbd>Space</kbd> starts, <kbd>P</kbd> pauses, <kbd>M</kbd> mutes.</p>
+
+  <script src="game.js"></script>
+</body>
+</html>

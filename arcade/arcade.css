@@ -1,0 +1,66 @@
+/* Shared page styles for YvyGrounds arcade games (arcade/<game>/index.html).
+   Opened directly, a game gets a small Newgrounds-style page around it.
+   Inside the portal's arcade pop-up (an iframe), body gets .embedded and the
+   game fills the frame. */
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; }
+
+body {
+  min-height: 100vh;
+  padding: 16px;
+  background: #1c1920;
+  color: #ccc;
+  font: 13px/1.5 Verdana, Tahoma, Geneva, sans-serif;
+  text-align: center;
+}
+
+.arcade-back { margin: 0 0 6px; text-align: left; max-width: 720px; margin-inline: auto; }
+.arcade-back a { color: #ffa31a; font-weight: bold; }
+.arcade-title { margin: 0 0 12px; font: 400 40px "Chewy", "Comic Sans MS", cursive; color: #ffa31a; text-shadow: 3px 3px 0 #000; }
+.arcade-help { max-width: 720px; margin: 12px auto 0; }
+kbd { display: inline-block; padding: 0 5px; border: 1px solid #666; border-bottom-width: 3px; border-radius: 5px; background: #2d2934; color: #fff; font: 11px monospace; }
+
+.stage {
+  position: relative;
+  width: min(100%, 720px);
+  aspect-ratio: 4 / 3;
+  margin: 0 auto;
+  border: 4px solid #000;
+  border-radius: 10px;
+  box-shadow: 0 0 0 3px #ffa31a;
+  overflow: hidden;
+  background: #c9b8f2;
+}
+.stage canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  touch-action: none;
+  cursor: crosshair;
+  outline: none;
+}
+
+.mute {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  width: 38px;
+  height: 38px;
+  border: 3px solid #2b1a52;
+  border-radius: 50%;
+  background: #fff8e4;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+.mute:focus-visible { outline: 3px dashed #ff8a1e; outline-offset: 2px; }
+
+/* Inside the portal pop-up: just the game, filling the frame */
+body.embedded { padding: 0; min-height: 0; height: 100vh; overflow: hidden; background: #000; display: grid; place-items: center; }
+body.embedded .arcade-back,
+body.embedded .arcade-title,
+body.embedded .arcade-help { display: none; }
+body.embedded .stage { width: min(100vw, calc(100vh * 4 / 3)); border: 0; border-radius: 0; box-shadow: none; }
