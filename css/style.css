@@ -604,6 +604,7 @@ a.game:hover { background: #34303b; }
 .game-thumb.garden { background: linear-gradient(#bfe9ff, #9be38a); }
 .game-thumb.silly { background: linear-gradient(#ffd6ec, #c9b8f2); }
 .game-thumb.story { background: linear-gradient(#ffe0ef, #ff9ecf); }
+.game-thumb.mystery { background: linear-gradient(#fff6b0, #c9b8f2); }
 .game-title { color: var(--ng-orange); font-weight: bold; text-transform: uppercase; }
 .tag {
   display: inline-block;
@@ -616,6 +617,7 @@ a.game:hover { background: #34303b; }
 .tag-garden { background: var(--green); color: #12330b; }
 .tag-silly { background: var(--pink); color: #4d0c30; }
 .tag-story { background: #ff6fa8; color: #fff; }
+.tag-mystery { background: #8a3fd1; color: #fff; }
 .tag-badge { background: #6fd3f2; color: #08303d; }
 .tag-new { background: var(--yellow); color: #000; animation: blink 1s steps(2) infinite; }
 .tag-soon { background: #555; color: #eee; }

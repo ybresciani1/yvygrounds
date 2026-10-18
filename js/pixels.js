@@ -67,6 +67,20 @@ window.Pixel = (function () {
         "..YYYYY..",
       ],
     },
+    mystery: {
+      colors: { P: "#8a3fd1", S: "#ffd23f" },
+      grid: [
+        "S.PPPPP..",
+        ".PP...PP.",
+        ".PP...PPS",
+        "......PP.",
+        "....PPP..",
+        "....PP...",
+        "S...PP...",
+        ".........",
+        "....PP..S",
+      ],
+    },
     heart: {
       colors: { P: "#ff6fa8", H: "#ffc2df" },
       grid: [

@@ -149,6 +149,7 @@
     garden: { label: "🌱 garden", icon: "sprout", emoji: "🌱" },
     silly:  { label: "🤪 silly",  icon: "silly",  emoji: "🤪" },
     story:  { label: "💖 story",  icon: "heart",  emoji: "💖" },
+    mystery: { label: "❓ mystery", icon: "mystery", emoji: "❓" },
   };
   const typeKey = (g) => (TYPES[g.type] ? g.type : "silly");
   const sortedGames = () => [...D.games].sort((a, b) => String(b.date).localeCompare(String(a.date)));

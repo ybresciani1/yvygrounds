@@ -31,7 +31,7 @@ Keep new work in that retro-but-cute style. It's meant to feel 2000s-maximalist,
 - Plain HTML/CSS/vanilla JS. No build step, no npm dependencies, no frameworks. External assets are Google Fonts only.
 - Content changes go in `js/data.js`, not hard-coded into HTML/JS. Escape user-facing strings with `esc()` in `main.js`.
 - All asset paths are **relative** (`images/...`, not `/images/...`) so the site works both at a subpath and at a custom domain.
-- Game types are `garden`, `silly` and `story` (see `TYPES` in `main.js`). Filter buttons only show types that have games.
+- Game types are `garden`, `silly`, `story` and `mystery` (for unannounced games) (see `TYPES` in `main.js`). Filter buttons only show types that have games.
 - Missing images fall back to an emoji placeholder automatically (`data-fallback`), so a typo in a photo path won't break the layout.
 - Frames crop with `object-fit: cover`, defaulting to `object-position: 50% 30%`. When a subject is off-center, set `focus` on the photo/card/game entry in `data.js` (`"top"`, `"left"`, `"30% 20%"`...) instead of making a new cropped file. `imgTag()` applies it. The scrapbook polaroid is a fixed square (crops, uses `focus`); only the lightbox shows whole photos. `wall: false` keeps a photo off the background wall.
 - Respect `prefers-reduced-motion` (animations, typewriter text and cursor sparkles already turn off), keep buttons as real `<button>`s, and give images alt text.
