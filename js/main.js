@@ -150,16 +150,25 @@
     silly:  { label: "🤪 silly",  icon: "silly",  emoji: "🤪" },
     story:  { label: "💖 story",  icon: "heart",  emoji: "💖" },
     mystery: { label: "❓ mystery", icon: "mystery", emoji: "❓" },
+    arcade: { label: "🕹️ arcade", icon: "silly", emoji: "🕹️" },
   };
   // type can be one key or a list (e.g. ["silly", "story"]); the first one picks the icon.
+  // Games you can play right here (g.play) are always in "arcade" too.
   const typesOf = (g) => {
     const list = [].concat(g.type || []).filter((t) => TYPES[t]);
-    return list.length ? list : ["silly"];
+    if (!list.length) list.push("silly");
+    if (g.play && !list.includes("arcade")) list.push("arcade");
+    return list;
   };
   const typeKey = (g) => typesOf(g)[0];
   const sortedGames = () => [...D.games].sort((a, b) => String(b.date).localeCompare(String(a.date)));
   const isNew = (g) => g.date && (Date.now() - new Date(g.date + "T00:00:00")) / 864e5 < 45;
-  const gameIcon = (g) => (g.thumb ? imgTag(g.thumb, "", TYPES[typeKey(g)].emoji, g.focus) : px(TYPES[typeKey(g)].icon, 5));
+  const gameIcon = (g) => (g.thumb ? imgTag(g.thumb, "", TYPES[typeKey(g)].emoji, g.focus) : px(g.icon || TYPES[typeKey(g)].icon, 5));
+  const playable = (g) => Boolean(g.play || g.url);
+  // Arcade games (in arcade/) open in the pop-up player; everything else opens in a new tab.
+  const gameLink = (g) => (g.play
+    ? `href="${esc(g.play)}" data-play="${esc(g.title)}"`
+    : `href="${esc(g.url)}" target="_blank" rel="noopener"`);
 
   function renderGames(filter) {
     const games = sortedGames().filter((g) => filter === "all" || typesOf(g).includes(filter));
@@ -173,12 +182,12 @@
         typesOf(g).map((t) => `<span class="tag tag-${t}">${TYPES[t].label}</span>`).join("") +
         (isNew(g) ? `<span class="tag tag-new">NEW!</span>` : "") +
         (g.badge ? `<span class="tag tag-badge">${esc(g.badge)}</span>` : "") +
-        (g.url ? "" : `<span class="tag tag-soon">coming soon</span>`);
+        (playable(g) ? "" : `<span class="tag tag-soon">coming soon</span>`);
       const inner =
         `<span class="game-thumb ${type}">${gameIcon(g)}</span>
          <span><span class="game-title">${esc(g.title)}</span> - ${esc(g.blurb)}<br>${tags}</span>`;
-      return g.url
-        ? `<li><a class="game" href="${esc(g.url)}" target="_blank" rel="noopener">${inner}</a></li>`
+      return playable(g)
+        ? `<li><a class="game" ${gameLink(g)}>${inner}</a></li>`
         : `<li><div class="game">${inner}</div></li>`;
     }).join("");
   }
@@ -196,16 +205,19 @@
     });
 
     $("#latestList").innerHTML = sortedGames().slice(0, 5).map((g) =>
-      `<li>${g.url ? `<a href="${esc(g.url)}" target="_blank" rel="noopener">${esc(g.title)}</a>` : esc(g.title)}</li>`
+      `<li>${playable(g) ? `<a ${gameLink(g)}>${esc(g.title)}</a>` : esc(g.title)}</li>`
     ).join("");
 
     const featured = D.games.find((g) => g.featured) || sortedGames()[0];
     if (featured) {
       $("#tvScreen").innerHTML = featured.thumb
         ? imgTag(featured.thumb, featured.title, "🎮", featured.focus)
-        : `<div>${px(TYPES[typeKey(featured)].icon, 9)}<p class="tv-title">${esc(featured.title)}</p></div>`;
+        : `<div>${px(featured.icon || TYPES[typeKey(featured)].icon, 9)}<p class="tv-title">${esc(featured.title)}</p></div>`;
       const play = $("#tvPlay");
-      if (featured.url) {
+      if (featured.play) {
+        play.href = featured.play;
+        play.dataset.play = featured.title;
+      } else if (featured.url) {
         play.href = featured.url;
         play.target = "_blank";
         play.rel = "noopener";
@@ -359,6 +371,45 @@
     });
   }
 
+  /* ---------- Arcade pop-up: mini games that live in arcade/ ---------- */
+  function buildArcade() {
+    const box = $("#arcade");
+    const frame = $("#arcadeFrame");
+    let lastFocus = null;
+    const open = (src, title) => {
+      lastFocus = document.activeElement;
+      $("#arcadeTitle").textContent = title;
+      $("#arcadePop").href = src;
+      frame.title = title;
+      frame.addEventListener("load", () => frame.focus(), { once: true });
+      frame.src = src;
+      box.hidden = false;
+      document.body.classList.add("arcade-open");
+    };
+    const close = () => {
+      if (box.hidden) return;
+      box.hidden = true;
+      frame.src = "about:blank"; // stops the game and its sounds
+      document.body.classList.remove("arcade-open");
+      if (lastFocus) lastFocus.focus();
+    };
+
+    document.addEventListener("click", (e) => {
+      const link = e.target.closest("a[data-play]");
+      if (!link || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      open(link.getAttribute("href"), link.dataset.play);
+    });
+    $("#arcadeClose").addEventListener("click", close);
+    $("#arcadePop").addEventListener("click", () => setTimeout(close, 150));
+    box.addEventListener("click", (e) => { if (e.target === e.currentTarget) close(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+    // Pressing Esc inside a game (when it isn't mid-round) asks to close the pop-up
+    window.addEventListener("message", (e) => {
+      if (e.origin === location.origin && e.data && e.data.yvyArcade === "close") close();
+    });
+  }
+
   /* ---------- Lightbox ---------- */
   const lb = { list: [], index: 0, lastFocus: null };
 
@@ -462,6 +513,7 @@
   buildCritters();
   buildAbout();
   buildMailPicker();
+  buildArcade();
   buildLightbox();
   buildMeadow();
   buildSparkles();

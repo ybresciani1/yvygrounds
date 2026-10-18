@@ -22,6 +22,7 @@ Keep new work in that retro-but-cute style. It's meant to feel 2000s-maximalist,
 | `js/data.js` | **All content**: games, photos, chickens, pets, ticker, about text, history facts |
 | `js/pixels.js` | Pixel-art sprites defined as letter grids → inline SVG (`Pixel.svg(name, scale, colorOverrides)`) |
 | `js/main.js` | Renders everything from `data.js`; no framework |
+| `arcade/<game>/` | Mini games that run right on the site (`index.html` + `game.js`, shared `arcade/arcade.css`). Listed in `data.js` with `play:` |
 | `images/<album>/` | Photos: `me`, `club`, `students`, `pets`, `chickens`; game thumbnails in `games` |
 | `images/yvy-feelings/` | Yvy's sticker-sheet "feelings" poses, saved for later. **Not shown** on the site and excluded from Pages in `_config.yml`; `stickerSet()` in `data.js` can bring a sheet back |
 | `OPEN_ITEMS.md` | Running to-do list for the project |
@@ -45,6 +46,8 @@ Yvy's games are deployed on **Vercel**, mostly from GitHub repos under `ybrescia
 ```bash
 gh repo list ybresciani1 --json name,homepageUrl,description
 ```
+Small games can also live **on the site itself** in `arcade/<game>/` (plain canvas + vanilla JS, no libraries; see `arcade/tomato-tussle/`). Give the `data.js` entry `play: "arcade/<game>/"` instead of `url`, and the portal opens it in the pop-up arcade player (an iframe; the game page adds `body.embedded` and fills the frame). Opened directly, the same page works as a standalone game page. Esc inside a game pauses, then posts `{ yvyArcade: "close" }` to the parent to close the pop-up.
+
 Thumbnails come from the game's own logo, or a screenshot of its title screen (headless Chrome works; give it its own `--user-data-dir`).
 
 ## Preview locally

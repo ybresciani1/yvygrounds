@@ -81,6 +81,19 @@ window.Pixel = (function () {
         "....PP..S",
       ],
     },
+    tomato: {
+      colors: { G: "#3f8f2e", R: "#e8352e", W: "#ffb3a8" },
+      grid: [
+        "...G.G...",
+        "..RGGGR..",
+        ".RRRGRRR.",
+        "RRWRRRRRR",
+        "RWRRRRRRR",
+        "RRRRRRRRR",
+        ".RRRRRRR.",
+        "..RRRRR..",
+      ],
+    },
     heart: {
       colors: { P: "#ff6fa8", H: "#ffc2df" },
       grid: [

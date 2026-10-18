@@ -220,6 +220,21 @@
     </div>
   </div>
 
+  <!-- Arcade pop-up: plays the mini games in arcade/ right here -->
+  <div class="lightbox arcade" id="arcade" hidden>
+    <div class="arcade-card" role="dialog" aria-modal="true" aria-labelledby="arcadeTitle">
+      <div class="arcade-bar">
+        <h2 id="arcadeTitle">Yvy Arcade</h2>
+        <a class="arcade-pop" id="arcadePop" href="#" target="_blank" rel="noopener">Full page ↗</a>
+        <button class="arcade-close" id="arcadeClose" type="button" aria-label="Close game">✕</button>
+      </div>
+      <div class="arcade-screen">
+        <iframe id="arcadeFrame" title="Game" allow="fullscreen; autoplay"></iframe>
+      </div>
+      <p class="arcade-tip">🕹️ Click the game to play · Esc pauses, Esc again closes</p>
+    </div>
+  </div>
+
   <!-- "Write to me" mail picker -->
   <div class="lightbox" id="mailPicker" hidden>
     <div class="lightbox-card mail-card" role="dialog" aria-modal="true" aria-labelledby="mailTitle">
