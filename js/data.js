@@ -72,7 +72,22 @@ window.YVY = {
    */
   photos: {
     me: [           // images/me/        (the first one becomes the "click my head" photo)
-      { src: "images/me/the-best.jpg", caption: "The best!" },
+      { src: "images/me/the-best.jpg",   caption: "The best!" },
+      { src: "images/me/hello.jpg",      caption: "Hello!" },
+      { src: "images/me/hahaha.jpg",     caption: "Hahaha" },
+      { src: "images/me/wow.jpg",        caption: "Wow~" },
+      { src: "images/me/muah.jpg",       caption: "Muah~" },
+      { src: "images/me/i-love-you.jpg", caption: "I love you" },
+      { src: "images/me/so-cute.jpg",    caption: "So cute" },
+      { src: "images/me/thinking.jpg",   caption: "Thinking.." },
+      { src: "images/me/blushing.jpg",   caption: "Blushing" },
+      { src: "images/me/proud.jpg",      caption: "Proud" },
+      { src: "images/me/oh-my-god.jpg",  caption: "Oh my God!" },
+      { src: "images/me/dazed.jpg",      caption: "Dazed~" },
+      { src: "images/me/sleepy.jpg",     caption: "Sleepy..." },
+      { src: "images/me/hmph.jpg",       caption: "Hmph!" },
+      { src: "images/me/ew.jpg",         caption: "Ew!!" },
+      { src: "images/me/sob.jpg",        caption: "Sob" },
     ],
     club:     [],   // images/club/      garden club
     students: [],   // images/students/  garden students

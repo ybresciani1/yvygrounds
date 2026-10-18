@@ -18,7 +18,6 @@
     { key: "chickens", label: "Chickens",        emoji: "🐔" },
   ];
   const photosIn = (key) => (D.photos[key] || []).filter((p) => p && p.src);
-  const allPhotos = () => ALBUMS.flatMap((a) => photosIn(a.key));
 
   // If a listed image is missing, show a cute placeholder instead of a broken icon.
   function imgTag(src, alt, fallbackEmoji) {
@@ -48,20 +47,34 @@
   /* ---------- Background photo wall ---------- */
   function buildPhotoWall() {
     const wall = $("#photoWall");
-    const photos = allPhotos();
-    const filler = ["🌱", "🐔", "🌷", "🐶", "🍅", "🌻", "🐣", "🥕", "🐱", "🍓", "🎮", "✨"];
+    // Frames rotate through albums so chickens and pets always keep some spots:
+    // an album with no photos yet shows its placeholder emoji instead.
+    const placeholders = {
+      me: ["🌱", "🌷", "🍅", "🌻", "🥕", "🍓", "🎮", "✨"],
+      chickens: ["🐔", "🐣", "🥚"],
+      pets: ["🐶", "🐱", "🐾"],
+      club: ["🌻", "🌷"],
+      students: ["🌱", "🥕"],
+    };
+    const pattern = ["me", "chickens", "me", "pets"];
+    ["club", "students"].forEach((key) => { if (photosIn(key).length) pattern.push("me", key); });
+    const used = {};
+
     const cols = Math.ceil((window.innerWidth + 80) / 130) + 1;
     const rows = Math.ceil((window.innerHeight + 80) / 166) + 1;
     wall.style.gridTemplateColumns = `repeat(${cols}, 116px)`;
     let html = "";
     for (let i = 0; i < cols * rows; i++) {
       const col = i % cols;
+      const row = Math.floor(i / cols);
       const style = `--dy:${col % 2 ? 80 : 0}px;--rot:${((i * 37) % 11) - 5}deg;--h:${(i * 47) % 360}`;
-      if (photos.length) {
-        html += `<div class="oval" style="${style}">${imgTag(photos[i % photos.length].src, "", filler[i % filler.length])}</div>`;
-      } else {
-        html += `<div class="oval oval-empty" style="${style}"><span>${filler[i % filler.length]}</span></div>`;
-      }
+      const album = pattern[(col + row * 3) % pattern.length];
+      const n = (used[album] = (used[album] || 0) + 1) - 1;
+      const photos = photosIn(album);
+      const emoji = placeholders[album][n % placeholders[album].length];
+      html += photos.length
+        ? `<div class="oval" style="${style}">${imgTag(photos[n % photos.length].src, "", emoji)}</div>`
+        : `<div class="oval oval-empty" style="${style}"><span>${emoji}</span></div>`;
     }
     wall.innerHTML = html;
   }
