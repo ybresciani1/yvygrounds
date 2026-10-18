@@ -39,26 +39,26 @@ window.YVY = {
 
   /*
    * GAMES
-   *  type:     "garden" or "silly"
-   *  url:      link to play it (itch.io, GitHub Pages, etc.). "" shows "coming soon".
+   *  type:     "garden", "silly" or "story"
+   *  url:      link to play it (Vercel, itch.io, etc.). "" shows "coming soon".
    *  thumb:    optional image, e.g. "images/games/tomato.png". "" uses a pixel icon.
    *  date:     "YYYY-MM-DD", newest show first. Games from the last 45 days get a NEW! tag.
    *  featured: true puts it on the Game of the Week TV (first one wins).
+   *  badge:    optional extra tag, e.g. "rough draft"
    */
   games: [
-    // SAMPLE games, replace with your real ones
-    { title: "Tomato Tussle", type: "garden", url: "", thumb: "", date: "2026-10-01", featured: true,
-      blurb: "Defend your tomato patch from extremely polite hornworms." },
-    { title: "Chicken Chaos Kitchen", type: "silly", url: "", thumb: "", date: "2026-09-12",
-      blurb: "Eight chickens. One kitchen. Zero plan." },
-    { title: "Sprout Sprint", type: "garden", url: "", thumb: "", date: "2026-08-20",
-      blurb: "Water every seed before sundown. Easier said than grown." },
-    { title: "Bean There, Done That", type: "silly", url: "", thumb: "", date: "2026-07-04",
-      blurb: "A pun-powered platformer about a bean on a gap year." },
-    { title: "Compost Critters", type: "garden", url: "", thumb: "", date: "2026-05-18",
-      blurb: "Feed the worms, build the soil, earn mysterious worm medals." },
-    { title: "Pet Rock Simulator 2000", type: "silly", url: "", thumb: "", date: "2026-03-01",
-      blurb: "It doesn't do anything. It's perfect." },
+    { title: "Rabbit & Frog: Gardenbound", type: "garden", date: "2026-10-18", featured: true,
+      url: "https://seed-game-pi.vercel.app/", thumb: "images/games/rabbit-and-frog.png",
+      blurb: "A watercolor garden adventure all about seeds: how they pop, travel and get saved for next year. Play in English or Español!" },
+    { title: "Master Composter Quest", type: "garden", date: "2026-10-07",
+      url: "https://master-composter.vercel.app/", thumb: "images/games/master-composter.jpg",
+      blurb: "Doze off in compost class, wake up in a dream world, and follow Wallace the worm through soil-science challenges." },
+    { title: "Tijuana Estuary Explorer", type: "garden", date: "2026-10-06", badge: "rough draft",
+      url: "https://tijuana-estuary-game.vercel.app/", thumb: "images/games/tijuana-estuary.jpg",
+      blurb: "Walk a park ranger through ten estuary zones, collect field data, and battle oil spills and invasive species." },
+    { title: "Mike & Yvy's Love Adventure", type: "story", date: "2026-10-06",
+      url: "https://mike-yvy-love-adventure.vercel.app/", thumb: "images/games/mike-yvy-love-story.jpg",
+      blurb: "A retro pixel RPG about how Mike and Yvy fell in love, from a chaotic airport trip all the way to moving in." },
   ],
 
   /*

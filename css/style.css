@@ -427,7 +427,7 @@ main > section { margin-top: 28px; scroll-margin-top: 16px; }
   background: repeating-linear-gradient(transparent 0 2px, rgba(0, 0, 0, .25) 2px 4px);
   pointer-events: none;
 }
-.tv-screen img { width: 100%; height: 100%; object-fit: cover; }
+.tv-screen img { width: 100%; height: 100%; object-fit: cover; background: #fdf3df; }
 .tv-title { font: 12px/1.6 var(--f-pixel); color: var(--yellow); margin: 10px 8px 0; }
 .tv-bumper {
   display: flex;
@@ -596,9 +596,10 @@ a.game:hover { background: #34303b; }
   place-items: center;
   overflow: hidden;
 }
-.game-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.game-thumb img { width: 100%; height: 100%; object-fit: cover; background: #fdf3df; }
 .game-thumb.garden { background: linear-gradient(#bfe9ff, #9be38a); }
 .game-thumb.silly { background: linear-gradient(#ffd6ec, #c9b8f2); }
+.game-thumb.story { background: linear-gradient(#ffe0ef, #ff9ecf); }
 .game-title { color: var(--ng-orange); font-weight: bold; text-transform: uppercase; }
 .tag {
   display: inline-block;
@@ -610,6 +611,8 @@ a.game:hover { background: #34303b; }
 }
 .tag-garden { background: var(--green); color: #12330b; }
 .tag-silly { background: var(--pink); color: #4d0c30; }
+.tag-story { background: #ff6fa8; color: #fff; }
+.tag-badge { background: #6fd3f2; color: #08303d; }
 .tag-new { background: var(--yellow); color: #000; animation: blink 1s steps(2) infinite; }
 .tag-soon { background: #555; color: #eee; }
 @keyframes blink { 50% { opacity: .35; } }

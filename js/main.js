@@ -112,23 +112,31 @@
   }
 
   /* ---------- Games ---------- */
+  const TYPES = {
+    garden: { label: "🌱 garden", icon: "sprout", emoji: "🌱" },
+    silly:  { label: "🤪 silly",  icon: "silly",  emoji: "🤪" },
+    story:  { label: "💖 story",  icon: "heart",  emoji: "💖" },
+  };
+  const typeKey = (g) => (TYPES[g.type] ? g.type : "silly");
   const sortedGames = () => [...D.games].sort((a, b) => String(b.date).localeCompare(String(a.date)));
   const isNew = (g) => g.date && (Date.now() - new Date(g.date + "T00:00:00")) / 864e5 < 45;
-  const gameIcon = (g) => (g.thumb ? imgTag(g.thumb, "", g.type === "garden" ? "🌱" : "🤪") : px(g.type === "garden" ? "sprout" : "silly", 5));
+  const gameIcon = (g) => (g.thumb ? imgTag(g.thumb, "", TYPES[typeKey(g)].emoji) : px(TYPES[typeKey(g)].icon, 5));
 
   function renderGames(filter) {
-    const games = sortedGames().filter((g) => filter === "all" || g.type === filter);
+    const games = sortedGames().filter((g) => filter === "all" || typeKey(g) === filter);
     if (!games.length) {
       $("#gameList").innerHTML = `<li class="game-empty">Nothing here yet... something is still sprouting!</li>`;
       return;
     }
     $("#gameList").innerHTML = games.map((g) => {
+      const type = typeKey(g);
       const tags =
-        `<span class="tag tag-${g.type === "garden" ? "garden" : "silly"}">${g.type === "garden" ? "🌱 garden" : "🤪 silly"}</span>` +
+        `<span class="tag tag-${type}">${TYPES[type].label}</span>` +
         (isNew(g) ? `<span class="tag tag-new">NEW!</span>` : "") +
+        (g.badge ? `<span class="tag tag-badge">${esc(g.badge)}</span>` : "") +
         (g.url ? "" : `<span class="tag tag-soon">coming soon</span>`);
       const inner =
-        `<span class="game-thumb ${g.type === "garden" ? "garden" : "silly"}">${gameIcon(g)}</span>
+        `<span class="game-thumb ${type}">${gameIcon(g)}</span>
          <span><span class="game-title">${esc(g.title)}</span> - ${esc(g.blurb)}<br>${tags}</span>`;
       return g.url
         ? `<li><a class="game" href="${esc(g.url)}" target="_blank" rel="noopener">${inner}</a></li>`
@@ -137,6 +145,9 @@
   }
 
   function buildGames() {
+    const present = Object.keys(TYPES).filter((t) => D.games.some((g) => typeKey(g) === t));
+    $("#filters").innerHTML = `<button type="button" class="filter is-on" data-filter="all">All</button>` +
+      (present.length > 1 ? present.map((t) => `<button type="button" class="filter" data-filter="${t}">${TYPES[t].label}</button>`).join("") : "");
     renderGames("all");
     document.querySelectorAll(".filter").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -153,7 +164,7 @@
     if (featured) {
       $("#tvScreen").innerHTML = featured.thumb
         ? imgTag(featured.thumb, featured.title, "🎮")
-        : `<div>${px(featured.type === "garden" ? "sprout" : "silly", 9)}<p class="tv-title">${esc(featured.title)}</p></div>`;
+        : `<div>${px(TYPES[typeKey(featured)].icon, 9)}<p class="tv-title">${esc(featured.title)}</p></div>`;
       const play = $("#tvPlay");
       if (featured.url) {
         play.href = featured.url;
