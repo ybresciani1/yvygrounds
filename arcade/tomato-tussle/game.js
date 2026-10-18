@@ -176,16 +176,18 @@
   const ROWS = [118, 166, 214];
   const holes = [];
   ROWS.forEach((y, row) => COLS.forEach((x) => holes.push({ x, y, row, critter: null })));
-  const THROW_FROM = { x: 160, y: 252 };
+  const THROW_FROM = { x: 160, y: 238 };
+  const FLIGHT_MS = 60;  // keep tiny: the splat already happened on the tap
   const RISE_MS = 130;
 
   /* ---------- Sound (tiny WebAudio bleeps) ---------- */
   let actx = null;
+  let noiseBuf = null;      // one second of noise, reused by every splat
   let muted = store.get(MUTE_KEY) === "1";
   function audio() {
     if (!actx) {
       const AC = window.AudioContext || window.webkitAudioContext;
-      if (AC) actx = new AC();
+      if (AC) actx = new AC({ latencyHint: "interactive" });
     }
     if (actx && actx.state === "suspended") actx.resume();
     return actx;
@@ -210,21 +212,24 @@
     if (muted) return;
     const a = audio();
     if (!a) return;
-    const buf = a.createBuffer(1, Math.floor(a.sampleRate * dur), a.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / data.length);
+    if (!noiseBuf) {
+      noiseBuf = a.createBuffer(1, a.sampleRate, a.sampleRate);
+      const data = noiseBuf.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+    }
+    const t = a.currentTime;
     const src = a.createBufferSource();
     const filter = a.createBiquadFilter();
     const g = a.createGain();
-    src.buffer = buf;
+    src.buffer = noiseBuf;
     filter.type = "lowpass";
     filter.frequency.value = cutoff;
-    g.gain.value = vol;
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
     src.connect(filter).connect(g).connect(a.destination);
-    src.start();
+    src.start(t, Math.random() * (1 - dur), dur);
   }
   const SFX = {
-    toss: () => tone(500, 900, 0.07, "triangle", 0.05),
     splat: () => { noise(0.16, 0.25, 1100); tone(180, 70, 0.12, "square", 0.05); },
     plop: () => noise(0.1, 0.12, 500),
     bawk: () => { tone(620, 480, 0.09, "square", 0.07); tone(520, 820, 0.14, "square", 0.07, 0.1); },
@@ -345,7 +350,6 @@
 
   function throwAt(hole, x, y) {
     stats.throws++;
-    SFX.toss();
     const tx = hole ? hole.x : x;
     const ty = hole ? hole.y - 18 : y;
     const c = hole && hole.critter;
@@ -377,11 +381,12 @@
     } else {
       combo = 0;
     }
-    shots.push({ x0: THROW_FROM.x + rand(-6, 6), y0: THROW_FROM.y, x1: tx, y1: ty, t: 0, dur: 150, result });
+    shots.push({ x0: THROW_FROM.x + rand(-6, 6), y0: THROW_FROM.y, x1: tx, y1: ty, t: 0, dur: FLIGHT_MS });
+    splat(tx, ty, result);
   }
 
-  function land(shot) {
-    const { x1: x, y1: y, result } = shot;
+  // Sound + particles fire on the tap itself so throws feel instant
+  function splat(x, y, result) {
     if (result === "miss") {
       SFX.plop();
       stains.push({ x, y: y + 6, t: 0 });
@@ -419,7 +424,7 @@
     for (let i = shots.length - 1; i >= 0; i--) {
       const s = shots[i];
       s.t += dt;
-      if (s.t >= s.dur) { land(s); shots.splice(i, 1); }
+      if (s.t >= s.dur) shots.splice(i, 1);
     }
     for (let i = bits.length - 1; i >= 0; i--) {
       const b = bits[i];
@@ -467,23 +472,58 @@
     ctx.stroke();
   }
 
-  function drawBackground(now) {
-    const sky = ctx.createLinearGradient(0, 0, 0, 80);
+  // The sky and the fence + lawn never change, so they're painted once into
+  // their own layers; each frame just stamps them down with the clouds in between.
+  function layer(paint) {
+    const c = document.createElement("canvas");
+    c.width = W * K;
+    c.height = H * K;
+    const g = c.getContext("2d");
+    g.setTransform(K, 0, 0, K, 0, 0);
+    paint(g);
+    return c;
+  }
+  const SKY = layer((g) => {
+    const sky = g.createLinearGradient(0, 0, 0, 80);
     sky.addColorStop(0, "#c9b8f2");
     sky.addColorStop(1, "#ffd6ec");
-    ctx.fillStyle = sky;
-    ctx.fillRect(0, 0, W, 80);
+    g.fillStyle = sky;
+    g.fillRect(0, 0, W, 80);
 
     // Kawaii sun
-    ctx.fillStyle = "#ffd23f";
-    ctx.beginPath(); ctx.arc(286, 42, 14, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#2b1a52";
-    ctx.fillRect(280, 39, 2, 3); ctx.fillRect(290, 39, 2, 3);
-    ctx.fillStyle = "#ff8cc6";
-    ctx.fillRect(277, 45, 3, 2); ctx.fillRect(292, 45, 3, 2);
-    ctx.fillStyle = "#2b1a52";
-    ctx.fillRect(284, 46, 4, 1);
+    g.fillStyle = "#ffd23f";
+    g.beginPath(); g.arc(286, 42, 14, 0, Math.PI * 2); g.fill();
+    g.fillStyle = "#2b1a52";
+    g.fillRect(280, 39, 2, 3); g.fillRect(290, 39, 2, 3);
+    g.fillStyle = "#ff8cc6";
+    g.fillRect(277, 45, 3, 2); g.fillRect(292, 45, 3, 2);
+    g.fillStyle = "#2b1a52";
+    g.fillRect(284, 46, 4, 1);
+  });
+  const YARD = layer((g) => {
+    // Picket fence
+    g.fillStyle = "#fff8e4";
+    g.strokeStyle = "#a98fe6";
+    g.lineWidth = 1;
+    g.fillRect(0, 60, W, 4); g.fillRect(0, 72, W, 4);
+    for (let x = -4; x < W; x += 14) {
+      g.beginPath();
+      g.moveTo(x, 82); g.lineTo(x, 56); g.lineTo(x + 5, 50); g.lineTo(x + 10, 56); g.lineTo(x + 10, 82);
+      g.closePath(); g.fill(); g.stroke();
+    }
 
+    // Lawn with little tufts
+    g.fillStyle = "#8fd16a";
+    g.fillRect(0, 80, W, H - 80);
+    g.fillStyle = "#6cb84a";
+    for (let i = 0; i < 70; i++) {
+      const x = (i * 97) % W, y = 84 + ((i * 53) % (H - 86));
+      g.fillRect(x, y, 1, 3); g.fillRect(x + 2, y - 1, 1, 4); g.fillRect(x + 4, y + 1, 1, 2);
+    }
+  });
+
+  function drawBackground(now) {
+    ctx.drawImage(SKY, 0, 0, W, H);
     // Drifting pixel clouds
     const drift = reduceMotion ? 0 : (now / 120) % (W + 60);
     [[30, 30], [170, 26], [250, 58]].forEach(([cx, cy], i) => {
@@ -492,25 +532,7 @@
       ctx.fillRect(x, cy, 30, 6); ctx.fillRect(x + 6, cy - 4, 14, 4); ctx.fillRect(x + 4, cy + 6, 22, 2);
     });
 
-    // Picket fence
-    ctx.fillStyle = "#fff8e4";
-    ctx.strokeStyle = "#a98fe6";
-    ctx.lineWidth = 1;
-    ctx.fillRect(0, 60, W, 4); ctx.fillRect(0, 72, W, 4);
-    for (let x = -4; x < W; x += 14) {
-      ctx.beginPath();
-      ctx.moveTo(x, 82); ctx.lineTo(x, 56); ctx.lineTo(x + 5, 50); ctx.lineTo(x + 10, 56); ctx.lineTo(x + 10, 82);
-      ctx.closePath(); ctx.fill(); ctx.stroke();
-    }
-
-    // Lawn with little tufts
-    ctx.fillStyle = "#8fd16a";
-    ctx.fillRect(0, 80, W, H - 80);
-    ctx.fillStyle = "#6cb84a";
-    for (let i = 0; i < 70; i++) {
-      const x = (i * 97) % W, y = 84 + ((i * 53) % (H - 86));
-      ctx.fillRect(x, y, 1, 3); ctx.fillRect(x + 2, y - 1, 1, 4); ctx.fillRect(x + 4, y + 1, 1, 2);
-    }
+    ctx.drawImage(YARD, 0, 0, W, H);
   }
 
   function drawBedBack(y) {
@@ -651,7 +673,7 @@
     shots.forEach((s) => {
       const p = s.t / s.dur;
       const x = lerp(s.x0, s.x1, p);
-      const y = lerp(s.y0, s.y1, p) - Math.sin(Math.PI * p) * 34;
+      const y = lerp(s.y0, s.y1, p) - Math.sin(Math.PI * p) * 10;
       const sc = p < 0.5 ? 3 : 2;
       sprite(IMG.tomato, x - (IMG.tomato.width * sc) / 2, y - (IMG.tomato.height * sc) / 2, sc);
     });
