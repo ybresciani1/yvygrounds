@@ -81,27 +81,38 @@ window.YVY = {
    * These also fill the oval photo wall in the background.
    *   { src: "images/chickens/coop-day.jpg", caption: "The girls inspecting the new coop" }
    *
+   * Frames (ovals, circles, the scrapbook) crop photos to fit. If a head or crest
+   * gets cut off, add focus to say which part to keep in view:
+   *   focus: "top"         also "bottom", "left", "right", "center", "top left"...
+   *   focus: "30% 20%"     left-right %, then top-bottom % (0% = left/top edge)
+   * Without focus, frames keep the upper-middle (50% 30%) in view.
+   * focus also works on flock/pets cards and game thumbs.
+   * (The scrapbook frame is square; the photo popup always shows the whole photo.)
+   *
+   * wall: false keeps a photo out of the background photo wall
+   * (it still shows in the scrapbook and popup).
+   *
    * Heads up: get a parent/guardian OK before posting photos of students who are kids.
    */
   photos: {
     me: [           // images/me/        (the first one becomes the "click my head" photo)
       { src: "images/me/the-best.jpg",       caption: "The best!" },
-      { src: "images/me/fairy-flower.jpg",   caption: "Tiny fairy, giant flower" },
+      { src: "images/me/fairy-flower.jpg",   caption: "Tiny fairy, giant flower", focus: "50% 72%" },
       { src: "images/me/fairy-leaves.jpg",   caption: "Fairy hiding in the garden" },
       { src: "images/me/pikachu.jpg",        caption: "Got swallowed by a Pikachu" },
-      { src: "images/me/star-guardian.jpg",  caption: "Star Guardian cosplay ✨" },
-      { src: "images/me/yukata-1.jpg",       caption: "Yukata night market" },
+      { src: "images/me/star-guardian.jpg",  caption: "Star Guardian cosplay ✨", focus: "top" },
+      { src: "images/me/yukata-1.jpg",       caption: "Yukata night market", focus: "55% 30%" },
       { src: "images/me/yukata-2.jpg",       caption: "Candied strawberries!!" },
       { src: "images/me/caricature.jpg",     caption: "Mike & Yvy, caricature edition" },
       { src: "images/me/throwback.jpg",      caption: "Throwback! ✌️" },
-      { src: "images/me/vinyl.jpg",          caption: "Spinning records" },
+      { src: "images/me/vinyl.jpg",          caption: "Spinning records", focus: "50% 40%" },
       { src: "images/me/portrait-color.jpg", caption: "Hi there" },
       { src: "images/me/portrait-bw.jpg",    caption: "Black & white mood" },
-      { src: "images/me/black-tank.jpg",     caption: "Plotting my next game" },
-      { src: "images/me/car-selfie.jpg",     caption: "Road trip selfie" },
-      { src: "images/me/dress-burgundy.jpg", caption: "Dress hunting" },
-      { src: "images/me/dress-blue.jpg",     caption: "Feeling blue (the good kind)" },
-      { src: "images/me/gingham.jpg",        caption: "Sunny gingham day" },
+      { src: "images/me/black-tank.jpg",     caption: "Plotting my next game", focus: "50% 15%" },
+      { src: "images/me/car-selfie.jpg",     caption: "Road trip selfie", focus: "55% 50%" },
+      { src: "images/me/dress-burgundy.jpg", caption: "Dress hunting", focus: "50% 15%" },
+      { src: "images/me/dress-blue.jpg",     caption: "Feeling blue (the good kind)", focus: "50% 15%" },
+      { src: "images/me/gingham.jpg",        caption: "Sunny gingham day", focus: "50% 15%" },
       ...stickerSet("").slice(0, -1),       // sheet 1 ("The best!" is already first)
       ...stickerSet("s2-"),
       ...stickerSet("s3-"),
@@ -112,30 +123,30 @@ window.YVY = {
     chickens: [     // images/chickens/
       // Riot (buff Polish)
       { src: "images/chickens/riot-and-yvy.jpg",       caption: "Me and Riot" },
-      { src: "images/chickens/riot-front.jpg",         caption: "Riot can see you. Probably." },
-      { src: "images/chickens/riot-coop.jpg",          caption: "Riot (Beyonce lurking behind)" },
-      { src: "images/chickens/riot-baby-1.jpg",        caption: "Baby Riot, already rocking the hairdo" },
-      { src: "images/chickens/riot-baby-2.jpg",        caption: "Riot, mid glow-up" },
+      { src: "images/chickens/riot-front.jpg",         caption: "Riot can see you. Probably.", focus: "50% 20%" },
+      { src: "images/chickens/riot-coop.jpg",          caption: "Riot (Beyonce lurking behind)", focus: "50% 20%" },
+      { src: "images/chickens/riot-baby-1.jpg",        caption: "Baby Riot, already rocking the hairdo", focus: "25% 45%" },
+      { src: "images/chickens/riot-baby-2.jpg",        caption: "Riot, mid glow-up", focus: "30% 40%" },
       // Beyonce (golden laced Polish)
-      { src: "images/chickens/beyonce-kale.jpg",       caption: "Beyonce guarding the kale" },
+      { src: "images/chickens/beyonce-kale.jpg",       caption: "Beyonce guarding the kale", focus: "50% 15%" },
       { src: "images/chickens/beyonce-patrol.jpg",     caption: "Beyonce on patrol" },
-      { src: "images/chickens/beyonce-yard.jpg",       caption: "Beyonce strutting the yard" },
-      { src: "images/chickens/beyonce-cage.jpg",       caption: "Beyonce, unimpressed" },
-      { src: "images/chickens/beyonce-glare.jpg",      caption: "Beyonce's signature glare" },
+      { src: "images/chickens/beyonce-yard.jpg",       caption: "Beyonce strutting the yard", focus: "50% 38%" },
+      { src: "images/chickens/beyonce-cage.jpg",       caption: "Beyonce, unimpressed", focus: "30% 30%", wall: false },
+      { src: "images/chickens/beyonce-glare.jpg",      caption: "Beyonce's signature glare", focus: "50% 100%", wall: false },
       // Both
       { src: "images/chickens/baby-beyonce-riot.jpg",  caption: "Baby Beyonce and baby Riot" },
-      { src: "images/chickens/riot-beyonce-table.jpg", caption: "Riot and Beyonce, tabletop edition" },
+      { src: "images/chickens/riot-beyonce-table.jpg", caption: "Riot and Beyonce, tabletop edition", focus: "55% 45%" },
       // Snow (white Silkie) 🌈
-      { src: "images/chickens/snow-dandelions.jpg",    caption: "Snow among the dandelions" },
-      { src: "images/chickens/snow-grass.jpg",         caption: "Snow at golden hour" },
-      { src: "images/chickens/snow-closeup.jpg",       caption: "Snow's best side" },
-      { src: "images/chickens/snow-held.jpg",          caption: "Snow, our little cloud" },
-      { src: "images/chickens/snow-inside.jpg",        caption: "Snow on indoor duty" },
+      { src: "images/chickens/snow-dandelions.jpg",    caption: "Snow among the dandelions", focus: "45% 50%" },
+      { src: "images/chickens/snow-grass.jpg",         caption: "Snow at golden hour", focus: "50% 76%" },
+      { src: "images/chickens/snow-closeup.jpg",       caption: "Snow's best side", focus: "55% 40%" },
+      { src: "images/chickens/snow-held.jpg",          caption: "Snow, our little cloud", focus: "38% 40%" },
+      { src: "images/chickens/snow-inside.jpg",        caption: "Snow on indoor duty", focus: "52% 50%" },
       // Chick days and friends
       { src: "images/chickens/brooder-crew.jpg",       caption: "The silkie brooder crew" },
-      { src: "images/chickens/silkie-chick.jpg",       caption: "Tiny silkie fluffball" },
-      { src: "images/chickens/yvy-fake-chickens-1.jpg", caption: "Me and some very well-behaved chickens (they're fake)" },
-      { src: "images/chickens/yvy-fake-chickens-2.jpg", caption: "Still trying to befriend the fake chickens" },
+      { src: "images/chickens/silkie-chick.jpg",       caption: "Tiny silkie fluffball", focus: "45% 50%" },
+      { src: "images/chickens/yvy-fake-chickens-1.jpg", caption: "Me and some very well-behaved chickens (they're fake)", focus: "30% 40%" },
+      { src: "images/chickens/yvy-fake-chickens-2.jpg", caption: "Still trying to befriend the fake chickens", focus: "40% 50%" },
     ],
   },
 

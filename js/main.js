@@ -19,9 +19,18 @@
   ];
   const photosIn = (key) => (D.photos[key] || []).filter((p) => p && p.src);
 
+  // "focus" picks which part of a photo stays in view when a frame crops it:
+  // a word (top, bottom, left, right, center, top left...) or "x% y%" like "30% 20%".
+  const FOCUS_WORDS = { top: "50% 0%", bottom: "50% 100%", left: "0% 50%", right: "100% 50%", center: "50% 50%" };
+  function focusStyle(focus) {
+    if (!focus) return "";
+    const value = FOCUS_WORDS[focus] || String(focus).trim();
+    return /^[a-z0-9.%\s-]+$/i.test(value) ? ` style="object-position:${value}"` : "";
+  }
+
   // If a listed image is missing, show a cute placeholder instead of a broken icon.
-  function imgTag(src, alt, fallbackEmoji) {
-    return `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" data-fallback="${esc(fallbackEmoji || "🌱")}">`;
+  function imgTag(src, alt, fallbackEmoji, focus) {
+    return `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" data-fallback="${esc(fallbackEmoji || "🌱")}"${focusStyle(focus)}>`;
   }
   document.addEventListener("error", (e) => {
     const img = e.target;
@@ -70,13 +79,13 @@
       const style = `--dy:${col % 2 ? 80 : 0}px;--rot:${((i * 37) % 11) - 5}deg;--h:${(i * 47) % 360}`;
       const album = pattern[(col + row * 3) % pattern.length];
       const n = (used[album] = (used[album] || 0) + 1) - 1;
-      const photos = photosIn(album);
+      const photos = photosIn(album).filter((p) => p.wall !== false); // wall: false keeps a photo off the wall
       const emoji = placeholders[album][n % placeholders[album].length];
       // Albums with only a few photos mix in placeholders so one picture doesn't repeat everywhere.
       const slots = album === "me" || photos.length >= 4 ? photos : [...photos, ...placeholders[album]];
       const item = slots.length ? slots[n % slots.length] : emoji;
       html += typeof item === "object"
-        ? `<div class="oval" style="${style}">${imgTag(item.src, "", emoji)}</div>`
+        ? `<div class="oval" style="${style}">${imgTag(item.src, "", emoji, item.focus)}</div>`
         : `<div class="oval oval-empty" style="${style}"><span>${item}</span></div>`;
     }
     wall.innerHTML = html;
@@ -104,7 +113,7 @@
   /* ---------- Welcome card ---------- */
   function buildWelcome() {
     const me = photosIn("me");
-    $("#headPhoto").innerHTML = me.length ? imgTag(me[0].src, "Yvy", "🌟") : px("flower", 9);
+    $("#headPhoto").innerHTML = me.length ? imgTag(me[0].src, "Yvy", "🌟", me[0].focus) : px("flower", 9);
     $("#headButton").addEventListener("click", () => openLightbox(me, 0, "Almost Actual Photos"));
     $("#announcement").textContent = D.announcement;
 
@@ -136,7 +145,7 @@
   const typeKey = (g) => (TYPES[g.type] ? g.type : "silly");
   const sortedGames = () => [...D.games].sort((a, b) => String(b.date).localeCompare(String(a.date)));
   const isNew = (g) => g.date && (Date.now() - new Date(g.date + "T00:00:00")) / 864e5 < 45;
-  const gameIcon = (g) => (g.thumb ? imgTag(g.thumb, "", TYPES[typeKey(g)].emoji) : px(TYPES[typeKey(g)].icon, 5));
+  const gameIcon = (g) => (g.thumb ? imgTag(g.thumb, "", TYPES[typeKey(g)].emoji, g.focus) : px(TYPES[typeKey(g)].icon, 5));
 
   function renderGames(filter) {
     const games = sortedGames().filter((g) => filter === "all" || typeKey(g) === filter);
@@ -179,7 +188,7 @@
     const featured = D.games.find((g) => g.featured) || sortedGames()[0];
     if (featured) {
       $("#tvScreen").innerHTML = featured.thumb
-        ? imgTag(featured.thumb, featured.title, "🎮")
+        ? imgTag(featured.thumb, featured.title, "🎮", featured.focus)
         : `<div>${px(TYPES[typeKey(featured)].icon, 9)}<p class="tv-title">${esc(featured.title)}</p></div>`;
       const play = $("#tvPlay");
       if (featured.url) {
@@ -223,7 +232,7 @@
     if (list.length) {
       scrap.index = (scrap.index + list.length) % list.length;
       const p = list[scrap.index];
-      photoBtn.innerHTML = imgTag(p.src, p.caption || album.label, album.emoji);
+      photoBtn.innerHTML = imgTag(p.src, p.caption || album.label, album.emoji, p.focus);
       $("#polaroidCaption").textContent = p.caption || "";
       $("#scrapCount").textContent = `${scrap.index + 1} / ${list.length}`;
     } else {
@@ -259,7 +268,7 @@
 
   /* ---------- Critters ---------- */
   function critterCard(c, kindField, emoji) {
-    const photo = c.photo ? imgTag(c.photo, c.name, emoji) : (emoji === "🐔" ? px("chicken", 6) : `<span>${emoji}</span>`);
+    const photo = c.photo ? imgTag(c.photo, c.name, emoji, c.focus) : (emoji === "🐔" ? px("chicken", 6) : `<span>${emoji}</span>`);
     return `<article class="critter">
       <div class="critter-photo">${photo}</div>
       <span class="critter-name">${esc(c.name)}</span>

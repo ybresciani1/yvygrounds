@@ -47,6 +47,10 @@ img { max-width: 100%; }
 
 :focus-visible { outline: 3px dashed var(--orange); outline-offset: 3px; }
 
+/* Cropped photo frames keep the upper-middle in view by default (heads, crests).
+   A photo's "focus" in data.js overrides this per image. */
+.oval img, .head-photo img, .polaroid-photo img, .critter-photo img, .game-thumb img, .tv-screen img { object-position: 50% 30%; }
+
 /* ---------- Photo wall (background) ---------- */
 .photo-wall {
   position: fixed;
@@ -661,7 +665,7 @@ a.game:hover { background: #34303b; }
 .polaroid {
   position: relative;
   margin: 0;
-  width: min(420px, 100%);
+  width: min(380px, 100%);
   background: #fff;
   padding: 14px 14px 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, .25);
@@ -680,18 +684,21 @@ a.game:hover { background: #34303b; }
   border-left: 2px dashed rgba(0, 0, 0, .08);
   border-right: 2px dashed rgba(0, 0, 0, .08);
 }
+/* Fixed square frame: photos are cropped to fit (use "focus" in data.js to aim the crop) */
 .polaroid-photo {
   display: grid;
   place-items: center;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 1 / 1;
   padding: 0;
   border: 3px solid var(--ink);
   background: var(--pink-soft);
   overflow: hidden;
   cursor: zoom-in;
 }
-.polaroid-photo img { width: 100%; height: 100%; object-fit: cover; }
+.polaroid-photo { position: relative; }
+/* Absolutely positioned so a tall photo can't stretch the square frame */
+.polaroid-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .polaroid figcaption { font: 400 22px/1.3 var(--f-hand); padding: 10px 4px 2px; min-height: 2.6em; }
 .scrap-count { margin: 12px 0 0; font: 9px var(--f-pixel); color: var(--purple); }
 
@@ -1024,7 +1031,9 @@ a.game:hover { background: #34303b; }
   .mascot { display: none; }
   .sticker { font-size: 16px; padding: 8px 10px; gap: 6px; }
   .dialog { padding: 20px 22px 18px; font-size: 15px; }
-  .scrap-stage { gap: 6px; }
+  /* Arrows go under the polaroid so the photo can use the full width */
+  .scrap-stage { display: grid; grid-template-columns: auto auto; justify-content: center; gap: 14px 40px; }
+  .polaroid { grid-column: 1 / -1; grid-row: 1; justify-self: center; width: min(380px, calc(100vw - 110px)); }
   .arrow { min-width: 48px; font-size: 7px; }
   .letter { padding: 24px 20px; font-size: 19px; }
   .stamp { display: none; }
