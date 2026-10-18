@@ -28,7 +28,7 @@
         <a href="#games">Games</a> |
         <a href="#scrapbook">Scrapbook</a> |
         <a href="#critters">Critters</a> |
-        <a href="#about">Write to Me</a>
+        <a href="#about" data-write>Write to Me</a>
         <span class="ng-bar-right">★ Everything, by Yvy. ★</span>
       </div>
 
@@ -81,7 +81,7 @@
 
           <div class="pills">
             <a class="pill pill-blue" href="#games"><small>Yvy's Game</small>Archive</a>
-            <a class="pill pill-orange" href="#about">Write<br>to me</a>
+            <a class="pill pill-orange" href="#about" data-write>Write<br>to me</a>
             <a class="pill pill-green" href="#about"><small>About me</small>Yvy!</a>
           </div>
         </div>
@@ -121,7 +121,7 @@
           </div>
           <div class="extra-row extra-bubble">
             <b>Got a game idea?</b> Garden-y, silly or both?
-            <a href="#about">Tell me about it! »</a>
+            <a href="#about" data-write>Tell me about it! »</a>
           </div>
         </div>
       </section>
@@ -217,6 +217,18 @@
         <span id="lightboxCount"></span>
         <button class="arrow arrow-next" id="lightboxNext" type="button">NEXT</button>
       </div>
+    </div>
+  </div>
+
+  <!-- "Write to me" mail picker -->
+  <div class="lightbox" id="mailPicker" hidden>
+    <div class="lightbox-card mail-card" role="dialog" aria-modal="true" aria-labelledby="mailTitle">
+      <button class="lightbox-close" id="mailClose" type="button" aria-label="Close">✕</button>
+      <div class="mail-stamp" aria-hidden="true">✉</div>
+      <h2 id="mailTitle">Send Yvy a letter!</h2>
+      <p class="mail-sub">Pick how you want to write. My address gets filled in for you.</p>
+      <div class="mail-options" id="mailOptions"></div>
+      <p class="mail-status" id="mailStatus" role="status"></p>
     </div>
   </div>
 

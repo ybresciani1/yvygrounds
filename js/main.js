@@ -260,10 +260,64 @@
   function buildAbout() {
     $("#aboutText").innerHTML = D.about.map((p) => `<p>${esc(p)}</p>`).join("");
     const links = [...D.links];
-    if (D.email) links.unshift({ label: "✉ Write to me", url: "mailto:" + D.email });
-    $("#letterLinks").innerHTML = links.map((l) =>
-      `<a href="${esc(l.url)}"${l.url.startsWith("mailto:") ? "" : ' target="_blank" rel="noopener"'}>${esc(l.label)}</a>`
-    ).join("");
+    $("#letterLinks").innerHTML =
+      (D.email ? `<a href="#about" data-write>✉ Write to me</a>` : "") +
+      links.map((l) => `<a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.label)}</a>`).join("");
+  }
+
+  /* ---------- "Write to me" mail picker ---------- */
+  // Visitors pick Gmail / Outlook / Yahoo / their mail app and get a draft with
+  // the address filled in, so the address itself never shows on the page.
+  function buildMailPicker() {
+    if (!D.email) return; // no email set: "Write to me" links just jump to the letter
+    const to = encodeURIComponent(D.email);
+    const subject = encodeURIComponent("Hi Yvy! (from YvyGrounds)");
+    const options = [
+      { label: "Gmail",       cls: "gmail",   url: `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}` },
+      { label: "Outlook",     cls: "outlook", url: `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${subject}` },
+      { label: "Yahoo Mail",  cls: "yahoo",   url: `https://compose.mail.yahoo.com/?to=${to}&subject=${subject}` },
+      { label: "My mail app", cls: "app",     url: `mailto:${D.email}?subject=${subject}` },
+    ];
+    $("#mailOptions").innerHTML = options.map((o) =>
+      `<a class="mail-option mail-${o.cls}" href="${esc(o.url)}"${o.url.startsWith("mailto:") ? "" : ' target="_blank" rel="noopener"'}>${o.label}</a>`
+    ).join("") + `<button class="mail-option mail-copy" id="mailCopy" type="button">Copy my address</button>`;
+
+    let lastFocus = null;
+    const open = () => {
+      lastFocus = document.activeElement;
+      $("#mailStatus").textContent = "";
+      $("#mailPicker").hidden = false;
+      $("#mailClose").focus();
+    };
+    const close = () => {
+      $("#mailPicker").hidden = true;
+      if (lastFocus) lastFocus.focus();
+    };
+
+    document.addEventListener("click", (e) => {
+      const link = e.target.closest("[data-write]");
+      if (!link) return;
+      e.preventDefault();
+      open();
+    });
+    $("#mailClose").addEventListener("click", close);
+    $("#mailPicker").addEventListener("click", (e) => { if (e.target === e.currentTarget) close(); });
+    $("#mailOptions").addEventListener("click", (e) => {
+      if (e.target.closest("a.mail-option")) setTimeout(close, 150);
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !$("#mailPicker").hidden) close();
+    });
+    $("#mailCopy").addEventListener("click", () => {
+      const done = (msg) => { $("#mailStatus").textContent = msg; };
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(D.email)
+          .then(() => done("Copied! Paste it into any email. ♥"))
+          .catch(() => done(D.email));
+      } else {
+        done(D.email);
+      }
+    });
   }
 
   /* ---------- Lightbox ---------- */
@@ -368,6 +422,7 @@
   buildScrapbook();
   buildCritters();
   buildAbout();
+  buildMailPicker();
   buildLightbox();
   buildMeadow();
   buildSparkles();

@@ -26,7 +26,8 @@ Live now at **https://ybresciani1.github.io/yvygrounds/**
 - [ ] Real chickens (names, breeds, fun facts, photos)
 - [ ] Real pets
 - [ ] "This Day in Yvy History" facts
-- [ ] About letter text, contact email and links (itch.io, GitHub, etc.)
+- [x] About letter text and contact email
+- [ ] Other links in the letter (itch.io, GitHub, etc.)
 - [ ] Photos for Yvy, garden club, garden students, pets and chickens (get a parent/guardian OK for photos of kids)
 
 ## 3. Double-checks

@@ -23,18 +23,19 @@ window.YVY = {
   ],
 
   // Your contact + links. Leave a value as "" to hide it.
-  email: "",               // e.g. "hello@yvygrounds.com"
+  email: "ybresciani@gmail.com",   // every "Write to me" link opens an email to this
   links: [
     // SAMPLE: uncomment and edit the ones you use
     // { label: "itch.io", url: "https://ybresciani.itch.io" },
     // { label: "GitHub",  url: "https://github.com/ybresciani" },
   ],
 
-  // The "About Yvy" letter. Each string is one paragraph. (SAMPLE: make it yours.)
+  // The "About Yvy" letter. Each string is one paragraph.
   about: [
     "I'm Yvy (you'll find me as ybresciani around the internet). I make games: cozy gardening games, and also some very silly ones.",
-    "When I'm not making games, I'm out in the garden with my garden students and the garden club, or hanging out with the pets and our chickens.",
-    "This is where all my games live. Hope you find one you like!",
+    "When I'm not making games, I'm out in the garden with my garden students and the garden club, or hanging out with my family, the pets and our chickens.",
+    "You can also find me paddleboarding (mostly standing, occasionally swimming) and working out: yoga, Pilates and, most importantly, calisthenics. The big quest is a handstand. Current record: about one hiccup long. The chickens remain unimpressed.",
+    "This is where all my games live. Hope you find one you like! Got a question, an idea, or a handstand tip? Write to me!",
   ],
 
   /*
