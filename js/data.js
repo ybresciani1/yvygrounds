@@ -71,7 +71,9 @@ window.YVY = {
    * Heads up: get a parent/guardian OK before posting photos of students who are kids.
    */
   photos: {
-    me:       [],   // images/me/        (the first one becomes the "click my head" photo)
+    me: [           // images/me/        (the first one becomes the "click my head" photo)
+      { src: "images/me/the-best.jpg", caption: "The best!" },
+    ],
     club:     [],   // images/club/      garden club
     students: [],   // images/students/  garden students
     pets:     [],   // images/pets/
