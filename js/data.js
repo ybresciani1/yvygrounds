@@ -132,7 +132,48 @@ window.YVY = {
     ],
     club:     [],   // images/club/      garden club
     students: [],   // images/students/  garden students
-    pets:     [],   // images/pets/
+    pets: [         // images/pets/
+      // Peaches (fox-faced Pomeranian)
+      { src: "images/pets/peaches-hehe-bite.jpg",       caption: "Hehe, bite playing" },
+      { src: "images/pets/peaches-spring.jpg",          caption: "Peaches in spring 🌼", focus: "0% 30%" },
+      { src: "images/pets/peaches-and-flowers.jpg",     caption: "Peaches and the flowers", focus: "60% 40%" },
+      { src: "images/pets/peaches-first-day-home-1.jpg", caption: "First day home (meeting a unicorn)", focus: "72% 40%" },
+      { src: "images/pets/peaches-first-day-home.jpg",  caption: "Peaches' first day home", focus: "35% 50%" },
+      { src: "images/pets/peaches-bunny-outfit.jpg",    caption: "Bunny outfit 🐰", focus: "10% 50%" },
+      { src: "images/pets/peaches-lgbtq-friendly.jpg",  caption: "LGBTQ friendly 🌈", focus: "50% 40%" },
+      { src: "images/pets/peaches-jean-outfit.jpg",     caption: "Peaches in her jean outfit", focus: "65% 30%" },
+      { src: "images/pets/peaches-heart.jpg",           caption: "Peaches ♥", focus: "50% 20%" },
+      { src: "images/pets/peaches-and-yvy-fox.jpg",     caption: "Me and Peaches in her fox costume 🦊", focus: "45% 40%" },
+      { src: "images/pets/peaches-wide-mouth.jpg",      caption: "Wide mouth!", focus: "80% 50%" },
+      { src: "images/pets/peaches-in-arms.jpg",         caption: "Peaches in my arms", focus: "80% 50%" },
+      { src: "images/pets/peaches-booties.jpg",         caption: "Peaches' booties", focus: "50% 50%" },
+      { src: "images/pets/peaches-butterflies.jpg",     caption: "Sweet girl with butterflies in her fur 🦋", focus: "40% 50%" },
+      { src: "images/pets/peaches-autumn.jpg",          caption: "Peaches loves autumn 🍂" },
+      { src: "images/pets/peaches-bikini.jpg",          caption: "Beach ready in her bikini 👙", focus: "90% 50%" },
+      { src: "images/pets/peaches-night-walk.jpg",      caption: "Night walk", focus: "50% 45%" },
+      { src: "images/pets/peaches-uh.jpg",              caption: "Peaches: uh.", focus: "32% 50%" },
+      { src: "images/pets/peaches-ice-cream.jpg",       caption: "Doggy ice cream 🍦", focus: "100% 50%" },
+      { src: "images/pets/peaches-blushing.jpg",        caption: "Peaches blushing", focus: "35% 50%" },
+      { src: "images/pets/peaches-hamster-face.jpg",    caption: "Sad hamster face", focus: "60% 30%" },
+      { src: "images/pets/peaches-sad-face.jpg",        caption: "Sad face (she's fine)", focus: "50% 40%" },
+      { src: "images/pets/peaches-cozy-blankets.jpg",   caption: "Cozy again", focus: "50% 62%" },
+      { src: "images/pets/peaches-cozy-bed.jpg",        caption: "Peaches cozy", focus: "80% 40%" },
+      { src: "images/pets/peaches-snowy-paw.jpg",       caption: "Snowy paw ❄️" },
+      { src: "images/pets/peaches-bike-ride-1.jpg",     caption: "Bike ride!", focus: "40% 30%" },
+      { src: "images/pets/peaches-bike-ride-2.jpg",     caption: "Bike ride, part 2", focus: "38% 30%" },
+      { src: "images/pets/peaches-queen-bee.jpg",       caption: "Peaches the queen bee 🐝" },
+      { src: "images/pets/peaches-queen-bee-feast.jpg", caption: "Queen bee, about to feast", focus: "50% 40%" },
+      { src: "images/pets/peaches-wig.jpg",             caption: "Peaches in a wig", focus: "50% 55%" },
+      { src: "images/pets/peaches-raincoat.jpg",        caption: "Raincoat ☔" },
+      { src: "images/pets/peaches-hospital.jpg",        caption: "At the hospital after eating avocado 🥑", wall: false },
+      // Peaches and the crew
+      { src: "images/pets/peaches-bojjii-pancake.jpg",  caption: "Peaches and Bojjii begging for a tiny pancake 🥞", focus: "50% 45%" },
+      { src: "images/pets/peaches-bojjii-blur.jpg",     caption: "Evil buahahah face (and blurry Bojjii)", focus: "50% 100%", wall: false },
+      { src: "images/pets/peaches-devil-lychee.jpg",    caption: "Evil Peaches 😈 (Lychee is watching)", focus: "100% 30%" },
+      { src: "images/pets/peaches-lychee-battle-1.jpg", caption: "Peaches vs. Lychee: the battle", focus: "50% 80%" },
+      { src: "images/pets/peaches-lychee-battle-2.jpg", caption: "The battle continues", focus: "50% 50%" },
+      { src: "images/pets/christmas-crew.jpg",          caption: "Bojjii, Peaches and Lychee at Christmas 🎄" },
+    ],
     chickens: [     // images/chickens/
       // Riot (buff Polish)
       { src: "images/chickens/riot-and-yvy.jpg",       caption: "Me and Riot" },
@@ -173,10 +214,14 @@ window.YVY = {
       fact: "Our fluffy little cloud. She's the mystery chicken now, keeping watch from somewhere extra soft. Forever loved." },
   ],
 
-  // PETS (SAMPLE placeholders)
+  // PETS (Critter Corner cards). photo is optional.
   pets: [
-    { name: "Mystery Pet", kind: "Species TBA", fact: "Has opinions about keyboards.", photo: "" },
-    { name: "Pet No. 2",   kind: "Species TBA", fact: "Professional napper.",          photo: "" },
+    { name: "Peaches", kind: "Fox-faced Pomeranian", photo: "images/pets/peaches-hehe-bite.jpg",
+      fact: "Owns more outfits than anyone in the house. Wears every one of them with pride." },
+    { name: "Bojjii", kind: "Mutt (German Shepherd × Aussie Shepherd, we think)", photo: "images/pets/peaches-bojjii-pancake.jpg", focus: "50% 40%",
+      fact: "The big sweet one. Will put on reindeer antlers for the team (and beg for pancakes)." },
+    { name: "Lychee", kind: "Cat", photo: "images/pets/peaches-lychee-battle-1.jpg", focus: "50% 70%",
+      fact: "Peaches' rival in the great food-bowl battles. Very dignified about it." },
   ],
 
   // "This Day in Yvy History". One is picked per calendar day. (SAMPLE: add real ones!)
