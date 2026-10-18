@@ -1,0 +1,5 @@
+# GitHub Pages (Jekyll) settings: keep repo notes off the live site.
+exclude:
+  - AGENTS.md
+  - OPEN_ITEMS.md
+  - README.md
