@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>YvyGrounds ★ Games, Gardens &amp; Goofs by Yvy</title>
+  <meta name="description" content="YvyGrounds is the game portal of Yvy (ybresciani): gardening games, silly games, garden club, pets and chickens.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Amanda Please-style wall of oval photos, filled from js/data.js -->
+  <div id="photoWall" class="photo-wall" aria-hidden="true"></div>
+
+  <div class="ticker" aria-label="Site news">
+    <div class="ticker-track" id="ticker"></div>
+  </div>
+
+  <div class="site">
+
+    <header class="masthead">
+      <div class="ng-bar">
+        <a href="#about">About YvyGrounds</a> |
+        <a href="#games">Games</a> |
+        <a href="#scrapbook">Scrapbook</a> |
+        <a href="#critters">Critters</a> |
+        <a href="#about">Write to Me</a>
+        <span class="ng-bar-right">★ Everything, by Yvy. ★</span>
+      </div>
+
+      <div class="logo-row">
+        <div class="mascot" id="mascot" title="Bawk!"></div>
+        <a class="logo" href="#home" aria-label="YvyGrounds home">
+          <h1 id="logo" aria-label="YvyGrounds">YvyGrounds</h1>
+        </a>
+        <p class="byline">By Yvy <span>(a.k.a. ybresciani)</span></p>
+      </div>
+
+      <div class="dialog" id="dialog" role="note">
+        <span class="dialog-name">Yvy</span>
+        <p id="dialogText"></p>
+        <span class="dialog-next" aria-hidden="true">▼</span>
+      </div>
+
+      <nav class="tabs" aria-label="Main">
+        <a href="#home">Home</a>
+        <a href="#games">Games</a>
+        <a href="#scrapbook">Scrapbook</a>
+        <a href="#critters">Critters</a>
+        <a href="#about">About Yvy</a>
+      </nav>
+    </header>
+
+    <main>
+
+      <!-- ===== Welcome card (Amanda Please) ===== -->
+      <section id="home" class="welcome">
+        <aside class="stickers">
+          <a class="sticker sticker-purple" href="#featured"><span class="sticker-icon" data-px="heart"></span>Game of the Week</a>
+          <a class="sticker sticker-orange" href="#scrapbook"><span class="sticker-icon" data-px="flower"></span>My Yvy Scrapbook</a>
+          <a class="sticker sticker-yellow" href="#critters"><span class="sticker-icon" data-px="chicken"></span>Chicken Coop</a>
+        </aside>
+
+        <div class="welcome-center">
+          <div class="head-row">
+            <button class="head-button" id="headButton" type="button" aria-label="Open Almost Actual Photos of Yvy">
+              <span class="head-photo" id="headPhoto"></span>
+              <svg class="head-star head-star-a" viewBox="0 0 50 50" aria-hidden="true"><polygon points="25,3 31,18 47,19 35,30 39,46 25,37 11,46 15,30 3,19 19,18"/></svg>
+              <svg class="head-star head-star-b" viewBox="0 0 50 50" aria-hidden="true"><polygon points="25,3 31,18 47,19 35,30 39,46 25,37 11,46 15,30 3,19 19,18"/></svg>
+            </button>
+            <div class="cloud" aria-hidden="true">Almost<br>Actual<small>PHOTOS</small></div>
+          </div>
+          <p class="click-hint">Click on Yvy's head to see<br>Almost Actual Photos!</p>
+
+          <h2 class="attention">Attention Players!</h2>
+          <p id="announcement" class="announcement"></p>
+
+          <div class="pills">
+            <a class="pill pill-blue" href="#games"><small>Yvy's Game</small>Archive</a>
+            <a class="pill pill-orange" href="#about">Write<br>to me</a>
+            <a class="pill pill-green" href="#about"><small>About me</small>Yvy!</a>
+          </div>
+        </div>
+
+        <aside class="side-right">
+          <div class="history">
+            <div class="history-head">This day in<br><b>Yvy</b><br>history:</div>
+            <div class="history-body">
+              <p class="history-date" id="historyDate"></p>
+              <p id="historyFact"></p>
+            </div>
+          </div>
+          <div class="counter">
+            <p>Your visits here:</p>
+            <div class="odometer" id="odometer"></div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- ===== Game of the Week (iCarly) ===== -->
+      <section id="featured" class="featured">
+        <div class="tv">
+          <div class="tv-label">Game of the Week</div>
+          <div class="tv-screen" id="tvScreen"></div>
+          <div class="tv-bumper">
+            <span class="tv-light"></span>
+            <a class="tv-play" id="tvPlay" href="#games">▶ PLAY!</a>
+            <span class="tv-light"></span>
+          </div>
+        </div>
+        <div class="extras">
+          <h2>Yvy's Extras</h2>
+          <div class="extra-row">
+            <p class="extra-title">Countdown to spring planting</p>
+            <div class="led" id="springCountdown" aria-live="off"></div>
+            <div class="led-labels"><span>days</span><span>hrs</span><span>min</span><span>sec</span></div>
+          </div>
+          <div class="extra-row extra-bubble">
+            <b>Got a game idea?</b> Garden-y, silly or both?
+            <a href="#about">Tell me about it! »</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Game portal (Newgrounds) ===== -->
+      <section id="games" class="portal">
+        <div class="portal-head">
+          <h2><span class="portal-icon" data-px="sprout"></span>Yvy Portal</h2>
+          <div class="filters" role="group" aria-label="Filter games">
+            <button type="button" class="filter is-on" data-filter="all">All</button>
+            <button type="button" class="filter" data-filter="garden">🌱 Garden</button>
+            <button type="button" class="filter" data-filter="silly">🤪 Silly</button>
+          </div>
+        </div>
+        <div class="portal-body">
+          <aside class="portal-side">
+            <div class="latest">
+              <h3>Latest 5 Sprouts</h3>
+              <ol id="latestList"></ol>
+            </div>
+            <div class="battle-on">
+              <span data-px="silly"></span>
+              <p>Garden on!<br><small>with new veggie friends</small></p>
+            </div>
+          </aside>
+          <ul class="game-list" id="gameList"></ul>
+        </div>
+      </section>
+
+      <!-- ===== Scrapbook (Amanda Please scrapbook) ===== -->
+      <section id="scrapbook" class="scrapbook">
+        <h2 class="scrap-title">My Yvy Scrapbook</h2>
+        <p class="scrap-sub">Remember to click on the arrows, please!</p>
+        <div class="scrap-tabs" id="scrapTabs" role="tablist" aria-label="Photo albums"></div>
+        <div class="scrap-stage">
+          <button class="arrow arrow-back" id="scrapPrev" type="button" aria-label="Previous photo">BACK</button>
+          <figure class="polaroid" id="polaroid">
+            <button class="polaroid-photo" id="polaroidPhoto" type="button" aria-label="Open photo larger"></button>
+            <figcaption id="polaroidCaption"></figcaption>
+          </figure>
+          <button class="arrow arrow-next" id="scrapNext" type="button" aria-label="Next photo">NEXT</button>
+        </div>
+        <p class="scrap-count" id="scrapCount"></p>
+      </section>
+
+      <!-- ===== Critters (Animal Crossing) ===== -->
+      <section id="critters" class="critters grass">
+        <h2 class="leaf-title"><span>Critter Corner</span></h2>
+        <h3 class="critter-group">The Flock 🐔</h3>
+        <div class="critter-cards" id="flockCards"></div>
+        <h3 class="critter-group">Pets 🐾</h3>
+        <div class="critter-cards" id="petCards"></div>
+      </section>
+
+      <!-- ===== About (Animal Crossing letter) ===== -->
+      <section id="about" class="about">
+        <div class="letter">
+          <div class="stamp" aria-hidden="true"><span data-px="flower"></span></div>
+          <p class="letter-to">Dear Visitor,</p>
+          <div id="aboutText" class="letter-body"></div>
+          <p class="letter-from">Love,<br>Yvy ♥</p>
+          <div class="letter-links" id="letterLinks"></div>
+        </div>
+        <div class="badges" aria-label="Site badges">
+          <span class="badge badge-a">MADE WITH ♥</span>
+          <span class="badge badge-b">🐔 CHICKEN APPROVED</span>
+          <span class="badge badge-c">BEST VIEWED 800×600</span>
+          <span class="badge badge-d">🌱 GROWN NOT BOUGHT</span>
+          <span class="badge badge-e">NO WEEDS ALLOWED</span>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ===== Meadow footer (Animal Crossing) ===== -->
+  <footer class="meadow grass" id="meadow">
+    <p class="meadow-hint">psst... click the grass to plant a flower</p>
+    <div class="flowers" id="flowers"></div>
+    <div class="rail">
+      <div class="walker" id="walker"><span class="walker-bob" id="walkerSprite"></span></div>
+      <div class="tracks" aria-hidden="true"></div>
+    </div>
+    <div class="construction" aria-hidden="true"><span>🚧 ALWAYS UNDER CONSTRUCTION 🚧</span></div>
+    <p class="copyright">© <span id="year"></span> YvyGrounds · made with ♥, dirt &amp; pixels by <b>ybresciani</b></p>
+  </footer>
+
+  <!-- Lightbox for photos -->
+  <div class="lightbox" id="lightbox" hidden>
+    <div class="lightbox-card" role="dialog" aria-modal="true" aria-labelledby="lightboxTitle">
+      <button class="lightbox-close" id="lightboxClose" type="button" aria-label="Close">✕</button>
+      <h2 id="lightboxTitle">Almost Actual Photos</h2>
+      <div class="lightbox-photo" id="lightboxPhoto"></div>
+      <p class="lightbox-caption" id="lightboxCaption"></p>
+      <div class="lightbox-nav">
+        <button class="arrow arrow-back" id="lightboxPrev" type="button">BACK</button>
+        <span id="lightboxCount"></span>
+        <button class="arrow arrow-next" id="lightboxNext" type="button">NEXT</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/pixels.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
