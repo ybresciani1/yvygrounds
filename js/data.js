@@ -110,16 +110,43 @@ window.YVY = {
     students: [],   // images/students/  garden students
     pets:     [],   // images/pets/
     chickens: [     // images/chickens/
-      { src: "images/chickens/riot-and-yvy.jpg", caption: "Me and Riot, my Polish chicken" },
+      // Riot (buff Polish)
+      { src: "images/chickens/riot-and-yvy.jpg",       caption: "Me and Riot" },
+      { src: "images/chickens/riot-front.jpg",         caption: "Riot can see you. Probably." },
+      { src: "images/chickens/riot-coop.jpg",          caption: "Riot (Beyonce lurking behind)" },
+      { src: "images/chickens/riot-baby-1.jpg",        caption: "Baby Riot, already rocking the hairdo" },
+      { src: "images/chickens/riot-baby-2.jpg",        caption: "Riot, mid glow-up" },
+      // Beyonce (golden laced Polish)
+      { src: "images/chickens/beyonce-kale.jpg",       caption: "Beyonce guarding the kale" },
+      { src: "images/chickens/beyonce-patrol.jpg",     caption: "Beyonce on patrol" },
+      { src: "images/chickens/beyonce-yard.jpg",       caption: "Beyonce strutting the yard" },
+      { src: "images/chickens/beyonce-cage.jpg",       caption: "Beyonce, unimpressed" },
+      { src: "images/chickens/beyonce-glare.jpg",      caption: "Beyonce's signature glare" },
+      // Both
+      { src: "images/chickens/baby-beyonce-riot.jpg",  caption: "Baby Beyonce and baby Riot" },
+      { src: "images/chickens/riot-beyonce-table.jpg", caption: "Riot and Beyonce, tabletop edition" },
+      // Snow (white Silkie) 🌈
+      { src: "images/chickens/snow-dandelions.jpg",    caption: "Snow among the dandelions" },
+      { src: "images/chickens/snow-grass.jpg",         caption: "Snow at golden hour" },
+      { src: "images/chickens/snow-closeup.jpg",       caption: "Snow's best side" },
+      { src: "images/chickens/snow-held.jpg",          caption: "Snow, our little cloud" },
+      { src: "images/chickens/snow-inside.jpg",        caption: "Snow on indoor duty" },
+      // Chick days and friends
+      { src: "images/chickens/brooder-crew.jpg",       caption: "The silkie brooder crew" },
+      { src: "images/chickens/silkie-chick.jpg",       caption: "Tiny silkie fluffball" },
+      { src: "images/chickens/yvy-fake-chickens-1.jpg", caption: "Me and some very well-behaved chickens (they're fake)" },
+      { src: "images/chickens/yvy-fake-chickens-2.jpg", caption: "Still trying to befriend the fake chickens" },
     ],
   },
 
-  // CHICKENS. photo is optional. (Mystery hens are SAMPLE placeholders.)
+  // CHICKENS (Critter Corner cards). photo is optional.
   flock: [
-    { name: "Riot", breed: "Polish", photo: "images/chickens/riot.jpg",
+    { name: "Riot", breed: "Buff Laced Polish", photo: "images/chickens/riot.jpg",
       fact: "Rocks a giant pom-pom hairdo and can't see where she's going. Goes anyway." },
-    { name: "Mystery Hen",     breed: "Breed TBA",  fact: "Has not yet agreed to a photoshoot.", photo: "" },
-    { name: "Hen of Intrigue", breed: "Breed TBA",  fact: "Lays eggs. Keeps secrets.",           photo: "" },
+    { name: "Beyonce", breed: "Golden Laced Polish", photo: "images/chickens/beyonce.jpg",
+      fact: "The feisty one. Runs the coop, and the coop knows it." },
+    { name: "Snow 🌈", breed: "Silkie", photo: "images/chickens/snow.jpg",
+      fact: "Our fluffy little cloud. She's the mystery chicken now, keeping watch from somewhere extra soft. Forever loved." },
   ],
 
   // PETS (SAMPLE placeholders)

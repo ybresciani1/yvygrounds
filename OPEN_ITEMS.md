@@ -23,8 +23,7 @@ Live now at **https://ybresciani1.github.io/yvygrounds/**
 
 ## 2. Swap placeholder content (in `js/data.js`)
 
-- [x] Riot (Polish chicken) added with photo
-- [ ] The rest of the flock (2 "Mystery Hen" placeholder cards left)
+- [x] The flock: Riot, Beyonce and Snow 🌈 (21 chicken photos)
 - [ ] Real pets
 - [ ] "This Day in Yvy History" facts
 - [x] About letter text and contact email
