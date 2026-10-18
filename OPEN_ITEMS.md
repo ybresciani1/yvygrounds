@@ -23,12 +23,14 @@ Live now at **https://ybresciani1.github.io/yvygrounds/**
 
 ## 2. Swap placeholder content (in `js/data.js`)
 
-- [ ] Real chickens (names, breeds, fun facts, photos)
+- [x] Riot (Polish chicken) added with photo
+- [ ] The rest of the flock (2 "Mystery Hen" placeholder cards left)
 - [ ] Real pets
 - [ ] "This Day in Yvy History" facts
 - [x] About letter text and contact email
 - [ ] Other links in the letter (itch.io, GitHub, etc.)
-- [ ] Photos for Yvy, garden club, garden students, pets and chickens (get a parent/guardian OK for photos of kids)
+- [x] Photos of Yvy (64 in the album)
+- [ ] Photos for garden club, garden students and pets (get a parent/guardian OK for photos of kids)
 
 ## 3. Double-checks
 

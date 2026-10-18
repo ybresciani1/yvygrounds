@@ -72,9 +72,12 @@
       const n = (used[album] = (used[album] || 0) + 1) - 1;
       const photos = photosIn(album);
       const emoji = placeholders[album][n % placeholders[album].length];
-      html += photos.length
-        ? `<div class="oval" style="${style}">${imgTag(photos[n % photos.length].src, "", emoji)}</div>`
-        : `<div class="oval oval-empty" style="${style}"><span>${emoji}</span></div>`;
+      // Albums with only a few photos mix in placeholders so one picture doesn't repeat everywhere.
+      const slots = album === "me" || photos.length >= 4 ? photos : [...photos, ...placeholders[album]];
+      const item = slots.length ? slots[n % slots.length] : emoji;
+      html += typeof item === "object"
+        ? `<div class="oval" style="${style}">${imgTag(item.src, "", emoji)}</div>`
+        : `<div class="oval oval-empty" style="${style}"><span>${item}</span></div>`;
     }
     wall.innerHTML = html;
   }

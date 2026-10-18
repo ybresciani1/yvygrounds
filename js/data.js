@@ -5,6 +5,19 @@
  *
  * Anything marked SAMPLE is placeholder content. Swap it for the real thing.
  */
+
+// Sticker-sheet poses. Each sheet is cropped into images/me/<prefix><file>.jpg
+// (sheet 1 has no prefix, sheet 2 is "s2-", sheet 3 is "s3-").
+const STICKER_POSES = [
+  ["hello", "Hello!"], ["hahaha", "Hahaha"], ["wow", "Wow~"], ["muah", "Muah~"],
+  ["i-love-you", "I love you"], ["so-cute", "So cute"], ["thinking", "Thinking.."],
+  ["blushing", "Blushing"], ["proud", "Proud"], ["oh-my-god", "Oh my God!"],
+  ["dazed", "Dazed~"], ["sleepy", "Sleepy..."], ["hmph", "Hmph!"], ["ew", "Ew!!"],
+  ["sob", "Sob"], ["the-best", "The best!"],
+];
+const stickerSet = (prefix) =>
+  STICKER_POSES.map(([file, caption]) => ({ src: `images/me/${prefix}${file}.jpg`, caption }));
+
 window.YVY = {
 
   // Shown in the Animal Crossing-style speech box under the logo.
@@ -72,33 +85,40 @@ window.YVY = {
    */
   photos: {
     me: [           // images/me/        (the first one becomes the "click my head" photo)
-      { src: "images/me/the-best.jpg",   caption: "The best!" },
-      { src: "images/me/hello.jpg",      caption: "Hello!" },
-      { src: "images/me/hahaha.jpg",     caption: "Hahaha" },
-      { src: "images/me/wow.jpg",        caption: "Wow~" },
-      { src: "images/me/muah.jpg",       caption: "Muah~" },
-      { src: "images/me/i-love-you.jpg", caption: "I love you" },
-      { src: "images/me/so-cute.jpg",    caption: "So cute" },
-      { src: "images/me/thinking.jpg",   caption: "Thinking.." },
-      { src: "images/me/blushing.jpg",   caption: "Blushing" },
-      { src: "images/me/proud.jpg",      caption: "Proud" },
-      { src: "images/me/oh-my-god.jpg",  caption: "Oh my God!" },
-      { src: "images/me/dazed.jpg",      caption: "Dazed~" },
-      { src: "images/me/sleepy.jpg",     caption: "Sleepy..." },
-      { src: "images/me/hmph.jpg",       caption: "Hmph!" },
-      { src: "images/me/ew.jpg",         caption: "Ew!!" },
-      { src: "images/me/sob.jpg",        caption: "Sob" },
+      { src: "images/me/the-best.jpg",       caption: "The best!" },
+      { src: "images/me/fairy-flower.jpg",   caption: "Tiny fairy, giant flower" },
+      { src: "images/me/fairy-leaves.jpg",   caption: "Fairy hiding in the garden" },
+      { src: "images/me/pikachu.jpg",        caption: "Got swallowed by a Pikachu" },
+      { src: "images/me/star-guardian.jpg",  caption: "Star Guardian cosplay ✨" },
+      { src: "images/me/yukata-1.jpg",       caption: "Yukata night market" },
+      { src: "images/me/yukata-2.jpg",       caption: "Candied strawberries!!" },
+      { src: "images/me/caricature.jpg",     caption: "Mike & Yvy, caricature edition" },
+      { src: "images/me/throwback.jpg",      caption: "Throwback! ✌️" },
+      { src: "images/me/vinyl.jpg",          caption: "Spinning records" },
+      { src: "images/me/portrait-color.jpg", caption: "Hi there" },
+      { src: "images/me/portrait-bw.jpg",    caption: "Black & white mood" },
+      { src: "images/me/black-tank.jpg",     caption: "Plotting my next game" },
+      { src: "images/me/car-selfie.jpg",     caption: "Road trip selfie" },
+      { src: "images/me/dress-burgundy.jpg", caption: "Dress hunting" },
+      { src: "images/me/dress-blue.jpg",     caption: "Feeling blue (the good kind)" },
+      { src: "images/me/gingham.jpg",        caption: "Sunny gingham day" },
+      ...stickerSet("").slice(0, -1),       // sheet 1 ("The best!" is already first)
+      ...stickerSet("s2-"),
+      ...stickerSet("s3-"),
     ],
     club:     [],   // images/club/      garden club
     students: [],   // images/students/  garden students
     pets:     [],   // images/pets/
-    chickens: [],   // images/chickens/
+    chickens: [     // images/chickens/
+      { src: "images/chickens/riot-and-yvy.jpg", caption: "Me and Riot, my Polish chicken" },
+    ],
   },
 
-  // CHICKENS (SAMPLE placeholders). photo is optional.
+  // CHICKENS. photo is optional. (Mystery hens are SAMPLE placeholders.)
   flock: [
+    { name: "Riot", breed: "Polish", photo: "images/chickens/riot.jpg",
+      fact: "Rocks a giant pom-pom hairdo and can't see where she's going. Goes anyway." },
     { name: "Mystery Hen",     breed: "Breed TBA",  fact: "Has not yet agreed to a photoshoot.", photo: "" },
-    { name: "Secret Chicken",  breed: "Breed TBA",  fact: "Rumored to be the boss of the coop.", photo: "" },
     { name: "Hen of Intrigue", breed: "Breed TBA",  fact: "Lays eggs. Keeps secrets.",           photo: "" },
   ],
 
