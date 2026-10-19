@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bowl Brawl ★ YvyGrounds Arcade</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥣</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../arcade.css">
+</head>
+<body>
+  <p class="arcade-back"><a href="../../#games">« Back to YvyGrounds</a></p>
+  <h1 class="arcade-title">Bowl Brawl</h1>
+
+  <div class="stage">
+    <canvas id="game" width="960" height="720" tabindex="0"
+      aria-label="Bowl Brawl. Peaches the Pomeranian and Lychee the cat face off over the food bowl. Wait for Bojjii to raise the flag, then pounce first. Pounce too early and you trip."></canvas>
+    <!-- Menus sit between the title panel and the pets (positions match the canvas layout) -->
+    <div class="arcade-menu" id="menu" style="top: 51%; bottom: auto;">
+      <button type="button" data-mode="peaches" aria-label="1 player as Peaches">🐶 Peaches</button>
+      <button type="button" data-mode="lychee" class="alt" aria-label="1 player as Lychee">🐱 Lychee</button>
+      <button type="button" data-mode="two" class="alt2">👯 2 Players</button>
+    </div>
+    <div class="arcade-menu" id="overMenu" style="top: 40%; bottom: auto;" hidden>
+      <button type="button" id="rematch">Rematch!</button>
+      <button type="button" id="toMenu" class="alt">Menu</button>
+    </div>
+    <button class="mute" id="mute" type="button" aria-pressed="false" aria-label="Mute sound">🔊</button>
+  </div>
+
+  <p class="arcade-help">Wait for Bojjii's flag and the big <b>!</b>, then pounce: tap the game or press any key. Pounce too early and you trip! 2 players: Peaches presses <kbd>A</kbd> or taps the left half, Lychee presses <kbd>L</kbd> or taps the right half. <kbd>P</kbd> pauses, <kbd>M</kbd> mutes.</p>
+
+  <script src="game.js"></script>
+</body>
+</html>

@@ -161,10 +161,18 @@
     return list;
   };
   const typeKey = (g) => typesOf(g)[0];
-  const sortedGames = () => [...D.games].sort((a, b) => String(b.date).localeCompare(String(a.date)));
-  const isNew = (g) => g.date && (Date.now() - new Date(g.date + "T00:00:00")) / 864e5 < 45;
+  // A game dated in the future stays locked until that day ("🔒 coming Nov 18"), then
+  // unlocks by itself. That way games can be built ahead and released one a month.
+  const todayStr = () => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+  };
+  const isLocked = (g) => Boolean(g.date) && String(g.date) > todayStr();
+  const unlockDay = (g) => new Date(g.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const sortedGames = () => D.games.filter((g) => !isLocked(g)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
+  const isNew = (g) => g.date && !isLocked(g) && (Date.now() - new Date(g.date + "T00:00:00")) / 864e5 < 45;
   const gameIcon = (g) => (g.thumb ? imgTag(g.thumb, "", TYPES[typeKey(g)].emoji, g.focus) : px(g.icon || TYPES[typeKey(g)].icon, 5));
-  const playable = (g) => Boolean(g.play || g.url);
+  const playable = (g) => !isLocked(g) && Boolean(g.play || g.url);
   // Arcade games (in arcade/) open in the pop-up player; everything else opens in a new tab.
   const gameLink = (g) => (g.play
     ? `href="${esc(g.play)}" data-play="${esc(g.title)}"`
@@ -183,7 +191,8 @@
         typesOf(g).map((t) => `<span class="tag tag-${t}">${TYPES[t].label}</span>`).join("") +
         (isNew(g) ? `<span class="tag tag-new">NEW!</span>` : "") +
         (g.badge ? `<span class="tag tag-badge">${esc(g.badge)}</span>` : "") +
-        (playable(g) ? "" : `<span class="tag tag-soon">coming soon</span>`);
+        (isLocked(g) ? `<span class="tag tag-soon">🔒 coming ${esc(unlockDay(g))}</span>`
+          : playable(g) ? "" : `<span class="tag tag-soon">coming soon</span>`);
       const inner =
         `<span class="game-thumb ${type}">${gameIcon(g)}</span>
          <span><span class="game-title">${esc(g.title)}</span> - ${esc(g.blurb)}<br>${tags}</span>`;
@@ -209,7 +218,7 @@
       `<li>${playable(g) ? `<a ${gameLink(g)}>${esc(g.title)}</a>` : esc(g.title)}</li>`
     ).join("");
 
-    const featured = D.games.find((g) => g.featured) || sortedGames()[0];
+    const featured = D.games.find((g) => g.featured && !isLocked(g)) || sortedGames()[0];
     if (featured) {
       $("#tvScreen").innerHTML = featured.thumb
         ? imgTag(featured.thumb, featured.title, "🎮", featured.focus)

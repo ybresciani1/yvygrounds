@@ -62,6 +62,7 @@ window.YVY = {
    *  thumb:    optional image, e.g. "images/games/tomato.png". "" uses a pixel icon.
    *  icon:     optional pixel icon from js/pixels.js (e.g. "tomato") when there's no thumb.
    *  date:     "YYYY-MM-DD". "Latest 5 Sprouts" lists newest first; games from the last 45 days get a NEW! tag.
+   *            A date in the future locks the game until that day: it shows "🔒 coming <date>" and unlocks by itself.
    *  featured: true puts it on the Game of the Week TV (first one wins).
    *  badge:    optional extra tag, e.g. "rough draft" or "still updating ✨"
    */
@@ -71,6 +72,12 @@ window.YVY = {
       blurb: "A watercolor garden adventure all about seeds: how they pop, travel and get saved for next year. Play in English or Español!" },
     { title: "Tomato Tussle", type: ["garden", "silly"], date: "2026-10-18", play: "arcade/tomato-tussle/", icon: "tomato",
       blurb: "Squirrels, crows and raccoons are raiding the garden. Splat them with tomatoes, but don't splat Riot or Beyonce!" },
+    { title: "Bowl Brawl", type: "silly", date: "2026-10-18", play: "arcade/bowl-brawl/", icon: "bowl",
+      blurb: "Peaches vs. Lychee: a quick-draw duel over the food bowl. Wait for Bojjii's flag, then pounce! 1 or 2 players." },
+    // Monthly arcade releases: a future date keeps a game locked ("coming Nov 18") until that day.
+    // See OPEN_ITEMS.md for the release calendar.
+    { title: "Egg Catch", type: "silly", date: "2026-11-18", play: "", icon: "chicken",
+      blurb: "Riot and Beyonce are laying eggs from the coop roof. Catch them in your basket before they crack!" },
     { title: "Master Composter Quest", type: "garden", date: "2026-10-07",
       url: "https://master-composter.vercel.app/", thumb: "images/games/master-composter.jpg",
       blurb: "Doze off in compost class, wake up in a dream world, and follow Wallace the worm through soil-science challenges." },

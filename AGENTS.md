@@ -46,7 +46,9 @@ Yvy's games are deployed on **Vercel**, mostly from GitHub repos under `ybrescia
 ```bash
 gh repo list ybresciani1 --json name,homepageUrl,description
 ```
-Small games can also live **on the site itself** in `arcade/<game>/` (plain canvas + vanilla JS, no libraries; see `arcade/tomato-tussle/`). Give the `data.js` entry `play: "arcade/<game>/"` instead of `url`, and the portal opens it in the pop-up arcade player (an iframe; the game page adds `body.embedded` and fills the frame). Opened directly, the same page works as a standalone game page. Esc inside a game pauses, then posts `{ yvyArcade: "close" }` to the parent to close the pop-up.
+Small games can also live **on the site itself** in `arcade/<game>/` (plain canvas + vanilla JS, no libraries; see `arcade/tomato-tussle/`). Give the `data.js` entry `play: "arcade/<game>/"` instead of `url`, and the portal opens it in the pop-up arcade player (an iframe; the game page adds `body.embedded` and fills the frame). Opened directly, the same page works as a standalone game page. Esc inside a game pauses, then posts `{ yvyArcade: "close" }` to the parent to close the pop-up. Menus over the canvas are real `<button>`s in an `.arcade-menu` (see `arcade/bowl-brawl/`).
+
+New arcade games come out **one a month, on the 18th** (calendar in `OPEN_ITEMS.md`). A game whose `date` is in the future stays locked in the portal ("🔒 coming Nov 18") and unlocks by itself that day, so it can be built and pushed early.
 
 Thumbnails come from the game's own logo, or a screenshot of its title screen (headless Chrome works; give it its own `--user-data-dir`).
 

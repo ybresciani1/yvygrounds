@@ -35,3 +35,25 @@ Live now at **https://ybresciani1.github.io/yvygrounds/**
 
 - [ ] OK to list *Mike & Yvy's Love Adventure* on the public portal?
 - [ ] Remove the "rough draft" tag from *Tijuana Estuary Explorer* once it's done
+
+## 4. Arcade release calendar (one new mini game on the 18th of each month)
+
+Each game lives in `arcade/<game>/` and gets an entry in `js/data.js` dated its release day.
+A future date keeps it locked in the portal ("🔒 coming Nov 18") and it unlocks by itself that day,
+so a game can be built and pushed early. (The files are still reachable by direct link before then.)
+
+| Release | Game | Idea |
+|---|---|---|
+| Oct 18, 2026 | ✅ Tomato Tussle | Splat garden pests with tomatoes, don't splat the chickens |
+| Oct 18, 2026 | ✅ Bowl Brawl | Peaches vs. Lychee quick-draw duel over the food bowl (1 or 2 players) |
+| Nov 18, 2026 | Egg Catch | Riot and Beyonce lay eggs from the coop roof; catch them in a basket (teaser already listed) |
+| Dec 18, 2026 | Bojjii's Pancake Catch | Holiday pancakes flip off the pan; Bojjii jumps for the tiny ones |
+| Jan 18, 2027 | Handstand Hero | New Year's resolution: hold Yvy's handstand longer than one hiccup |
+| Feb 18, 2027 | Kibble Rush | Peaches races Lychee to gobble spilled kibble |
+| Mar 18, 2027 | Watering Can Dash | Spring planting! Water wilting plants before they droop |
+| Apr 18, 2027 | Compost Stacker | Earth Day month: Tetris-style compost bin with Wallace the worm |
+| May 18, 2027 | Coop Roundup | Herd the flock back into the coop at bedtime |
+| Jun 18, 2027 | Paddleboard Panic | Summer endless runner on the water: stay (mostly) standing |
+| Jul 18, 2027 | Battle for the Bowl | The big one: Peaches vs. Lychee mini fighting game with a Dignity Meter |
+
+- [ ] Build each game a few days before its release date, then push (it stays locked until the 18th)

@@ -94,6 +94,17 @@ window.Pixel = (function () {
         "..RRRRR..",
       ],
     },
+    bowl: {
+      colors: { K: "#a0643a", L: "#ffd6ec", P: "#ff8cc6", D: "#c9579a" },
+      grid: [
+        "...KK.K...",
+        "..KKKKKK..",
+        "LLLLLLLLLL",
+        "PPPPPPPPPP",
+        ".PPPDDPPP.",
+        "..PPPPPP..",
+      ],
+    },
     heart: {
       colors: { P: "#ff6fa8", H: "#ffc2df" },
       grid: [
