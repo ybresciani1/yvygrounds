@@ -269,7 +269,7 @@ window.YVY = {
   pets: [
     { name: "Peaches", kind: "Fox-faced Pomeranian", photo: "images/pets/peaches-hehe-bite.jpg",
       fact: "Owns more outfits than anyone in the house. Wears every one of them with pride." },
-    { name: "Bojjii", kind: "Mutt (German Shepherd × Aussie Shepherd, we think)", photo: "images/pets/bojjii-handsome.jpg", focus: "50% 40%",
+    { name: "Bojjii", kind: "Mutt (German Shepherd × Aussie Shepherd, we think)", photo: "images/pets/bojjii-card.jpg",
       fact: "The big sweet boy. Will wear antlers, wigs and party hats for the team (and beg for pancakes)." },
     { name: "Lychee", kind: "Tabby cat", photo: "images/pets/lychee-cucumber.jpg", focus: "70% 50%",
       fact: "Lounges on vegetables, tolerates costumes, and is deeply tired of Peaches' nonsense." },

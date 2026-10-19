@@ -737,7 +737,9 @@ a.game:hover { background: #34303b; }
   color: #fff;
   text-shadow: 0 2px 0 var(--green-dark), 2px 0 0 var(--green-dark), -2px 0 0 var(--green-dark), 0 -2px 0 var(--green-dark);
 }
-.critter-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+/* Up to 4 cards per row; rows with fewer cards sit in the middle */
+.critter-cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+.critter-cards > .critter { flex: 0 1 calc((100% - 3 * 16px) / 4); min-width: 200px; }
 .critter {
   background: var(--cream);
   border-radius: 24px;
