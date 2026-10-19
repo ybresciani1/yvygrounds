@@ -855,6 +855,8 @@ a.game:hover { background: #34303b; }
 }
 .chips em { font-style: normal; font-weight: 400; color: #9a7a3a; font-size: 12px; }
 .chip-emoji { margin-right: 4px; }
+/* Hand-drawn vegetable icons (js/veg-icons.js), sized like an emoji */
+.veg-icon { display: inline-block; width: 1.2em; height: 1.2em; vertical-align: -0.25em; }
 .chip-alt { font-weight: 400; }
 .packet-legend { margin: 10px 0 0; font: 400 16px var(--f-hand); color: #6b4a1f; }
 

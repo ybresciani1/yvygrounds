@@ -354,8 +354,10 @@
       if (saved === "coastal" || saved === "inland") area = saved;
     } catch (e) { /* storage blocked: use the default */ }
 
+    // Hand-drawn icon (js/veg-icons.js) when a crop has no accurate emoji
+    const glyph = (c) => (c.icon && window.VegIcons && VegIcons.svg(c.icon)) || esc(c.emoji || "🌱");
     const chip = (c, note, extra) =>
-      `<li><span class="chip-emoji" aria-hidden="true">${esc(c.emoji || "🌱")}</span>${esc(c.name)}` +
+      `<li><span class="chip-emoji" aria-hidden="true">${glyph(c)}</span>${esc(c.name)}` +
       `${note ? ` <em>(${esc(note)})</em>` : ""}${extra || ""}</li>`;
     const list = (items, empty) =>
       (items.length ? `<ul class="chips">${items.join("")}</ul>` : `<p class="packet-empty">${empty}</p>`);
@@ -409,7 +411,7 @@
       ["🔀 Either way", "Sow in place, or start in trays and transplant.", (c) => c.how === "either"],
       ["🌿 Plant out", "Usually planted as slips or sets.", (c) => c.how === "plant" && !c.trayFirst],
     ].map(([title, note, pick]) =>
-      `<div class="cheat-col"><h4>${title}</h4><p>${note}</p><ul>${G.crops.filter(pick).map((c) => `<li>${esc(c.emoji)} ${esc(c.name)}</li>`).join("")}</ul></div>`
+      `<div class="cheat-col"><h4>${title}</h4><p>${note}</p><ul>${G.crops.filter(pick).map((c) => `<li>${glyph(c)} ${esc(c.name)}</li>`).join("")}</ul></div>`
     ).join("");
 
     if (G.source) {
