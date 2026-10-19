@@ -325,6 +325,113 @@
     $("#petCards").innerHTML = D.pets.map((c) => critterCard(c, "kind", "🐾")).join("");
   }
 
+  /* ---------- Garden Almanac: San Diego planting calendar (data.js → growing) ---------- */
+  const MONTHS = ["January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December"];
+  const shiftMonth = (m, n) => ((m - 1 + n + 120) % 12) + 1;
+
+  // Is month m inside any [start, end] window? (x.5 = mid-month; start > end wraps past December)
+  function windowHit(windows, m) {
+    for (const [a, b] of windows || []) {
+      const s = Math.floor(a);
+      const e = Math.floor(b);
+      const inside = s <= e ? m >= s && m <= e : m >= s || m <= e;
+      if (inside) {
+        return { note: m === s && a % 1 ? "from mid-month" : m === e && b % 1 ? "until mid-month" : "" };
+      }
+    }
+    return null;
+  }
+
+  function buildGrowing() {
+    const G = D.growing;
+    if (!G || !$("#growing")) return;
+    const thisMonth = new Date().getMonth() + 1;
+    let month = thisMonth;
+    let area = G.defaultArea === "inland" ? "inland" : "coastal";
+    try {
+      const saved = localStorage.getItem("yvy-area");
+      if (saved === "coastal" || saved === "inland") area = saved;
+    } catch (e) { /* storage blocked: use the default */ }
+
+    const chip = (c, note, extra) =>
+      `<li><span class="chip-emoji" aria-hidden="true">${esc(c.emoji || "🌱")}</span>${esc(c.name)}` +
+      `${note ? ` <em>(${esc(note)})</em>` : ""}${extra || ""}</li>`;
+    const list = (items, empty) =>
+      (items.length ? `<ul class="chips">${items.join("")}</ul>` : `<p class="packet-empty">${empty}</p>`);
+
+    function columns(m) {
+      const sow = [];
+      const tray = [];
+      const plant = [];
+      G.crops.forEach((c) => {
+        const hit = windowHit(c[area], m);
+        if (hit && (c.how === "sow" || c.how === "either")) {
+          sow.push(chip(c, hit.note, c.how === "either" ? ' <b class="chip-alt" title="Can also be started in trays">🪴</b>' : ""));
+        }
+        if (hit && c.how === "tray") tray.push(chip(c, hit.note));
+        if (hit && c.how === "plant") plant.push(chip(c, hit.note));
+        const out = c.plant && windowHit(c.plant[area], m);
+        if (out) plant.push(chip(c, out.note));
+        // Warm-season transplants: start seeds in trays the two months before planting out
+        const first = c.trayFirst && c[area] && c[area][0] ? Math.floor(c[area][0][0]) : 0;
+        if (first && (m === shiftMonth(first, -2) || m === shiftMonth(first, -1))) {
+          tray.push(chip(c, `plant out in ${MONTHS[first - 1]}`));
+        }
+      });
+      return { sow, tray, plant };
+    }
+
+    function render() {
+      $("#areaToggle").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.area === area)));
+      $("#monthTabs").innerHTML = MONTHS.map((name, i) =>
+        `<button type="button" class="month-tab${i + 1 === thisMonth ? " is-now" : ""}" data-month="${i + 1}" aria-pressed="${i + 1 === month}" aria-label="${name}">${name.slice(0, 3)}</button>`
+      ).join("");
+      const cool = month >= 9 || month <= 2;
+      const { sow, tray, plant } = columns(month);
+      $("#monthCard").innerHTML = `
+        <div class="month-head">
+          <h3>${MONTHS[month - 1]}${month === thisMonth ? ' <span class="now-badge">this month!</span>' : ""}</h3>
+          <span class="season-badge ${cool ? "cool" : "warm"}">${cool ? "🍂 Cool season" : "☀️ Warm season"}</span>
+        </div>
+        <p class="month-where">${area === "coastal" ? "🌊 Coastal" : "⛰️ Inland"} San Diego</p>
+        <div class="packets">
+          <div class="packet packet-sow"><h4>🌰 Direct sow</h4><p class="packet-note">Seeds straight into the ground</p>${list(sow, "No direct sowing this month.")}</div>
+          <div class="packet packet-tray"><h4>🪴 Start in trays</h4><p class="packet-note">Seeds in trays or pots, transplant later</p>${list(tray, "Nothing to start in trays this month.")}</div>
+          <div class="packet packet-plant"><h4>🌿 Plant out</h4><p class="packet-note">Set out seedlings, slips or sets</p>${list(plant, "Nothing new to plant out. Water, weed and harvest!")}</div>
+        </div>
+        ${sow.some((s) => s.includes("chip-alt")) ? '<p class="packet-legend">🪴 = can also be started in trays first</p>' : ""}`;
+    }
+
+    $("#cheatSheet").innerHTML = [
+      ["🌰 Direct sow", "Root crops and big seeds grow best right where they're sown.", (c) => c.how === "sow"],
+      ["🪴 Start in trays", "Give these a head start, then transplant.", (c) => c.how === "tray" || c.trayFirst],
+      ["🔀 Either way", "Sow in place, or start in trays and transplant.", (c) => c.how === "either"],
+      ["🌿 Plant out", "Usually planted as slips or sets.", (c) => c.how === "plant" && !c.trayFirst],
+    ].map(([title, note, pick]) =>
+      `<div class="cheat-col"><h4>${title}</h4><p>${note}</p><ul>${G.crops.filter(pick).map((c) => `<li>${esc(c.emoji)} ${esc(c.name)}</li>`).join("")}</ul></div>`
+    ).join("");
+
+    if (G.source) {
+      $("#growingSource").innerHTML = `Planting dates follow the <a href="${esc(G.source.url)}" target="_blank" rel="noopener">${esc(G.source.label)}</a>. They're based on long-term averages and can shift a few weeks with the weather, so keep an eye on your own garden too.`;
+    }
+
+    $("#areaToggle").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-area]");
+      if (!btn) return;
+      area = btn.dataset.area;
+      try { localStorage.setItem("yvy-area", area); } catch (err) { /* ignore */ }
+      render();
+    });
+    $("#monthTabs").addEventListener("click", (e) => {
+      const btn = e.target.closest("button[data-month]");
+      if (!btn) return;
+      month = Number(btn.dataset.month);
+      render();
+    });
+    render();
+  }
+
   /* ---------- About letter ---------- */
   function buildAbout() {
     $("#aboutText").innerHTML = D.about.map((p) => `<p>${esc(p)}</p>`).join("");
@@ -529,6 +636,7 @@
   buildCountdown();
   buildScrapbook();
   buildCritters();
+  buildGrowing();
   buildAbout();
   buildMailPicker();
   buildArcade();

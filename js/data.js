@@ -285,4 +285,63 @@ window.YVY = {
     "Garden club finds a worm described as 'basically a noodle'.",
     "A pet sits directly on the keyboard during an important build.",
   ],
+
+  /*
+   * GROWING TIPS: San Diego planting calendar (the "Garden Almanac" section).
+   * Dates come from the UC Master Gardeners of San Diego County planting guide (link below).
+   * Months are numbers: 1 = Jan ... 12 = Dec. Add .5 for "mid-month" (3.5 = from mid-March).
+   * A window like [9, 5] wraps around the new year (September through May).
+   *   how: "sow"    = seed straight into the ground
+   *        "either" = direct sow, or start in trays and transplant
+   *        "tray"   = start seeds in trays (dates = seed-starting window); "plant" = when to set the seedlings out
+   *        "plant"  = set out transplants, slips or sets (dates = planting-out window)
+   *   trayFirst: true = also start seeds in trays ~6–8 weeks before the planting-out window
+   */
+  growing: {
+    defaultArea: "coastal",   // "coastal" or "inland"
+    source: {
+      label: "UC Master Gardeners of San Diego County: Vegetable Garden Planting Guide",
+      url: "https://ucanr.edu/site/uc-master-gardeners-san-diego-county/article/vegetable-garden-planting-guide-san-diego-county",
+    },
+    crops: [
+      // Warm season (spring & summer)
+      { name: "Snap beans",     emoji: "🫘", how: "sow",    coastal: [[3.5, 8]],  inland: [[4, 8.5]] },
+      { name: "Lima beans",     emoji: "🫘", how: "sow",    coastal: [[4.5, 7]],  inland: [[4.5, 7]] },
+      { name: "Sweet corn",     emoji: "🌽", how: "sow",    coastal: [[3.5, 7]],  inland: [[4, 7]] },
+      { name: "Cucumbers",      emoji: "🥒", how: "either", coastal: [[3.5, 7]],  inland: [[4, 7]] },
+      { name: "Summer squash",  emoji: "🌼", how: "either", coastal: [[3.5, 8]],  inland: [[4, 7]] },
+      { name: "Winter squash",  emoji: "🎃", how: "either", coastal: [[4, 6]],    inland: [[4, 6]] },
+      { name: "Cantaloupe",     emoji: "🍈", how: "either", coastal: [[4, 6]],    inland: [[4, 6]] },
+      { name: "Melons",         emoji: "🍈", how: "either", coastal: [[4, 6]],    inland: [[4, 6]] },
+      { name: "Watermelon",     emoji: "🍉", how: "either", coastal: [[4, 6]],    inland: [[4, 6]] },
+      { name: "Okra",           emoji: "🌿", how: "sow",    coastal: [[4, 6]],    inland: [[4, 6]] },
+      { name: "Tomatoes",       emoji: "🍅", how: "plant",  coastal: [[3, 7]],    inland: [[4, 6]], trayFirst: true },
+      { name: "Peppers",        emoji: "🫑", how: "plant",  coastal: [[4, 7]],    inland: [[4, 6]], trayFirst: true },
+      { name: "Eggplant",       emoji: "🍆", how: "plant",  coastal: [[4, 6]],    inland: [[4, 6]], trayFirst: true },
+      { name: "Sweet potato slips", emoji: "🍠", how: "plant", coastal: [[4, 6]], inland: [[5, 6]] },
+      // Cool season (fall & winter)
+      { name: "Beets",          emoji: "🌱", how: "sow",    coastal: [[9, 5]],    inland: [[9, 4.5]] },
+      { name: "Carrots",        emoji: "🥕", how: "sow",    coastal: [[9, 4]],    inland: [[9, 3]] },
+      { name: "Radishes",       emoji: "🌱", how: "sow",    coastal: [[9, 5]],    inland: [[9, 3]] },
+      { name: "Turnips",        emoji: "🌱", how: "sow",    coastal: [[9, 5]],    inland: [[9.5, 4]] },
+      { name: "Peas",           emoji: "🫛", how: "sow",    coastal: [[9, 3]],    inland: [[1, 3]] },
+      { name: "Spinach",        emoji: "🥬", how: "sow",    coastal: [[9, 4]],    inland: [[9, 3]] },
+      { name: "Green onions",   emoji: "🧅", how: "sow",    coastal: [[9, 5]],    inland: [[9, 4]] },
+      { name: "Seed potatoes",  emoji: "🥔", how: "sow",    coastal: [[2, 3], [8.5, 9]], inland: [[2.5, 4], [8.5, 9]] },
+      { name: "Leaf lettuce",   emoji: "🥬", how: "either", coastal: [[9, 4]],    inland: [[9, 3]] },
+      { name: "Head lettuce",   emoji: "🥬", how: "either", coastal: [[9, 3]],    inland: [[9, 2]] },
+      { name: "Chard",          emoji: "🥬", how: "either", coastal: [[9, 6]],    inland: [[9, 4]] },
+      { name: "Kale",           emoji: "🥬", how: "either", coastal: [[9, 4]],    inland: [[9, 4]] },
+      { name: "Endive",         emoji: "🥬", how: "either", coastal: [[9, 5]],    inland: [[9, 4]] },
+      { name: "Kohlrabi",       emoji: "🌱", how: "either", coastal: [[9, 3]],    inland: [[9, 3]] },
+      { name: "Broccoli",       emoji: "🥦", how: "tray",   coastal: [[8, 12]],   inland: [[8, 10]],
+        plant: { coastal: [[9, 2]], inland: [[9, 2]] } },
+      { name: "Cabbage",        emoji: "🥬", how: "tray",   coastal: [[8, 12]],   inland: [[8, 10]],
+        plant: { coastal: [[9, 2]], inland: [[9, 2]] } },
+      { name: "Cauliflower",    emoji: "🥦", how: "tray",   coastal: [[8, 12]],   inland: [[8, 10]],
+        plant: { coastal: [[9, 2]], inland: [[9, 2]] } },
+      { name: "Bulb onions (short-day)",  emoji: "🧅", how: "plant", coastal: [[10, 12]], inland: [[10.5, 12]] },
+      { name: "Bulb onions (medium-day)", emoji: "🧅", how: "plant", coastal: [[1, 2]],   inland: [[1, 2]] },
+    ],
+  },
 };

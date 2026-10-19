@@ -28,6 +28,7 @@
         <a href="#games">Games</a> |
         <a href="#scrapbook">Scrapbook</a> |
         <a href="#critters">Critters</a> |
+        <a href="#growing">Garden Tips</a> |
         <a href="#about" data-write>Write to Me</a>
         <span class="ng-bar-right">★ Everything, by Yvy. ★</span>
       </div>
@@ -51,6 +52,7 @@
         <a href="#games">Games</a>
         <a href="#scrapbook">Scrapbook</a>
         <a href="#critters">Critters</a>
+        <a href="#growing">Garden Tips</a>
         <a href="#about">About Yvy</a>
       </nav>
     </header>
@@ -170,6 +172,23 @@
         <div class="critter-cards" id="flockCards"></div>
         <h3 class="critter-group">Pets 🐾</h3>
         <div class="critter-cards" id="petCards"></div>
+      </section>
+
+      <!-- ===== Growing tips: San Diego planting calendar (data in js/data.js) ===== -->
+      <section id="growing" class="growing">
+        <h2 class="leaf-title"><span>Yvy's Garden Almanac</span></h2>
+        <p class="growing-intro">What to plant in San Diego, month by month 🌱</p>
+        <div class="area-toggle" id="areaToggle" role="group" aria-label="Which part of San Diego">
+          <button type="button" data-area="coastal">🌊 Coastal</button>
+          <button type="button" data-area="inland">⛰️ Inland</button>
+        </div>
+        <div class="month-tabs" id="monthTabs" role="group" aria-label="Pick a month"></div>
+        <div class="month-card" id="monthCard" aria-live="polite"></div>
+        <details class="cheat">
+          <summary>Direct sow or start in a tray? (cheat sheet)</summary>
+          <div class="cheat-grid" id="cheatSheet"></div>
+        </details>
+        <p class="growing-source" id="growingSource"></p>
       </section>
 
       <!-- ===== About (Animal Crossing letter) ===== -->
