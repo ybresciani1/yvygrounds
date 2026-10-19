@@ -273,6 +273,8 @@ window.YVY = {
       fact: "The big sweet boy. Will wear antlers, wigs and party hats for the team (and beg for pancakes)." },
     { name: "Lychee", kind: "Tabby cat", photo: "images/pets/lychee-cucumber.jpg", focus: "70% 50%",
       fact: "Lounges on vegetables, tolerates costumes, and is deeply tired of Peaches' nonsense." },
+    { name: "Penny 🌈", kind: "Chug (Chihuahua × Pug)", photo: "",
+      fact: "Stuck by my side through my hardest times. Spun in happy circles and hid chocolate under the blankets for later. The sweetest, most loving doggo there ever was. Forever loved." },
   ],
 
   // "This Day in Yvy History". One is picked per calendar day. (SAMPLE: add real ones!)
