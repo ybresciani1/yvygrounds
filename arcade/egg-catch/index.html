@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Egg Catch ★ YvyGrounds Arcade</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🥚</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../arcade.css">
+</head>
+<body>
+  <p class="arcade-back"><a href="../../#games">« Back to YvyGrounds</a></p>
+  <h1 class="arcade-title">Egg Catch</h1>
+
+  <div class="stage">
+    <canvas id="game" width="960" height="720" tabindex="0"
+      aria-label="Egg Catch. Riot and Beyonce the Polish chickens strut along the coop roof and drop eggs. Slide the basket to catch them. Golden eggs are worth extra, rotten eggs are a stinky trap, and three cracked eggs end the game."></canvas>
+    <!-- Menus sit at the bottom of the title and results panels (positions match the canvas layout) -->
+    <div class="arcade-menu" id="menu" style="top: 84%; bottom: auto;">
+      <button type="button" id="start">🧺 Start!</button>
+    </div>
+    <div class="arcade-menu" id="overMenu" style="top: 81%; bottom: auto;" hidden>
+      <button type="button" id="again">🥚 Play again!</button>
+    </div>
+    <button class="mute" id="mute" type="button" aria-pressed="false" aria-label="Mute sound">🔊</button>
+  </div>
+
+  <p class="arcade-help">Riot and Beyonce lay eggs from the coop roof. Slide the basket to catch them: drag or tap on a phone, or use <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd>. Golden eggs are worth 50 and fix a crack. Don't catch the rotten ones! Three cracked eggs and it's scrambled. <kbd>P</kbd> pauses, <kbd>M</kbd> mutes.</p>
+
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,11 +1,15 @@
 # YvyGrounds open items
 
-Live now at **https://ybresciani1.github.io/yvygrounds/**
+Live now at **http://yvygrounds.com/** (HTTPS certificate provisioning is pending).
 
-## 1. Connect the domains (next up)
+## 1. Connect the domains
 
-- [ ] **Buy `yvygrounds.com` and `ybresciani.com`** at any registrar (Porkbun, Namecheap, Cloudflare...). Turn on free WHOIS privacy if it's offered.
-- [ ] **Add DNS records for both domains** (the same records work for both):
+- [x] **Connect `yvygrounds.com`** (October 18, 2026): active in Cloudflare, with the DNS-only records below. GitHub Pages custom domain is set, and its `CNAME` commit is synced locally. HTTP loads the site; `www` redirects to the apex domain.
+- [x] **Install and sign in to the official Cloudflare CLI** globally (`cf` / `cloudflare`, version `1.0.0-beta.18`). Credentials stay in the user's Cloudflare CLI configuration, outside this repository. Inspect DNS with `cf dns records list --zone yvygrounds.com`.
+- [ ] **Enable HTTPS enforcement for `yvygrounds.com`** after GitHub finishes issuing its certificate.
+- [ ] **Buy/connect `ybresciani.com`** for the redirect site. It currently returns NXDOMAIN; its GitHub Pages custom domain is not set.
+
+  DNS records (`yvygrounds.com` is done; use the same values for `ybresciani.com` when available):
 
   | Type  | Host / Name | Value |
   |-------|-------------|-------|
@@ -16,9 +20,9 @@ Live now at **https://ybresciani1.github.io/yvygrounds/**
   | CNAME | `www` | `ybresciani1.github.io` |
 
   Delete any default "parking" A/CNAME records the registrar added. If you use Cloudflare, set these records to **DNS only** (gray cloud).
-- [ ] **Ask Claude to connect them.** It sets the custom domain on both GitHub repos and turns on HTTPS:
-  - `ybresciani1/yvygrounds` → `yvygrounds.com`
-  - `ybresciani1/ybresciani-redirect` → `ybresciani.com` (redirects to yvygrounds.com)
+  GitHub Pages mapping:
+  - `ybresciani1/yvygrounds` → `yvygrounds.com` (configured)
+  - `ybresciani1/ybresciani-redirect` → `ybresciani.com` (pending; redirects to yvygrounds.com)
 - [ ] Optional: verify both domains under GitHub → Settings → Pages → *Add a verified domain*, so nobody else can claim them on GitHub Pages.
 
 ## 2. Swap placeholder content (in `js/data.js`)
