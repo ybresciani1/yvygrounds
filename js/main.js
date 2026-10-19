@@ -68,6 +68,13 @@
     const pattern = ["me", "chickens", "me", "pets"];
     ["club", "students"].forEach((key) => { if (photosIn(key).length) pattern.push("me", key); });
     const used = {};
+    // Walk each album in "golden ratio" order so even a few frames sample the whole album
+    // (Bojjii and Lychee get spots too, not just whoever is listed first).
+    const spread = (list) => list
+      .map((p, i) => [((i + 1) * 0.6180339887) % 1, p])
+      .sort((a, b) => a[0] - b[0])
+      .map(([, p]) => p);
+    const wallPhotos = {};
     // Share of photo frames that stay as cute emoji frames, so the wall doesn't feel crowded.
     const emojiShare = Math.min(1, Math.max(0, Number(D.wallEmojiShare ?? 0.3)));
     const isBreather = (i) => ((Math.imul(i + 1, 2654435761) >>> 16) % 100) < emojiShare * 100;
@@ -87,7 +94,8 @@
         continue;
       }
       const n = (used[album] = (used[album] || 0) + 1) - 1;
-      const photos = photosIn(album).filter((p) => p.wall !== false); // wall: false keeps a photo off the wall
+      // wall: false keeps a photo off the wall
+      const photos = (wallPhotos[album] ??= spread(photosIn(album).filter((p) => p.wall !== false)));
       const emoji = placeholders[album][n % placeholders[album].length];
       // Albums with only a few photos mix in placeholders so one picture doesn't repeat everywhere.
       const slots = album === "me" || photos.length >= 4 ? photos : [...photos, ...placeholders[album]];
