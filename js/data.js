@@ -195,6 +195,16 @@ window.YVY = {
       { src: "images/pets/bojjii-reindeer.jpg",         caption: "Reindeer Bojjii in his holiday socks 🦌", focus: "50% 20%" },
       { src: "images/pets/bojjii-christmas.jpg",        caption: "Wearing the tree so the tree doesn't feel left out 🎄" },
       { src: "images/pets/bojjii-happy.jpg",            caption: "The happiest boy in the whole house", focus: "50% 25%" },
+      // Lychee (tabby cat)
+      { src: "images/pets/lychee-cucumber.jpg",         caption: "Lychee, chilling on a cold cucumber 🥒", focus: "70% 50%" },
+      { src: "images/pets/lychee-kitten.jpg",           caption: "Baby Lychee and the jingle-bell collar 🔔", focus: "50% 25%" },
+      { src: "images/pets/lychee-kitten-play.jpg",      caption: "Tiny Lychee, 100% toe beans 🐾", focus: "15% 50%" },
+      { src: "images/pets/lychee-mariachi.jpg",         caption: "Mariachi Lychee, ready for the serenade 🎺", focus: "50% 20%" },
+      { src: "images/pets/lychee-cosplay.jpg",          caption: "Lychee in full Akatsuki cosplay ☁️" },
+      { src: "images/pets/lychee-vacation.jpg",         caption: "Vacation Lychee in a tiger shirt 🌴" },
+      { src: "images/pets/lychee-bee.jpg",              caption: "Bee Lychee, deeply tired of our nonsense 🐝" },
+      { src: "images/pets/lychee-basket.jpg",           caption: "Chonky Lychee, loafing in the basket 🧺" },
+      { src: "images/pets/lychee-backpack-treat.jpg",   caption: "Backpack Lychee, side-eyeing the pup cup 🍦", focus: "50% 58%" },
       // Peaches and the crew
       { src: "images/pets/peaches-bojjii-pancake.jpg",  caption: "Peaches and Bojjii begging for a tiny pancake 🥞", focus: "50% 45%" },
       { src: "images/pets/peaches-bojjii-blur.jpg",     caption: "Evil buahahah face (and blurry Bojjii)", focus: "50% 100%", wall: false },
@@ -203,6 +213,7 @@ window.YVY = {
       { src: "images/pets/peaches-lychee-battle-2.jpg", caption: "The battle continues", focus: "50% 50%" },
       { src: "images/pets/peaches-bojjii-pc.jpg",       caption: "Peaches and Bojjii waiting for me to get off the PC", focus: "45% 50%" },
       { src: "images/pets/bojjii-peaches-easter.jpg",   caption: "Matching Easter fits. Bojjii is thrilled. Peaches is thrilleder 🐰", focus: "100% 50%" },
+      { src: "images/pets/lychee-peaches-nonsense.jpg", caption: "Peaches attacks. Lychee files a complaint.", focus: "50% 50%" },
       { src: "images/pets/christmas-crew.jpg",          caption: "Bojjii, Peaches and Lychee at Christmas 🎄" },
     ],
     chickens: [     // images/chickens/
@@ -251,8 +262,8 @@ window.YVY = {
       fact: "Owns more outfits than anyone in the house. Wears every one of them with pride." },
     { name: "Bojjii", kind: "Mutt (German Shepherd × Aussie Shepherd, we think)", photo: "images/pets/bojjii-handsome.jpg", focus: "50% 40%",
       fact: "The big sweet boy. Will wear antlers, wigs and party hats for the team (and beg for pancakes)." },
-    { name: "Lychee", kind: "Cat", photo: "images/pets/peaches-lychee-battle-1.jpg", focus: "50% 70%",
-      fact: "Peaches' rival in the great food-bowl battles. Very dignified about it." },
+    { name: "Lychee", kind: "Tabby cat", photo: "images/pets/lychee-cucumber.jpg", focus: "70% 50%",
+      fact: "Lounges on vegetables, tolerates costumes, and is deeply tired of Peaches' nonsense." },
   ],
 
   // "This Day in Yvy History". One is picked per calendar day. (SAMPLE: add real ones!)
