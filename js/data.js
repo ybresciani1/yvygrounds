@@ -290,7 +290,7 @@ window.YVY = {
 
   /*
    * GROWING TIPS: San Diego planting calendar (the "Garden Almanac" section).
-   * Dates come from the UC Master Gardeners of San Diego County planting guide (link below).
+   * Each month shows a drop-down per group (vegetables, fruit, flowers). Sources are listed below.
    * Months are numbers: 1 = Jan ... 12 = Dec. Add .5 for "mid-month" (3.5 = from mid-March).
    * A window like [9, 5] wraps around the new year (September through May).
    *   how: "sow"    = seed straight into the ground
@@ -299,13 +299,26 @@ window.YVY = {
    *        "plant"  = set out transplants, slips or sets (dates = planting-out window)
    *   trayFirst: true = also start seeds in trays ~6–8 weeks before the planting-out window
    *   emoji, or icon: "cauliflower" for a hand-drawn one from js/veg-icons.js when no emoji is accurate
+   *   group: "veg" (default), "fruit" or "flower"
+   *   note: optional short tip shown next to the name, e.g. "Oct 10 – Nov 1"
    */
   growing: {
     defaultArea: "coastal",   // "coastal" or "inland"
-    source: {
-      label: "UC Master Gardeners of San Diego County: Vegetable Garden Planting Guide",
-      url: "https://ucanr.edu/site/uc-master-gardeners-san-diego-county/article/vegetable-garden-planting-guide-san-diego-county",
-    },
+    groups: [
+      { key: "veg",    label: "Vegetables", emoji: "🥕" },
+      { key: "fruit",  label: "Fruit",      emoji: "🍓" },
+      { key: "flower", label: "Flowers",    emoji: "🌷" },
+    ],
+    sources: [
+      { label: "UC Master Gardeners of San Diego County: Vegetable Garden Planting Guide", covers: "vegetables",
+        url: "https://ucanr.edu/site/uc-master-gardeners-san-diego-county/article/vegetable-garden-planting-guide-san-diego-county" },
+      { label: "UC IPM: When to plant strawberries (South Coast)", covers: "strawberries",
+        url: "https://ipm.ucanr.edu/PMG/GARDEN/FRUIT/CULTURAL/strawberrytime.html" },
+      { label: "Master Gardeners of San Diego County: Fruit (buy bare-root in January)", covers: "bare-root fruit",
+        url: "https://mastergardenerssandiego.org/schools/gardenbook/planting/fruit.html" },
+      { label: "Sunset: Southern California garden checklist", covers: "flowers",
+        url: "https://sunset.com/garden/garden-basics/so-california-1" },
+    ],
     crops: [
       // Warm season (spring & summer)
       { name: "Snap beans",     icon: "green-beans", how: "sow",    coastal: [[3.5, 8]],  inland: [[4, 8.5]] },
@@ -345,6 +358,39 @@ window.YVY = {
         plant: { coastal: [[9, 2]], inland: [[9, 2]] } },
       { name: "Bulb onions (short-day)",  emoji: "🧅", how: "plant", coastal: [[10, 12]], inland: [[10.5, 12]] },
       { name: "Bulb onions (medium-day)", emoji: "🧅", how: "plant", coastal: [[1, 2]],   inland: [[1, 2]] },
+
+      // Fruit
+      { group: "fruit", name: "Strawberries", emoji: "🍓", how: "plant", note: "Oct 10 – Nov 1",
+        coastal: [[10, 10]], inland: [[10, 10]] },
+      { group: "fruit", name: "Bare-root fruit trees", icon: "fruit-tree", how: "plant", note: "pick low-chill types",
+        coastal: [[1, 2]], inland: [[1, 2]] },
+      { group: "fruit", name: "Raspberries & blackberries", icon: "raspberry", how: "plant", note: "bare-root canes",
+        coastal: [[1, 2]], inland: [[1, 2]] },
+      { group: "fruit", name: "Blueberries", emoji: "🫐", how: "plant", note: "low-chill types",
+        coastal: [[1, 2]], inland: [[1, 2]] },
+      { group: "fruit", name: "Grapevines", emoji: "🍇", how: "plant", note: "bare-root",
+        coastal: [[1, 2]], inland: [[1, 2]] },
+      { group: "fruit", name: "Citrus", emoji: "🍋", how: "plant", note: "after frost risk passes",
+        coastal: [[3, 5]], inland: [[3.5, 5]] },
+      { group: "fruit", name: "Avocado", emoji: "🥑", how: "plant", note: "after frost risk passes",
+        coastal: [[3, 4]], inland: [[3.5, 4]] },
+
+      // Flowers
+      { group: "flower", name: "Sweet peas", icon: "sweet-pea", how: "sow", note: "flowers only, not edible",
+        coastal: [[9, 11]], inland: [[9, 11]] },
+      { group: "flower", name: "California poppies", icon: "poppy", how: "sow", note: "sow before the rains",
+        coastal: [[10, 12]], inland: [[10, 12]] },
+      { group: "flower", name: "Wildflower mix", emoji: "🌼", how: "sow", note: "sow before the rains",
+        coastal: [[10, 12]], inland: [[10, 12]] },
+      { group: "flower", name: "Ranunculus & anemones", icon: "ranunculus", how: "plant", note: "corms, claws down",
+        coastal: [[10, 12]], inland: [[10, 12]] },
+      { group: "flower", name: "Pansies & violas", icon: "pansy", how: "plant", coastal: [[10, 12]], inland: [[10, 12]] },
+      { group: "flower", name: "Snapdragons & stock", icon: "snapdragon", how: "plant", coastal: [[10, 12]], inland: [[10, 12]] },
+      { group: "flower", name: "Calendula", icon: "calendula", how: "either", coastal: [[9, 11]], inland: [[9, 11]] },
+      { group: "flower", name: "Sunflowers", emoji: "🌻", how: "sow", coastal: [[4, 6]], inland: [[4, 6]] },
+      { group: "flower", name: "Zinnias", icon: "zinnia", how: "sow", coastal: [[4, 6]], inland: [[4, 6]] },
+      { group: "flower", name: "Cosmos", icon: "cosmos", how: "sow", coastal: [[4, 6]], inland: [[4, 6]] },
+      { group: "flower", name: "Marigolds", icon: "marigold", how: "either", coastal: [[4, 6]], inland: [[4, 6]] },
     ],
   },
 };

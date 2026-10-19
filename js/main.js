@@ -356,32 +356,61 @@
 
     // Hand-drawn icon (js/veg-icons.js) when a crop has no accurate emoji
     const glyph = (c) => (c.icon && window.VegIcons && VegIcons.svg(c.icon)) || esc(c.emoji || "🌱");
-    const chip = (c, note, extra) =>
-      `<li><span class="chip-emoji" aria-hidden="true">${glyph(c)}</span>${esc(c.name)}` +
-      `${note ? ` <em>(${esc(note)})</em>` : ""}${extra || ""}</li>`;
-    const list = (items, empty) =>
-      (items.length ? `<ul class="chips">${items.join("")}</ul>` : `<p class="packet-empty">${empty}</p>`);
+    const chip = (c, notes, extra) => {
+      const note = [].concat(notes, c.note).filter(Boolean).join(", ");
+      return `<li><span class="chip-emoji" aria-hidden="true">${glyph(c)}</span>${esc(c.name)}` +
+        `${note ? ` <em>(${esc(note)})</em>` : ""}${extra || ""}</li>`;
+    };
+    const groups = G.groups || [{ key: "veg", label: "Vegetables", emoji: "🥕" }];
+    const groupOf = (c) => c.group || "veg";
+    const openGroups = new Set(); // drop-downs stay open while you flip months
 
-    function columns(m) {
+    // What to sow / start in trays / plant out in month m, for a list of crops
+    function columns(m, crops) {
       const sow = [];
       const tray = [];
       const plant = [];
-      G.crops.forEach((c) => {
+      const names = new Set();
+      const add = (list, c, ...rest) => { list.push(chip(c, ...rest)); names.add(c.name); };
+      crops.forEach((c) => {
         const hit = windowHit(c[area], m);
         if (hit && (c.how === "sow" || c.how === "either")) {
-          sow.push(chip(c, hit.note, c.how === "either" ? ' <b class="chip-alt" title="Can also be started in trays">🪴</b>' : ""));
+          add(sow, c, hit.note, c.how === "either" ? ' <b class="chip-alt" title="Can also be started in trays">🪴</b>' : "");
         }
-        if (hit && c.how === "tray") tray.push(chip(c, hit.note));
-        if (hit && c.how === "plant") plant.push(chip(c, hit.note));
+        if (hit && c.how === "tray") add(tray, c, hit.note);
+        if (hit && c.how === "plant") add(plant, c, hit.note);
         const out = c.plant && windowHit(c.plant[area], m);
-        if (out) plant.push(chip(c, out.note));
+        if (out) add(plant, c, out.note);
         // Warm-season transplants: start seeds in trays the two months before planting out
         const first = c.trayFirst && c[area] && c[area][0] ? Math.floor(c[area][0][0]) : 0;
         if (first && (m === shiftMonth(first, -2) || m === shiftMonth(first, -1))) {
-          tray.push(chip(c, `plant out in ${MONTHS[first - 1]}`));
+          add(tray, c, `plant out in ${MONTHS[first - 1]}`);
         }
       });
-      return { sow, tray, plant };
+      return { sow, tray, plant, count: names.size, crops: crops.filter((c) => names.has(c.name)) };
+    }
+
+    const packet = (cls, title, note, items) => (items.length
+      ? `<div class="packet packet-${cls}"><h4>${title}</h4><p class="packet-note">${note}</p><ul class="chips">${items.join("")}</ul></div>`
+      : "");
+
+    function groupDrop(g, m) {
+      const col = columns(m, G.crops.filter((c) => groupOf(c) === g.key));
+      const title = `<span class="cg-title">${esc(g.emoji)} ${esc(g.label)}</span>`;
+      if (!col.count) {
+        return `<div class="crop-group is-empty">${title}<span class="cg-count">nothing to plant this month</span></div>`;
+      }
+      const preview = col.crops.slice(0, 7).map((c) => `<span class="chip-emoji">${glyph(c)}</span>`).join("");
+      const either = col.sow.some((x) => x.includes("chip-alt"));
+      return `<details class="crop-group crop-group-${esc(g.key)}" data-group="${esc(g.key)}"${openGroups.has(g.key) ? " open" : ""}>
+          <summary>${title}<span class="cg-preview" aria-hidden="true">${preview}</span><span class="cg-count">${col.count} to plant</span></summary>
+          <div class="packets">
+            ${packet("sow", "🌰 Direct sow", "Seeds straight into the ground", col.sow)}
+            ${packet("tray", "🪴 Start in trays", "Seeds in trays or pots, transplant later", col.tray)}
+            ${packet("plant", "🌿 Plant out", "Transplants, bare-root, slips, sets or corms", col.plant)}
+          </div>
+          ${either ? '<p class="packet-legend">🪴 = can also be started in trays first</p>' : ""}
+        </details>`;
     }
 
     function render() {
@@ -390,34 +419,46 @@
         `<button type="button" class="month-tab${i + 1 === thisMonth ? " is-now" : ""}" data-month="${i + 1}" aria-pressed="${i + 1 === month}" aria-label="${name}">${name.slice(0, 3)}</button>`
       ).join("");
       const cool = month >= 9 || month <= 2;
-      const { sow, tray, plant } = columns(month);
       $("#monthCard").innerHTML = `
         <div class="month-head">
           <h3>${MONTHS[month - 1]}${month === thisMonth ? ' <span class="now-badge">this month!</span>' : ""}</h3>
           <span class="season-badge ${cool ? "cool" : "warm"}">${cool ? "🍂 Cool season" : "☀️ Warm season"}</span>
         </div>
-        <p class="month-where">${area === "coastal" ? "🌊 Coastal" : "⛰️ Inland"} San Diego</p>
-        <div class="packets">
-          <div class="packet packet-sow"><h4>🌰 Direct sow</h4><p class="packet-note">Seeds straight into the ground</p>${list(sow, "No direct sowing this month.")}</div>
-          <div class="packet packet-tray"><h4>🪴 Start in trays</h4><p class="packet-note">Seeds in trays or pots, transplant later</p>${list(tray, "Nothing to start in trays this month.")}</div>
-          <div class="packet packet-plant"><h4>🌿 Plant out</h4><p class="packet-note">Set out seedlings, slips or sets</p>${list(plant, "Nothing new to plant out. Water, weed and harvest!")}</div>
-        </div>
-        ${sow.some((s) => s.includes("chip-alt")) ? '<p class="packet-legend">🪴 = can also be started in trays first</p>' : ""}`;
+        <p class="month-where">${area === "coastal" ? "🌊 Coastal" : "⛰️ Inland"} San Diego · tap a group to see what to plant</p>
+        ${groups.map((g) => groupDrop(g, month)).join("")}`;
     }
 
-    $("#cheatSheet").innerHTML = [
-      ["🌰 Direct sow", "Root crops and big seeds grow best right where they're sown.", (c) => c.how === "sow"],
+    // Cheat sheet: one drop-down per group, four ways to plant inside
+    const WAYS = [
+      ["🌰 Direct sow", "Sow seeds right where they'll grow.", (c) => c.how === "sow"],
       ["🪴 Start in trays", "Give these a head start, then transplant.", (c) => c.how === "tray" || c.trayFirst],
       ["🔀 Either way", "Sow in place, or start in trays and transplant.", (c) => c.how === "either"],
-      ["🌿 Plant out", "Usually planted as slips or sets.", (c) => c.how === "plant" && !c.trayFirst],
-    ].map(([title, note, pick]) =>
-      `<div class="cheat-col"><h4>${title}</h4><p>${note}</p><ul>${G.crops.filter(pick).map((c) => `<li>${glyph(c)} ${esc(c.name)}</li>`).join("")}</ul></div>`
-    ).join("");
+      ["🌿 Plant out", "Planted as transplants, bare-root, slips, sets or corms.", (c) => c.how === "plant" && !c.trayFirst],
+    ];
+    $("#cheatSheet").innerHTML = groups.map((g) => {
+      const crops = G.crops.filter((c) => groupOf(c) === g.key);
+      const cols = WAYS.map(([title, note, pick]) => {
+        const items = crops.filter(pick);
+        return items.length
+          ? `<div class="cheat-col"><h4>${title}</h4><p>${note}</p><ul>${items.map((c) => `<li>${glyph(c)} ${esc(c.name)}</li>`).join("")}</ul></div>`
+          : "";
+      }).join("");
+      return cols ? `<details class="cheat-group"><summary>${esc(g.emoji)} ${esc(g.label)}</summary><div class="cheat-grid">${cols}</div></details>` : "";
+    }).join("");
 
-    if (G.source) {
-      $("#growingSource").innerHTML = `Planting dates follow the <a href="${esc(G.source.url)}" target="_blank" rel="noopener">${esc(G.source.label)}</a>. They're based on long-term averages and can shift a few weeks with the weather, so keep an eye on your own garden too.`;
+    const sources = G.sources || (G.source ? [G.source] : []);
+    if (sources.length) {
+      $("#growingSource").innerHTML = `Planting dates: ${sources.map((src) =>
+        `<a href="${esc(src.url)}" target="_blank" rel="noopener">${esc(src.label)}</a>${src.covers ? ` (${esc(src.covers)})` : ""}`
+      ).join(" · ")}. They're based on long-term averages and shift a few weeks with the weather, so keep an eye on your own garden too.`;
     }
 
+    // Remember which drop-downs are open ("toggle" doesn't bubble, so listen in the capture phase)
+    $("#monthCard").addEventListener("toggle", (e) => {
+      const d = e.target;
+      if (!d.dataset || !d.dataset.group) return;
+      if (d.open) openGroups.add(d.dataset.group); else openGroups.delete(d.dataset.group);
+    }, true);
     $("#areaToggle").addEventListener("click", (e) => {
       const btn = e.target.closest("button[data-area]");
       if (!btn) return;

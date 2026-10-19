@@ -822,7 +822,56 @@ a.game:hover { background: #34303b; }
 .season-badge.warm { background: #fff6b0; color: #6b4a00; border-color: var(--yellow); }
 .month-where { margin: 4px 0 12px; font: 600 13px var(--f-round); color: #9a7a3a; }
 
-.packets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.packets { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+
+/* Drop-down per group (Vegetables / Fruit / Flowers) */
+.crop-group {
+  margin-top: 10px;
+  border-radius: 18px;
+  border: 3px solid #e0c98e;
+  background: var(--cream);
+}
+.crop-group > summary,
+.crop-group.is-empty {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  padding: 10px 14px;
+  list-style: none;
+}
+.crop-group > summary { cursor: pointer; border-radius: 15px; }
+.crop-group > summary::-webkit-details-marker { display: none; }
+.crop-group > summary::after {
+  content: "▼";
+  margin-left: auto;
+  color: var(--green-dark);
+  font-size: 13px;
+  transition: transform .2s;
+}
+.crop-group[open] > summary::after { transform: rotate(180deg); }
+.crop-group > summary:hover { background: #fff3cf; }
+.crop-group[open] > summary { border-bottom: 3px dashed #e0c98e; border-radius: 15px 15px 0 0; }
+.crop-group > .packets { padding: 12px; }
+.crop-group > .packet-legend { padding: 0 14px 12px; margin: 0; }
+.cg-title { font: 700 18px var(--f-round); color: var(--ink); }
+.cg-preview { display: inline-flex; gap: 2px; font-size: 16px; }
+.cg-count {
+  font: 700 12px var(--f-round);
+  background: var(--green);
+  color: #fff;
+  border-radius: 999px;
+  padding: 2px 10px;
+}
+.crop-group-fruit { border-color: #f5b3c8; }
+.crop-group-fruit .cg-count { background: #e0245e; }
+.crop-group-flower { border-color: #d6c2f5; }
+.crop-group-flower .cg-count { background: var(--purple); }
+.crop-group.is-empty { opacity: .65; }
+.crop-group.is-empty .cg-count { background: #b9a77a; }
+
+.cheat-group { margin-top: 10px; border-top: 2px dashed #e0c98e; padding-top: 8px; }
+.cheat-group > summary { cursor: pointer; font: 700 15px var(--f-round); color: var(--ink); }
 .packet {
   position: relative;
   border-radius: 10px 10px 16px 16px;
@@ -862,7 +911,7 @@ a.game:hover { background: #34303b; }
 
 .cheat { margin-top: 16px; text-align: left; background: #fff; border-radius: 18px; border: 3px solid #e0c98e; padding: 10px 14px; }
 .cheat summary { cursor: pointer; font: 700 16px var(--f-round); color: var(--green-dark); }
-.cheat-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 12px; }
+.cheat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-top: 10px; }
 .cheat-col h4 { margin: 0; font: 700 15px var(--f-round); }
 .cheat-col p { margin: 2px 0 6px; font: 400 16px/1.2 var(--f-hand); color: #6b4a1f; }
 .cheat-col ul { margin: 0; padding: 0; list-style: none; font: 600 13px/1.6 var(--f-round); }

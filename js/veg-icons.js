@@ -1,5 +1,5 @@
 /*
- * Hand-drawn vegetable icons for crops that don't have an accurate emoji
+ * Hand-drawn vegetable, fruit and flower icons for crops that don't have an accurate emoji
  * (there's no cauliflower, beet or kale emoji, and 🥬 / 🫘 are too generic).
  * Each icon is a 32×32 SVG, drawn at emoji size by VegIcons.svg(name).
  * Use one from data.js with `icon: "cauliflower"` instead of `emoji:`.
@@ -23,6 +23,15 @@ window.VegIcons = (function () {
       out += `<circle cx="${(cx + ring * Math.cos(a)).toFixed(1)}" cy="${(cy + ring * Math.sin(a)).toFixed(1)}" r="${bump}" fill="${fill}"/>`;
     }
     return out + `<circle cx="${cx}" cy="${cy}" r="${ring}" fill="${fill}"/>`;
+  }
+  // A ring of oval petals around a center (zinnia, cosmos)
+  function petals(cx, cy, count, length, width, fill, turn = 0) {
+    let out = "";
+    for (let i = 0; i < count; i++) {
+      const deg = (360 * i) / count + turn;
+      out += `<ellipse cx="${cx}" cy="${(cy - length / 2).toFixed(1)}" rx="${width}" ry="${(length / 2).toFixed(1)}" transform="rotate(${deg.toFixed(1)} ${cx} ${cy})" fill="${fill}"/>`;
+    }
+    return out;
   }
   // Root-vegetable greens (beet, radish, turnip)
   const rootLeaves = (stem) => `
@@ -142,6 +151,96 @@ window.VegIcons = (function () {
       <circle cx="3" cy="6" r="1.2" fill="#1b5e20"/><circle cx="2.5" cy="13" r="1.2" fill="#33691e"/>`,
 
     "lima-beans": `${bean(10, 11, -20)}${bean(21, 13, 25)}${bean(15, 22, 5)}`,
+
+    /* ---- Fruit ---- */
+    "fruit-tree": `
+      <path d="M14.5 31V20.5l-4-4M17.5 31V19l4-4" stroke="#8d5a2b" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+      <circle cx="16" cy="12" r="10.5" fill="#4f9e3a"/>
+      <circle cx="10" cy="15" r="5.5" fill="#5aa83a"/><circle cx="22" cy="15" r="5.5" fill="#5aa83a"/>
+      <circle cx="13" cy="7.5" r="4" fill="#7cc85a"/>
+      <g fill="#ff6b4a" stroke="#c0392b" stroke-width=".6">
+        <circle cx="11" cy="11" r="1.9"/><circle cx="19.5" cy="8" r="1.9"/><circle cx="21.5" cy="15" r="1.9"/>
+        <circle cx="15" cy="16.5" r="1.9"/><circle cx="8.5" cy="17" r="1.9"/>
+      </g>`,
+
+    raspberry: `
+      <g fill="#e0245e" stroke="#9c1240" stroke-width=".7">
+        ${[[16, 27], [12.5, 24], [19.5, 24], [9.5, 20], [16, 21], [22.5, 20], [8.5, 15.5], [13, 17], [19, 17], [23.5, 15.5], [11, 12], [16, 13], [21, 12]]
+          .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.2"/>`).join("")}
+      </g>
+      <g fill="#ff7aa2">${[[15, 19.5], [11, 15], [19, 15], [14, 25]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r=".9"/>`).join("")}</g>
+      <path d="M8 9.5l4 1.5 4-5 4 5 4-1.5-3 3.5H11z" fill="#4f9e3a"/>
+      <path d="M16 6V2" stroke="#3f8f2e" stroke-width="1.6" stroke-linecap="round"/>`,
+
+    /* ---- Flowers ---- */
+    "sweet-pea": `
+      <path d="M16 31V20" stroke="#4f9e3a" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M16 25c4 0 6-2 6-4.5 0-2-2.5-2.5-3-.5" stroke="#7cc85a" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+      <path d="M16 18c-7.5 1-12-4-11-10 2.5-4 8-5 11-1.5C19 3 24.5 4 27 8c1 6-3.5 11-11 10z" fill="#d97cd6"/>
+      <path d="M16 18c-4.5 0-8-2.8-8.5-6.5C10 13 13 13.8 16 12c3 1.8 6 1 8.5-.5-.5 3.7-4 6.5-8.5 6.5z" fill="#f2b4ec"/>
+      <path d="M16 21.5c-2.6 0-4-1.6-3.6-3.6 1.2.9 2.3 1.2 3.6 1.2s2.4-.3 3.6-1.2c.4 2-1 3.6-3.6 3.6z" fill="#fbe3f8"/>`,
+
+    poppy: `
+      <path d="M16 31V20" stroke="#5f9ea0" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M16 27l-5-4M16 26l5-4.5M11 23l-2-3M21 21.5l2.2-2.8" stroke="#7fb3a8" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+      <path d="M16 20C9 20 4.5 15 5 7.5 8.5 6 12 8.5 16 12c4-3.5 7.5-6 11-4.5.5 7.5-4 12.5-11 12.5z" fill="#f57c00"/>
+      <path d="M16 20c-4 0-6.5-4-6-11 2.5 1 4.5 2.5 6 4.5 1.5-2 3.5-3.5 6-4.5.5 7-2 11-6 11z" fill="#ffa726"/>
+      <ellipse cx="16" cy="13.5" rx="2.2" ry="1.6" fill="#ffd54f"/>`,
+
+    ranunculus: `
+      <path d="M16 31v-6M16 28l-4-3" stroke="#4f9e3a" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+      ${scallop(16, 14, 9, 3.4, 13, "#f4796a")}
+      ${scallop(16, 14, 6.2, 2.8, 11, "#ff9a8a")}
+      ${scallop(16, 14, 3.4, 2.2, 8, "#ffbcb1")}
+      <circle cx="16" cy="14" r="1.8" fill="#ffd9d2"/>`,
+
+    pansy: `
+      <ellipse cx="11" cy="9" rx="6.5" ry="6" fill="#6a3fb5"/>
+      <ellipse cx="21" cy="9" rx="6.5" ry="6" fill="#6a3fb5"/>
+      <ellipse cx="7.5" cy="17" rx="5.5" ry="5" fill="#ffd54f"/>
+      <ellipse cx="24.5" cy="17" rx="5.5" ry="5" fill="#ffd54f"/>
+      <ellipse cx="16" cy="22.5" rx="7.5" ry="6.5" fill="#ffca28"/>
+      <path d="M16 17.5l-3.5 5M16 17.5v6.5M16 17.5l3.5 5M16 17.5l-6.5 1M16 17.5l6.5 1" stroke="#4a2577" stroke-width="1.6" stroke-linecap="round"/>
+      <circle cx="16" cy="17" r="1.6" fill="#fff59d"/>`,
+
+    snapdragon: `
+      <path d="M16 31V3" stroke="#4f9e3a" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M16 27l-5-3M16 24l5-3" stroke="#7cc85a" stroke-width="1.6" stroke-linecap="round"/>
+      <g fill="#f06292" stroke="#c2185b" stroke-width=".7">
+        <ellipse cx="12" cy="20" rx="4.2" ry="3.2"/><ellipse cx="20" cy="17" rx="4.2" ry="3.2"/>
+        <ellipse cx="12.3" cy="13.5" rx="3.7" ry="2.9"/><ellipse cx="19.7" cy="10.5" rx="3.4" ry="2.7"/>
+        <ellipse cx="13" cy="7.5" rx="3" ry="2.4"/><ellipse cx="17.5" cy="4.5" rx="2.4" ry="2"/>
+      </g>
+      <g fill="#ffd54f"><circle cx="10.5" cy="20.5" r="1"/><circle cx="21.5" cy="17.5" r="1"/><circle cx="11" cy="14" r=".9"/><circle cx="21" cy="11" r=".9"/></g>`,
+
+    calendula: `
+      <path d="M16 31V22" stroke="#4f9e3a" stroke-width="1.6" stroke-linecap="round"/>
+      ${spiky(16, 14, 16, 13, 6.5, "#ff9800")}
+      ${spiky(16, 14, 16, 9.5, 5, "#ffb300")}
+      <circle cx="16" cy="14" r="4.6" fill="#a05a1c"/>
+      <circle cx="16" cy="14" r="2.6" fill="#7a3f12"/>`,
+
+    zinnia: `
+      <path d="M16 31V22" stroke="#4f9e3a" stroke-width="1.6" stroke-linecap="round"/>
+      ${petals(16, 14, 12, 12.5, 3.4, "#d81b60")}
+      ${petals(16, 14, 10, 8.5, 2.8, "#f06292", 18)}
+      <circle cx="16" cy="14" r="3.6" fill="#ffd54f"/>
+      <circle cx="16" cy="14" r="1.8" fill="#8d4f1f"/>`,
+
+    cosmos: `
+      <path d="M16 31V22M16 27l-5-3.5" stroke="#4f9e3a" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+      ${petals(16, 14, 8, 13, 5, "#f48fb1")}
+      ${petals(16, 14, 8, 10, 1.2, "#ec6a9c")}
+      <circle cx="16" cy="14" r="3.4" fill="#fdd835"/>
+      <circle cx="16" cy="14" r="1.6" fill="#f9a825"/>`,
+
+    marigold: `
+      <path d="M16 31V23" stroke="#4f9e3a" stroke-width="1.6" stroke-linecap="round"/>
+      <path d="M16 28l-4.5-3M16 27l4.5-3" stroke="#3f8f2e" stroke-width="1.4" stroke-linecap="round"/>
+      ${scallop(16, 13, 9.5, 3.2, 13, "#ef6c00")}
+      ${scallop(16, 13, 6.5, 2.6, 11, "#fb8c00")}
+      ${scallop(16, 13, 3.5, 2, 8, "#ffa726")}
+      <circle cx="16" cy="13" r="1.6" fill="#ffcc80"/>`,
   };
 
   function svg(name) {
