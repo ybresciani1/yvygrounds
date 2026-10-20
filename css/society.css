@@ -180,3 +180,11 @@
 .adm-table { width: 100%; border-collapse: collapse; font: 600 13px var(--f-round); }
 .adm-table th, .adm-table td { text-align: left; padding: 6px 8px; border-bottom: 1px solid #ece7f2; }
 .adm [hidden] { display: none !important; }
+
+/* Almanac as the 4th Garden Society tab (the planting calendar from main.js lives in #growing) */
+.society-almanac {
+  margin-top: 4px;
+  border-width: 4px;
+  box-shadow: 0 0 0 3px var(--green-dark), 0 6px 0 3px rgba(43, 26, 82, .12);
+}
+.society-almanac .leaf-title span { font-size: 24px; }

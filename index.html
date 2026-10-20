@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-20a">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-20a">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-20b">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-20b">
 </head>
 <body>
 
@@ -29,7 +29,7 @@
         <a href="#games">Games</a> |
         <a href="#scrapbook">Scrapbook</a> |
         <a href="#critters">Critters</a> |
-        <a href="#growing">Garden Tips</a> |
+        <a href="#growing">Garden Almanac</a> |
         <a href="#society">Garden Society</a> |
         <a href="#about" data-write>Write to Me</a>
         <span class="ng-bar-right">★ Everything, by Yvy. ★</span>
@@ -54,7 +54,6 @@
         <a href="#games">Games</a>
         <a href="#scrapbook">Scrapbook</a>
         <a href="#critters">Critters</a>
-        <a href="#growing">Garden Tips</a>
         <a href="#society">Society</a>
         <a href="#about">About Yvy</a>
       </nav>
@@ -177,23 +176,6 @@
         <div class="critter-cards" id="petCards"></div>
       </section>
 
-      <!-- ===== Growing tips: San Diego planting calendar (data in js/data.js) ===== -->
-      <section id="growing" class="growing">
-        <h2 class="leaf-title"><span>Yvy's Garden Almanac</span></h2>
-        <p class="growing-intro">What to plant in San Diego, month by month 🌱</p>
-        <div class="area-toggle" id="areaToggle" role="group" aria-label="Which part of San Diego">
-          <button type="button" data-area="coastal">🌊 Coastal</button>
-          <button type="button" data-area="inland">⛰️ Inland</button>
-        </div>
-        <div class="month-tabs" id="monthTabs" role="group" aria-label="Pick a month"></div>
-        <div class="month-card" id="monthCard" aria-live="polite"></div>
-        <details class="cheat">
-          <summary>Direct sow or start in a tray? (cheat sheet)</summary>
-          <div class="cheat-grid" id="cheatSheet"></div>
-        </details>
-        <p class="growing-source" id="growingSource"></p>
-      </section>
-
       <!-- ===== Garden Society: journal, projects, compost (js/society.js + society-api/) ===== -->
       <section id="society" class="society">
         <h2 class="leaf-title"><span>The Garden Society</span></h2>
@@ -202,9 +184,26 @@
           <button type="button" role="tab" data-tab="journal" aria-selected="true">📓 Journal</button>
           <button type="button" role="tab" data-tab="projects" aria-selected="false">🛠️ Projects</button>
           <button type="button" role="tab" data-tab="compost" aria-selected="false">🌡️ Compost</button>
+          <button type="button" role="tab" data-tab="almanac" aria-selected="false">🌱 Almanac</button>
         </div>
         <div class="society-panel" id="societyPanel" role="tabpanel" aria-live="polite">
           <p class="society-empty">Opening the notebook… 📓</p>
+        </div>
+        <!-- Almanac tab: San Diego planting calendar (data in js/data.js → growing, built by main.js) -->
+        <div id="growing" class="growing society-almanac" role="tabpanel" aria-label="Yvy's Garden Almanac" hidden>
+          <h3 class="leaf-title"><span>Yvy's Garden Almanac</span></h3>
+          <p class="growing-intro">What to plant in San Diego, month by month 🌱</p>
+          <div class="area-toggle" id="areaToggle" role="group" aria-label="Which part of San Diego">
+            <button type="button" data-area="coastal">🌊 Coastal</button>
+            <button type="button" data-area="inland">⛰️ Inland</button>
+          </div>
+          <div class="month-tabs" id="monthTabs" role="group" aria-label="Pick a month"></div>
+          <div class="month-card" id="monthCard" aria-live="polite"></div>
+          <details class="cheat">
+            <summary>Direct sow or start in a tray? (cheat sheet)</summary>
+            <div class="cheat-grid" id="cheatSheet"></div>
+          </details>
+          <p class="growing-source" id="growingSource"></p>
         </div>
         <p class="society-cta"><button type="button" class="society-submit" id="societySubmitBtn">✏️ Submit an entry</button></p>
       </section>
@@ -322,10 +321,10 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=2026-10-20a"></script>
-  <script src="js/pixels.js?v=2026-10-20a"></script>
-  <script src="js/veg-icons.js?v=2026-10-20a"></script>
-  <script src="js/main.js?v=2026-10-20a"></script>
-  <script src="js/society.js?v=2026-10-20a"></script>
+  <script src="js/data.js?v=2026-10-20b"></script>
+  <script src="js/pixels.js?v=2026-10-20b"></script>
+  <script src="js/veg-icons.js?v=2026-10-20b"></script>
+  <script src="js/main.js?v=2026-10-20b"></script>
+  <script src="js/society.js?v=2026-10-20b"></script>
 </body>
 </html>

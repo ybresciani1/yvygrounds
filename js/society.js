@@ -213,7 +213,14 @@
   const TABS = { journal: showJournal, projects: showProjects, compost: showCompost };
   async function openTab(name) {
     root.querySelectorAll(".society-tabs [data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === name)));
+    // The Almanac tab is the planting calendar built by main.js (#growing); the others load from the API
+    const almanac = $("#growing");
     const panel = $("#societyPanel");
+    const isAlmanac = name === "almanac";
+    if (almanac) almanac.hidden = !isAlmanac;
+    panel.hidden = isAlmanac;
+    $(".society-cta", root).hidden = isAlmanac;
+    if (isAlmanac) return;
     panel.classList.add("is-loading");
     try { await TABS[name](panel); } catch (e) { panel.innerHTML = napping; }
     panel.classList.remove("is-loading");
@@ -302,10 +309,21 @@
     if (b) openTab(b.dataset.tab);
   });
   buildForm();
+  // Links to #growing / #almanac (e.g. the "Garden Almanac" link up top) open the Almanac tab
+  const wantsAlmanac = () => ["#growing", "#almanac"].includes(location.hash);
+  const showAlmanacFromLink = () => {
+    if (!wantsAlmanac()) return false;
+    started = true;
+    openTab("almanac");
+    root.scrollIntoView({ behavior: "smooth" });
+    return true;
+  };
+  window.addEventListener("hashchange", showAlmanacFromLink);
+
   // Load the journal when the section scrolls into view, or a few seconds after the page loads
   let started = false;
   const start = () => { if (!started) { started = true; io.disconnect(); openTab("journal"); } };
   const io = new IntersectionObserver((entries) => { if (entries.some((x) => x.isIntersecting)) start(); }, { rootMargin: "300px" });
   io.observe(root);
-  setTimeout(start, location.hash === "#society" ? 0 : 4000);
+  if (!showAlmanacFromLink()) setTimeout(start, location.hash === "#society" ? 0 : 4000);
 })();
