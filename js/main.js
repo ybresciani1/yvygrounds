@@ -254,17 +254,77 @@
   }
 
   /* ---------- 13+ check for PG-13 games ---------- */
-  // Clicking a PG-13 game shows a pop-up with an "I'm 13 or older" checkbox first.
-  // Once someone confirms, they aren't asked again until they come back another day
+  // The Garden Worm Dilemma: "W worms for every P sq ft; the bed is w ft × l ft; how many worms?"
+  // The numbers change every time, and the answer is always a whole number.
+  function wormProblem() {
+    const pick = (list) => list[Math.floor(Math.random() * list.length)];
+    for (;;) {
+      const per = pick([2, 3, 4]);           // square feet per patch
+      const worms = pick([2, 3, 4, 5, 6]);   // earthworms per patch
+      const w = pick([2, 3, 4, 5]);
+      const l = pick([4, 5, 6, 7, 8, 9, 10, 11, 12]);
+      const area = w * l;
+      // keep it a real two-step problem, with no more than 2 worms per square so the picture stays readable
+      if (worms === per || worms > per * 2 || area % per || area < 12) continue;
+      return { per, worms, w, l, area, answer: (area / per) * worms };
+    }
+  }
+
+  // The raised bed drawn to scale: one square per square foot, with one example
+  // patch (pink) showing how many worms go in it.
+  function bedSvg(p) {
+    const c = 20, f = 6, top = 16, left = 22;
+    const bedW = p.l * c + f * 2, bedH = p.w * c + f * 2;
+    const W = left + bedW + 4, H = top + bedH + 4;
+    let s = `<svg viewBox="0 0 ${W} ${H}" width="${Math.round(W * 1.35)}" role="img" aria-label="A raised garden bed ${p.w} feet by ${p.l} feet, drawn as ${p.area} one-foot squares. One pink patch of ${p.per} squares holds ${p.worms} earthworms.">`;
+    s += `<text x="${left + bedW / 2}" y="11" text-anchor="middle" class="age-dim">${p.l} ft</text>`;
+    s += `<text x="12" y="${top + bedH / 2}" text-anchor="middle" class="age-dim" transform="rotate(-90 12 ${top + bedH / 2})">${p.w} ft</text>`;
+    s += `<rect x="${left}" y="${top}" width="${bedW}" height="${bedH}" rx="4" fill="#b0683a" stroke="#2b1a52" stroke-width="2"/>`;
+    for (let r = 0; r < p.w; r++) {
+      for (let col = 0; col < p.l; col++) {
+        const patch = r === 0 && col < p.per;
+        s += `<rect x="${left + f + col * c}" y="${top + f + r * c}" width="${c}" height="${c}" fill="${patch ? "#ffd6ec" : (r + col) % 2 ? "#6e4a2e" : "#7a5233"}" stroke="${patch ? "#8a3fd1" : "#5a3b24"}" stroke-width="1"/>`;
+      }
+    }
+    s += `<rect x="${left + f}" y="${top + f}" width="${p.per * c}" height="${c}" fill="none" stroke="#8a3fd1" stroke-width="2" stroke-dasharray="4 2"/>`;
+    for (let i = 0; i < p.worms; i++) {
+      const x = left + f + ((i + 0.5) * p.per * c) / p.worms;
+      s += `<text x="${x}" y="${top + f + c / 2 + (i % 2 ? 5 : 3)}" text-anchor="middle" font-size="${p.worms > p.per * 1.5 ? 9 : 12}">🪱</text>`;
+    }
+    return s + "</svg>";
+  }
+
+  // Clicking a PG-13 game asks for an "I'm 13 or older" checkbox, then the worm problem.
+  // Once someone gets it right, they aren't asked again until their next visit
   // (sessionStorage). It's an honor-system check, not a lock.
   function buildAgeCheck() {
     const box = $("#ageCheck");
+    const card = box.querySelector(".age-card");
     const ok = $("#ageOk");
     const go = $("#ageGo");
+    const step1 = $("#ageStep1");
+    const step2 = $("#ageStep2");
+    const answer = $("#ageAnswer");
     const KEY = "yvy-age13-ok";
     let pending = null;
     let lastFocus = null;
+    let problem = null;
     const confirmed = () => { try { return sessionStorage.getItem(KEY) === "1"; } catch (e) { return false; } };
+
+    const showStep = (n) => {
+      step1.hidden = n !== 1;
+      step2.hidden = n !== 2;
+      card.setAttribute("aria-labelledby", n === 1 ? "ageTitle" : "ageQuizTitle");
+    };
+    const newProblem = () => {
+      problem = wormProblem();
+      const p = problem;
+      $("#ageQuiz").innerHTML = `Elena is building a healthy composting bin for her vegetable garden. She reads that a thriving garden bed needs <b>${p.worms} earthworms for every ${p.per} square feet</b> of soil.`;
+      $("#ageBed").innerHTML = bedSvg(p) +
+        `<p class="age-legend">Each square = 1 sq ft · <span class="age-swatch"></span> = ${p.per} sq ft with ${p.worms} 🪱</p>`;
+      $("#ageAsk").textContent = `Her new raised bed is ${p.w} ft × ${p.l} ft (${p.area} square feet). How many earthworms does she need to add to the soil?`;
+      answer.value = "";
+    };
 
     const open = (link) => {
       pending = link;
@@ -274,6 +334,7 @@
       $("#ageWhy").textContent = why ? `It has some ${why}.` : "";
       ok.checked = false;
       go.disabled = true;
+      showStep(1);
       box.hidden = false;
       ok.focus();
     };
@@ -295,12 +356,29 @@
     ok.addEventListener("change", () => { go.disabled = !ok.checked; });
     go.addEventListener("click", () => {
       if (!ok.checked || !pending) return;
-      try { sessionStorage.setItem(KEY, "1"); } catch (e) { /* storage blocked: we'll just ask again next time */ }
-      const link = pending;
-      close();
-      link.click(); // now goes through to the game
+      newProblem();
+      $("#ageFeedback").textContent = "";
+      showStep(2);
+      answer.focus();
+    });
+    step2.addEventListener("submit", (e) => {
+      e.preventDefault();
+      if (!pending || !problem) return;
+      const guess = answer.value.trim();
+      if (/^\d+$/.test(guess) && Number(guess) === problem.answer) {
+        try { sessionStorage.setItem(KEY, "1"); } catch (err) { /* storage blocked: we'll just ask again next time */ }
+        const link = pending;
+        close();
+        link.click(); // now goes through to the game
+        return;
+      }
+      // Wrong: a hint and fresh numbers, so guessing doesn't work
+      $("#ageFeedback").textContent = "Not quite! Tip: work out how many patches fit in the bed, then count the worms. Here's a fresh one 🌱";
+      newProblem();
+      answer.focus();
     });
     $("#ageBack").addEventListener("click", close);
+    $("#ageBack2").addEventListener("click", close);
     $("#ageClose").addEventListener("click", close);
     box.addEventListener("click", (e) => { if (e.target === e.currentTarget) close(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !box.hidden) close(); });

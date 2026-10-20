@@ -1193,6 +1193,37 @@ body.arcade-open { overflow: hidden; }
 .age-go:disabled { background: #ddd; color: #888; box-shadow: 0 4px 0 #999; border-color: #999; cursor: not-allowed; }
 .age-back { background: #fff; color: var(--ink); }
 .age-note { margin: 6px 0 0; font: 400 18px var(--f-hand); color: var(--lav-dark); }
+/* Step 2: The Garden Worm Dilemma */
+.age-quiz-intro {
+  display: inline-block;
+  margin: 0 32px 8px; /* clear of the ✕ button */
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--yellow);
+  color: var(--ink);
+  font: 700 14px var(--f-round);
+  transform: rotate(-1.5deg);
+}
+.age-quiz-title { font-size: 26px !important; }
+.age-quiz-text { font-size: 14px; text-align: left; }
+.age-quiz-text b { color: var(--purple); }
+.age-bed { margin: 0 0 8px; }
+.age-bed svg { display: block; max-width: 100%; height: auto; margin: 0 auto; }
+.age-dim { font: 9px var(--f-pixel); fill: var(--ink); }
+.age-legend { margin: 6px 0 0; font: 600 12px var(--f-round); color: #6b5a8e; }
+.age-swatch { display: inline-block; width: 14px; height: 10px; vertical-align: -1px; background: #ffd6ec; border: 2px dashed #8a3fd1; }
+.age-quiz-ask { margin: 0 0 10px; font: 700 15px/1.4 var(--f-round); text-align: left; }
+.age-answer { display: flex; align-items: center; justify-content: center; gap: 10px; font: 700 16px var(--f-round); }
+.age-answer input {
+  width: 96px;
+  padding: 8px 10px;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  font: 14px var(--f-pixel);
+  text-align: center;
+  background: var(--cream);
+}
+.age-feedback { min-height: 1.4em; margin: 8px 0 0; font: 700 13px/1.4 var(--f-round); color: #c42a24; }
 
 /* ---------- Mail picker ---------- */
 .mail-card {
