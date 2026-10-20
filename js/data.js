@@ -105,7 +105,8 @@ window.YVY = {
   // Weekly photo rotation: these albums show only this many photos at a time
   // (scrapbook, popup and photo wall), shuffled. A new set rotates in every Monday,
   // and over the weeks every photo gets its turn. Remove an album to show all of it.
-  weeklyPhotos: { pets: 10, chickens: 10 },
+  // pin: true on a photo keeps it in every week, first (it counts toward the 10).
+  weeklyPhotos: { me: 10, pets: 10, chickens: 10 },
   // Albums where everyone gets an equal share every week. A photo belongs to whoever's
   // name is in its file name or caption (group photos count for everyone in them).
   // Leftover spots rotate between them week to week. A few photos may repeat to keep it even.
@@ -131,8 +132,8 @@ window.YVY = {
    * Heads up: get a parent/guardian OK before posting photos of students who are kids.
    */
   photos: {
-    me: [           // images/me/        (the first one becomes the "click my head" photo)
-      { src: "images/me/the-best.jpg",       caption: "Certified the best. Source: me ✨" },
+    me: [           // images/me/        (the first one becomes the "click my head" photo; it's pinned so it always shows)
+      { src: "images/me/the-best.jpg",       caption: "Certified the best. Source: me ✨", pin: true },
       { src: "images/me/fairy-flower.jpg",   caption: "Tiny fairy, giant flower. Scale is a social construct 🌸", focus: "50% 72%" },
       { src: "images/me/fairy-leaves.jpg",   caption: "Fairy in the garden. You didn't see me 🧚" },
       { src: "images/me/pikachu.jpg",        caption: "Got swallowed by a Pikachu" },

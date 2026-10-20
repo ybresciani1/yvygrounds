@@ -40,13 +40,20 @@
     const limit = Number((D.weeklyPhotos || {})[key]) || 0;
     if (!limit || all.length <= limit) return all;
     if (weeklyCache[key]) return weeklyCache[key];
+    // pin: true photos always show, first and in order; the rest rotate in the spots left.
+    const pinned = all.filter((p) => p.pin);
+    const rest = all.filter((p) => !p.pin);
+    return (weeklyCache[key] = [...pinned, ...weeklyPick(key, rest, Math.max(0, limit - pinned.length))]);
+  }
+  function weeklyPick(key, all, limit) {
+    if (!limit) return [];
     const seed = [...key].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619), 2166136261);
     const groups = ((D.weeklyGroups || {})[key] || []).map((g) => String(g).toLowerCase());
     if (!groups.length) {
       const deck = seededShuffle(all, seed);
       const start = (weekNo * limit) % deck.length;
       const picks = Array.from({ length: limit }, (_, i) => deck[(start + i) % deck.length]);
-      return (weeklyCache[key] = seededShuffle(picks, seed ^ weekNo));
+      return seededShuffle(picks, seed ^ weekNo);
     }
     // Everyone gets an equal share; the leftover spots rotate between them each week.
     const base = Math.floor(limit / groups.length);
@@ -88,7 +95,7 @@
       if (!next) break;
       take(next);
     }
-    return (weeklyCache[key] = seededShuffle(picks, seed ^ weekNo));
+    return seededShuffle(picks, seed ^ weekNo);
   }
 
   // "focus" picks which part of a photo stays in view when a frame crops it:
