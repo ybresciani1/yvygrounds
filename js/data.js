@@ -102,6 +102,15 @@ window.YVY = {
   // so it doesn't feel crowded. 0 = all photos, 0.3 = about 1 in 3, 1 = all emoji.
   wallEmojiShare: 0.3,
 
+  // Weekly photo rotation: these albums show only this many photos at a time
+  // (scrapbook, popup and photo wall), shuffled. A new set rotates in every Monday,
+  // and over the weeks every photo gets its turn. Remove an album to show all of it.
+  weeklyPhotos: { pets: 10, chickens: 10 },
+  // Albums where everyone gets an equal share every week. A photo belongs to whoever's
+  // name is in its file name or caption (group photos count for everyone in them).
+  // Leftover spots rotate between them week to week. A few photos may repeat to keep it even.
+  weeklyGroups: { pets: ["peaches", "bojjii", "lychee", "penny"] },
+
   /*
    * PHOTOS
    * Drop image files into the matching images/ folder, then list them here.

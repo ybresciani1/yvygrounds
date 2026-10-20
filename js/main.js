@@ -17,7 +17,79 @@
     { key: "pets",     label: "Pets",            emoji: "🐾" },
     { key: "chickens", label: "Chickens",        emoji: "🐔" },
   ];
-  const photosIn = (key) => (D.photos[key] || []).filter((p) => p && p.src);
+  const allPhotosIn = (key) => (D.photos[key] || []).filter((p) => p && p.src);
+
+  // Weekly rotation (data.js → weeklyPhotos): shuffle the album the same way for every
+  // visitor, then show the next `limit` photos each week (weeks start Monday), wrapping
+  // around so every photo comes up in turn.
+  const now = new Date();
+  const weekNo = Math.floor((Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) / 864e5 + 3) / 7);
+  function seededShuffle(list, seed) {
+    const out = [...list];
+    let s = seed >>> 0;
+    for (let i = out.length - 1; i > 0; i--) {
+      s = (Math.imul(s, 1664525) + 1013904223) >>> 0; // tiny LCG, plenty for shuffling photos
+      const j = s % (i + 1);
+      [out[i], out[j]] = [out[j], out[i]];
+    }
+    return out;
+  }
+  const weeklyCache = {};
+  function photosIn(key) {
+    const all = allPhotosIn(key);
+    const limit = Number((D.weeklyPhotos || {})[key]) || 0;
+    if (!limit || all.length <= limit) return all;
+    if (weeklyCache[key]) return weeklyCache[key];
+    const seed = [...key].reduce((h, c) => Math.imul(h ^ c.charCodeAt(0), 16777619), 2166136261);
+    const groups = ((D.weeklyGroups || {})[key] || []).map((g) => String(g).toLowerCase());
+    if (!groups.length) {
+      const deck = seededShuffle(all, seed);
+      const start = (weekNo * limit) % deck.length;
+      const picks = Array.from({ length: limit }, (_, i) => deck[(start + i) % deck.length]);
+      return (weeklyCache[key] = seededShuffle(picks, seed ^ weekNo));
+    }
+    // Everyone gets an equal share; the leftover spots rotate between them each week.
+    const base = Math.floor(limit / groups.length);
+    const extra = limit % groups.length;
+    const per = Math.ceil(limit / groups.length);
+    const who = (p) => groups.filter((g) => `${p.src} ${p.caption || ""}`.toLowerCase().includes(g));
+    const want = groups.map((g, gi) => base + ((gi - weekNo % groups.length + groups.length) % groups.length < extra ? 1 : 0));
+    const have = groups.map(() => 0);
+    const picks = [];
+    const take = (p) => { picks.push(p); who(p).forEach((g) => have[groups.indexOf(g)]++); };
+    const decks = groups.map((g, gi) => seededShuffle(all.filter((p) => who(p).includes(g)), seed ^ (gi + 1) * 0x9e3779b1));
+    const startOf = (gi) => (weekNo * per) % decks[gi].length;
+    groups.forEach((g, gi) => {
+      const deck = decks[gi];
+      if (!deck.length) return;
+      const start = startOf(gi);
+      // Group photos count for everyone in them, so skip ones that would push
+      // another pet past their share (unless there's nothing else left).
+      for (const strict of [true, false]) {
+        for (let k = 0; k < deck.length && have[gi] < want[gi]; k++) {
+          const p = deck[(start + k) % deck.length];
+          const overflows = who(p).some((o) => o !== g && have[groups.indexOf(o)] >= want[groups.indexOf(o)]);
+          if (!picks.includes(p) && !(strict && overflows)) take(p);
+        }
+      }
+    });
+    // Group photos can fill several shares at once; top up to the limit with solo
+    // photos of whoever has the fewest so far.
+    while (picks.length < limit) {
+      const order = groups.map((_, gi) => gi).filter((gi) => decks[gi].length).sort((a, b) => have[a] - have[b]);
+      const next = order.map((gi) => {
+        const deck = decks[gi];
+        for (let k = 0; k < deck.length; k++) {
+          const p = deck[(startOf(gi) + k) % deck.length];
+          if (!picks.includes(p) && who(p).length === 1) return p;
+        }
+        return null;
+      }).find(Boolean) || all.find((p) => !picks.includes(p));
+      if (!next) break;
+      take(next);
+    }
+    return (weeklyCache[key] = seededShuffle(picks, seed ^ weekNo));
+  }
 
   // "focus" picks which part of a photo stays in view when a frame crops it:
   // a word (top, bottom, left, right, center, top left...) or "x% y%" like "30% 20%".
