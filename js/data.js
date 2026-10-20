@@ -65,6 +65,8 @@ window.YVY = {
    *            A date in the future locks the game until that day: it shows "🔒 coming <date>" and unlocks by itself.
    *  featured: true puts it on the Game of the Week TV (first one wins).
    *  badge:    optional extra tag, e.g. "rough draft" or "still updating ✨"
+   *  rated:    "PG-13" adds a PG-13 tag and asks players to confirm they're 13 or older before playing.
+   *  ratedFor: what makes it PG-13, shown in that pop-up, e.g. "drinking and grown-up jokes".
    */
   games: [
     { title: "Rabbit & Frog: Gardenbound", type: "garden", date: "2026-10-18", featured: true, badge: "still updating ✨",
@@ -78,12 +80,14 @@ window.YVY = {
     { title: "Bowl Brawl", type: "silly", date: "2026-10-18", play: "arcade/bowl-brawl/", icon: "bowl",
       blurb: "Peaches vs. Lychee: a quick-draw duel over the food bowl. Wait for Bojjii's flag, then pounce! 1 or 2 players." },
     { title: "Who is my wife cheating with!?", type: ["silly", "story"], date: "2026-10-18",
+      rated: "PG-13", ratedFor: "drinking and grown-up jokes",
       url: "https://who-is-my-wife-cheating-with.vercel.app/", thumb: "images/games/who-is-my-wife-cheating-with.jpg",
       blurb: "A crime of passion, investigated entirely in MS Paint. Made with ALCaline. Play in English or Español!" },
     { title: "Tijuana Estuary Explorer", type: "garden", date: "2026-10-06", badge: "rough draft",
       url: "https://tijuana-estuary-game.vercel.app/", thumb: "images/games/tijuana-estuary.jpg",
       blurb: "Walk a park ranger through ten estuary zones, collect field data, and battle oil spills and invasive species." },
     { title: "Mike & Yvy's Love Adventure", type: "story", date: "2026-10-06", badge: "still updating ✨",
+      rated: "PG-13", ratedFor: "drinking and grown-up jokes",
       url: "https://mike-yvy-love-adventure.vercel.app/", thumb: "images/games/mike-yvy-love-story.jpg",
       blurb: "A retro pixel RPG about how Mike and Yvy fell in love, from a chaotic airport trip all the way to moving in." },
     // Monthly arcade releases: a future date keeps a game locked ("coming Nov 18") until that day.

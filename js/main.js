@@ -181,10 +181,13 @@
   const isNew = (g) => g.date && !isLocked(g) && (Date.now() - new Date(g.date + "T00:00:00")) / 864e5 < 45;
   const gameIcon = (g) => (g.thumb ? imgTag(g.thumb, "", TYPES[typeKey(g)].emoji, g.focus) : px(g.icon || TYPES[typeKey(g)].icon, 5));
   const playable = (g) => !isLocked(g) && Boolean(g.play || g.url);
+  // PG-13 games ask "are you 13 or older?" first (see buildAgeCheck).
+  const isPG13 = (g) => g.rated === "PG-13";
+  const ageAttrs = (g) => (isPG13(g) ? ` data-age13="${esc(g.title)}" data-age-why="${esc(g.ratedFor || "")}"` : "");
   // Arcade games (in arcade/) open in the pop-up player; everything else opens in a new tab.
   const gameLink = (g) => (g.play
     ? `href="${esc(g.play)}" data-play="${esc(g.title)}"`
-    : `href="${esc(g.url)}" target="_blank" rel="noopener"`);
+    : `href="${esc(g.url)}" target="_blank" rel="noopener"`) + ageAttrs(g);
 
   function renderGames(filter) {
     // The portal lists games in the order they're written in data.js ("Latest 5" goes by date).
@@ -199,6 +202,7 @@
         typesOf(g).map((t) => `<span class="tag tag-${t}">${TYPES[t].label}</span>`).join("") +
         (isNew(g) ? `<span class="tag tag-new">NEW!</span>` : "") +
         (g.badge ? `<span class="tag tag-badge">${esc(g.badge)}</span>` : "") +
+        (isPG13(g) ? `<span class="tag tag-rated">PG-13</span>` : "") +
         (isLocked(g) ? `<span class="tag tag-soon">🔒 coming ${esc(unlockDay(g))}</span>`
           : playable(g) ? "" : `<span class="tag tag-soon">coming soon</span>`);
       const inner =
@@ -242,7 +246,64 @@
       } else {
         play.textContent = "SOON!";
       }
+      if (isPG13(featured)) {
+        play.dataset.age13 = featured.title;
+        play.dataset.ageWhy = featured.ratedFor || "";
+      }
     }
+  }
+
+  /* ---------- 13+ check for PG-13 games ---------- */
+  // Clicking a PG-13 game shows a pop-up with an "I'm 13 or older" checkbox first.
+  // Once someone confirms, they aren't asked again until they come back another day
+  // (sessionStorage). It's an honor-system check, not a lock.
+  function buildAgeCheck() {
+    const box = $("#ageCheck");
+    const ok = $("#ageOk");
+    const go = $("#ageGo");
+    const KEY = "yvy-age13-ok";
+    let pending = null;
+    let lastFocus = null;
+    const confirmed = () => { try { return sessionStorage.getItem(KEY) === "1"; } catch (e) { return false; } };
+
+    const open = (link) => {
+      pending = link;
+      lastFocus = document.activeElement;
+      $("#ageGame").textContent = link.dataset.age13;
+      const why = link.dataset.ageWhy;
+      $("#ageWhy").textContent = why ? `It has some ${why}.` : "";
+      ok.checked = false;
+      go.disabled = true;
+      box.hidden = false;
+      ok.focus();
+    };
+    const close = () => {
+      box.hidden = true;
+      pending = null;
+      if (lastFocus) lastFocus.focus();
+    };
+
+    // Capture phase, so this runs before the arcade pop-up or the new-tab link
+    document.addEventListener("click", (e) => {
+      const link = e.target.closest("a[data-age13]");
+      if (!link || confirmed()) return;
+      e.preventDefault();
+      e.stopPropagation();
+      open(link);
+    }, true);
+
+    ok.addEventListener("change", () => { go.disabled = !ok.checked; });
+    go.addEventListener("click", () => {
+      if (!ok.checked || !pending) return;
+      try { sessionStorage.setItem(KEY, "1"); } catch (e) { /* storage blocked: we'll just ask again next time */ }
+      const link = pending;
+      close();
+      link.click(); // now goes through to the game
+    });
+    $("#ageBack").addEventListener("click", close);
+    $("#ageClose").addEventListener("click", close);
+    box.addEventListener("click", (e) => { if (e.target === e.currentTarget) close(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !box.hidden) close(); });
   }
 
   /* ---------- Spring countdown ---------- */
@@ -683,6 +744,7 @@
   buildAbout();
   buildMailPicker();
   buildArcade();
+  buildAgeCheck();
   buildLightbox();
   buildMeadow();
   buildSparkles();

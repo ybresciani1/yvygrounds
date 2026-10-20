@@ -1152,6 +1152,48 @@ body.arcade-open { overflow: hidden; }
 .arcade-tip { margin: 0; padding: 6px 10px; font: 600 12px var(--f-round); color: #bbb; text-align: center; }
 .tag-arcade { background: var(--ng-orange); color: #2b1300; }
 
+/* ---------- 13+ check for PG-13 games ---------- */
+.tag-rated { background: #e8352e; color: #fff; }
+.age-card { width: min(440px, 100%); }
+.age-badge {
+  display: inline-block;
+  margin-bottom: 6px;
+  padding: 6px 14px;
+  border: 4px solid var(--ink);
+  border-radius: 12px;
+  background: #e8352e;
+  color: #fff;
+  font: 14px var(--f-pixel);
+  transform: rotate(-4deg);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+.age-text { margin: 0 0 14px; font: 600 16px/1.45 var(--f-round); }
+.age-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  border: 3px dashed var(--lav-mid);
+  border-radius: 14px;
+  background: var(--pink-soft);
+  font: 700 18px var(--f-round);
+  cursor: pointer;
+}
+.age-check input { width: 24px; height: 24px; margin: 0; accent-color: var(--purple); cursor: pointer; }
+.age-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 16px 0 8px; }
+.age-buttons button {
+  padding: 10px 18px;
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  font: 700 16px var(--f-round);
+  box-shadow: 0 4px 0 var(--ink);
+  cursor: pointer;
+}
+.age-go { background: var(--yellow); color: var(--ink); }
+.age-go:disabled { background: #ddd; color: #888; box-shadow: 0 4px 0 #999; border-color: #999; cursor: not-allowed; }
+.age-back { background: #fff; color: var(--ink); }
+.age-note { margin: 6px 0 0; font: 400 18px var(--f-hand); color: var(--lav-dark); }
+
 /* ---------- Mail picker ---------- */
 .mail-card {
   width: min(440px, 100%);

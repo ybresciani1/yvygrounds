@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-20c">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-20c">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-20d">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-20d">
 </head>
 <body>
 
@@ -321,10 +321,26 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=2026-10-20c"></script>
-  <script src="js/pixels.js?v=2026-10-20c"></script>
-  <script src="js/veg-icons.js?v=2026-10-20c"></script>
-  <script src="js/main.js?v=2026-10-20c"></script>
-  <script src="js/society.js?v=2026-10-20c"></script>
+  <!-- 13+ check before PG-13 games -->
+  <div class="lightbox" id="ageCheck" hidden>
+    <div class="lightbox-card age-card" role="dialog" aria-modal="true" aria-labelledby="ageTitle">
+      <button class="lightbox-close" id="ageClose" type="button" aria-label="Close">✕</button>
+      <div class="age-badge" aria-hidden="true">PG-13</div>
+      <h2 id="ageTitle">Hold up, player!</h2>
+      <p class="age-text"><b id="ageGame"></b> is rated PG-13. <span id="ageWhy"></span></p>
+      <label class="age-check"><input type="checkbox" id="ageOk"> I'm 13 or older</label>
+      <div class="age-buttons">
+        <button class="age-go" id="ageGo" type="button" disabled>Let's play! ▶</button>
+        <button class="age-back" id="ageBack" type="button">Take me back</button>
+      </div>
+      <p class="age-note">Under 13? Lots of the other games here are for everyone! 🌱</p>
+    </div>
+  </div>
+
+  <script src="js/data.js?v=2026-10-20d"></script>
+  <script src="js/pixels.js?v=2026-10-20d"></script>
+  <script src="js/veg-icons.js?v=2026-10-20d"></script>
+  <script src="js/main.js?v=2026-10-20d"></script>
+  <script src="js/society.js?v=2026-10-20d"></script>
 </body>
 </html>
