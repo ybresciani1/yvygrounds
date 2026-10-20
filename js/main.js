@@ -12,7 +12,7 @@
 
   const ALBUMS = [
     { key: "me",       label: "Yvy",             emoji: "🌟" },
-    { key: "club",     label: "Garden Club",     emoji: "🌻" },
+    { key: "club",     label: "Garden Society", emoji: "🌻" },
     { key: "students", label: "Garden Students", emoji: "🌱" },
     { key: "pets",     label: "Pets",            emoji: "🐾" },
     { key: "chickens", label: "Chickens",        emoji: "🐔" },

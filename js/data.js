@@ -48,7 +48,7 @@ window.YVY = {
   // The "About Yvy" letter. Each string is one paragraph.
   about: [
     "I'm Yvy (you'll find me as ybresciani around the internet). I make games: cozy gardening games, and also some very silly ones.",
-    "When I'm not making games, I'm out in the garden with my garden students and the garden club, or hanging out with my family, the pets and our chickens.",
+    "When I'm not making games, I'm out in the garden with my garden students and the Garden Society, or hanging out with my family, the pets and our chickens.",
     "You can also find me paddleboarding (mostly standing, occasionally swimming) and working out: yoga, Pilates and, most importantly, calisthenics. The big quest is a handstand. Current record: about one hiccup long. The chickens remain unimpressed.",
     "This is where all my games live. Hope you find one you like! Got a question, an idea, or a handstand tip? Write to me!",
   ],
@@ -137,7 +137,7 @@ window.YVY = {
       { src: "images/me/dress-blue.jpg",     caption: "Feeling blue (the good kind)", focus: "50% 15%" },
       { src: "images/me/gingham.jpg",        caption: "Gingham + sunshine = picnic energy 🧺", focus: "50% 15%" },
     ],
-    club:     [],   // images/club/      garden club
+    club:     [],   // images/club/      Garden Society
     students: [],   // images/students/  garden students
     pets: [         // images/pets/
       // Peaches (fox-faced Pomeranian)
@@ -280,13 +280,33 @@ window.YVY = {
   // "This Day in Yvy History". One is picked per calendar day. (SAMPLE: add real ones!)
   history: [
     "Yvy decides every snack tastes better eaten in the garden.",
-    "A chicken attempts to join garden club. Membership pending.",
+    "A chicken attempts to join the Garden Society. Membership pending.",
     "Yvy names a zucchini. Regrets nothing.",
     "All the tomatoes ripen at once. Again.",
     "Yvy makes a game instead of weeding. The weeds file a complaint.",
-    "Garden club finds a worm described as 'basically a noodle'.",
+    "The Garden Society finds a worm described as 'basically a noodle'.",
     "A pet sits directly on the keyboard during an important build.",
   ],
+
+  /*
+   * GARDEN SOCIETY: journal, project updates and the compost log.
+   * Members submit with a passcode; nothing shows until Yvy approves it on society-admin.html.
+   * The data lives in a Cloudflare Worker (society-api/). On localhost the site uses the local API.
+   */
+  society: {
+    api: "https://api.yvygrounds.com",
+    intro: "Our little gang of gardeners. Members can share journal entries, project progress and compost photos. Yvy reviews every post before it goes up.",
+    // Compost temperature guide (UC Master Gardeners, linked under the chart)
+    compost: {
+      hotLow: 131,   // above this kills most pathogens and weed seeds
+      turnAt: 150,   // turn the pile when it gets this hot
+      tooHot: 160,   // above this the helpful microbes start dying
+      source: {
+        label: "UC Master Gardeners: Composting basics",
+        url: "https://ucanr.edu/site/uc-master-gardeners-san-luis-obispo-county/composting-basics",
+      },
+    },
+  },
 
   /*
    * GROWING TIPS: San Diego planting calendar (the "Garden Almanac" section).

@@ -1,6 +1,6 @@
 # YvyGrounds 🌱🐔🎮
 
-The game portal of **Yvy** (ybresciani): gardening games, silly games, garden club, pets and chickens.
+The game portal of **Yvy** (ybresciani): gardening games, silly games, the Garden Society, pets and chickens.
 It mixes Amanda Please, iCarly, Newgrounds, kawaii and Animal Crossing.
 
 Plain HTML/CSS/JS with no build step, so it runs on any static host (GitHub Pages, Netlify, Cloudflare Pages).

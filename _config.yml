@@ -4,3 +4,4 @@ exclude:
   - OPEN_ITEMS.md
   - README.md
   - images/yvy-feelings
+  - society-api

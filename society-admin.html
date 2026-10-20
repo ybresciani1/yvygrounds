@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Garden Society Admin ★ YvyGrounds</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌻</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-20a">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-20a">
+</head>
+<body class="adm-body">
+  <main class="adm">
+    <p class="adm-back"><a href="./#society">« Back to YvyGrounds</a></p>
+    <h1 class="adm-title">🌻 Garden Society Admin</h1>
+
+    <!-- Sign in -->
+    <form class="adm-card adm-login" id="admLogin">
+      <label class="sf-row">Admin password
+        <input name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <button type="submit" class="society-submit">Sign in</button>
+      <p class="sf-status" id="admLoginStatus" role="status"></p>
+    </form>
+
+    <!-- Signed in -->
+    <div id="admApp" hidden>
+      <div class="society-tabs adm-tabs" role="tablist">
+        <button type="button" role="tab" data-view="review" aria-selected="true">📬 Review <span id="admPendingCount"></span></button>
+        <button type="button" role="tab" data-view="projects" aria-selected="false">🛠️ Projects</button>
+        <button type="button" role="tab" data-view="compost" aria-selected="false">🌡️ Compost log</button>
+        <button type="button" class="adm-signout" id="admSignOut">Sign out</button>
+      </div>
+
+      <section class="adm-view" data-view="review">
+        <div class="adm-filter" role="group" aria-label="Show">
+          <button type="button" data-status="pending" aria-pressed="true">Waiting</button>
+          <button type="button" data-status="approved" aria-pressed="false">Approved</button>
+          <button type="button" data-status="rejected" aria-pressed="false">Rejected</button>
+        </div>
+        <div id="admPosts"></div>
+      </section>
+
+      <section class="adm-view" data-view="projects" hidden>
+        <form class="adm-card adm-inline" id="admNewProject">
+          <h2>Add a project</h2>
+          <label class="sf-row adm-emoji">Emoji <input name="emoji" maxlength="8" value="🌱"></label>
+          <label class="sf-row">Name <input name="name" maxlength="80" required></label>
+          <label class="sf-row adm-wide">Description <input name="description" maxlength="400"></label>
+          <button type="submit" class="society-submit">Add</button>
+        </form>
+        <div id="admProjects"></div>
+      </section>
+
+      <section class="adm-view" data-view="compost" hidden>
+        <form class="adm-card adm-inline" id="admNewReading">
+          <h2>Log a temperature</h2>
+          <label class="sf-row">Date <input name="logged_on" type="date" required></label>
+          <label class="sf-row">Pile <input name="pile" maxlength="40" list="admPiles" value="Main pile"></label>
+          <datalist id="admPiles"></datalist>
+          <label class="sf-row">Temp (°F) <input name="temp_f" type="number" min="0" max="200" step="0.1" required inputmode="decimal"></label>
+          <label class="sf-row">Moisture
+            <select name="moisture">
+              <option value="">(skip)</option>
+              <option>Dry</option>
+              <option>Like a wrung-out sponge</option>
+              <option>Soggy</option>
+            </select>
+          </label>
+          <label class="adm-check"><input name="turned" type="checkbox"> Turned it today ↻</label>
+          <label class="sf-row adm-wide">Notes <input name="notes" maxlength="600"></label>
+          <button type="submit" class="society-submit">Log it</button>
+          <p class="sf-status adm-wide" id="admReadingStatus" role="status"></p>
+        </form>
+        <div id="admReadings"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/data.js?v=2026-10-20a"></script>
+  <script src="js/society-admin.js?v=2026-10-20a"></script>
+</body>
+</html>

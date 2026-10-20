@@ -1,0 +1,25 @@
+// Cloudflare Worker for the YvyGrounds Garden Society (submissions, approvals, projects, compost log).
+// Data: D1 database (posts, projects, compost log) + Workers KV (photos).
+// Secrets (set with `npx wrangler secret put NAME`, never committed):
+//   SOCIETY_PASSCODE: what members type to submit
+//   ADMIN_PASSWORD:   what Yvy types on society-admin.html
+{
+  "name": "yvygrounds-society",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "routes": [{ "pattern": "api.yvygrounds.com", "custom_domain": true }],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "yvygrounds-society",
+      "database_id": "cd566944-2c18-4bcf-a549-f0a4ffd3b1c9",
+      "migrations_dir": "migrations"
+    }
+  ],
+  // Photos live in Workers KV (free tier, no card needed): 1 GB, 1,000 uploads a day
+  "kv_namespaces": [{ "binding": "PHOTOS", "id": "ad9cdfa830894cdf9c0600a141f4159f" }],
+  "vars": {
+    // Sites allowed to call this API from a browser
+    "ALLOWED_ORIGINS": "https://yvygrounds.com,http://yvygrounds.com,https://www.yvygrounds.com,http://www.yvygrounds.com,https://ybresciani1.github.io,http://localhost:8080"
+  }
+}
