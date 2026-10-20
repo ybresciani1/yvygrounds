@@ -9,8 +9,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-20g">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-20g">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-20m">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-20m">
+  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-20m">
 </head>
 <body>
 
@@ -31,6 +32,9 @@
         <a href="#critters">Critters</a> |
         <a href="#growing">Garden Almanac</a> |
         <a href="#society">Garden Society</a> |
+        <a href="#resume">Résumé</a> |
+        <a href="#shop">Hire Me</a> |
+        <a href="#guestbook">Guestbook</a> |
         <a href="#about" data-write>Write to Me</a>
         <span class="ng-bar-right">★ Everything, by Yvy. ★</span>
       </div>
@@ -55,6 +59,9 @@
         <a href="#scrapbook">Scrapbook</a>
         <a href="#critters">Critters</a>
         <a href="#society">Society</a>
+        <a href="#resume">Résumé</a>
+        <a href="#shop">Hire Me</a>
+        <a href="#guestbook">Guestbook</a>
         <a href="#about">About Yvy</a>
       </nav>
     </header>
@@ -208,6 +215,49 @@
         <p class="society-cta"><button type="button" class="society-submit" id="societySubmitBtn">✏️ Submit an entry</button></p>
       </section>
 
+      <!-- ===== Résumé as an RPG character sheet (data.js → resume, built by js/portfolio.js) ===== -->
+      <section id="resume" class="rpg-wrap">
+        <h2 class="rpg-title"><span>Character Sheet</span></h2>
+        <p class="rpg-sub">a.k.a. my résumé, but make it an RPG</p>
+        <div class="rpg" id="rpgSheet"></div>
+        <p class="rpg-buttons">
+          <a class="rpg-btn rpg-btn-plain" href="resume.html">📄 Boring printable version</a>
+          <a class="rpg-btn rpg-btn-hire" href="#shop">💼 Hire me!</a>
+        </p>
+      </section>
+
+      <!-- ===== Hire me / commission me: shop counter (data.js → shop) ===== -->
+      <section id="shop" class="shop">
+        <div class="shop-awning" aria-hidden="true"></div>
+        <h2 class="shop-sign">Yvy's Garden &amp; Game Shop</h2>
+        <div class="shop-counter">
+          <div class="shop-keeper" id="shopKeeper" aria-hidden="true"></div>
+          <div class="dialog shop-dialog" role="note">
+            <span class="dialog-name" id="shopKeeperName">Yvy</span>
+            <p id="shopGreeting"></p>
+          </div>
+        </div>
+        <ul class="shop-shelf" id="shopItems"></ul>
+        <p class="shop-closing" id="shopClosing"></p>
+        <p class="shop-cta"><a class="rpg-btn rpg-btn-hire" href="#shop" data-write>✉ Ask at the counter</a></p>
+        <div class="shop-pay" id="shopPay"></div>
+      </section>
+
+      <!-- ===== Guestbook (data.js → guestbook; signed entries come from the API) ===== -->
+      <section id="guestbook" class="guestbook">
+        <h2 class="gb-title">✎ Sign My Guestbook! ✎</h2>
+        <p class="gb-intro" id="gbIntro"></p>
+        <p class="gb-cta"><button type="button" class="society-submit" id="gbSignBtn">✏️ Sign the guestbook</button></p>
+        <!-- One entry at a time, flipped with the arrows (like the scrapbook) -->
+        <div class="gb-stage">
+          <button class="arrow arrow-back" id="gbPrev" type="button" aria-label="Previous guestbook entry">BACK</button>
+          <div class="gb-page" id="gbEntries" aria-live="polite"></div>
+          <button class="arrow arrow-next" id="gbNext" type="button" aria-label="Next guestbook entry">NEXT</button>
+        </div>
+        <p class="scrap-count gb-count" id="gbCount"></p>
+        <div id="gbNote"></div>
+      </section>
+
       <!-- ===== About (Animal Crossing letter) ===== -->
       <section id="about" class="about">
         <div class="letter">
@@ -275,6 +325,35 @@
         </label>
         <button type="submit" class="society-submit">🌱 Send to Yvy</button>
         <p class="sf-status" id="sfStatus" role="status"></p>
+      </form>
+    </div>
+  </div>
+
+  <!-- Guestbook sign form -->
+  <div class="lightbox" id="gbForm" hidden>
+    <div class="lightbox-card sf-card gb-card" role="dialog" aria-modal="true" aria-labelledby="gbFormTitle">
+      <button class="lightbox-close" id="gbClose" type="button" aria-label="Close">✕</button>
+      <h2 id="gbFormTitle">Sign Yvy's guestbook</h2>
+      <p class="sf-sub">Yvy reads every entry before it goes on the site.</p>
+      <form class="sf-form" novalidate>
+        <label class="sf-row">Your first name or initials
+          <input name="name" maxlength="40" autocomplete="given-name" required placeholder="e.g. Sam or S.K.">
+        </label>
+        <label class="sf-row">Who are you?
+          <select name="role" id="gbRoles"></select>
+        </label>
+        <fieldset class="gb-avatars">
+          <legend>Pick your buddy</legend>
+          <div id="gbAvatars"></div>
+        </fieldset>
+        <label class="sf-row">Your message
+          <textarea name="message" maxlength="600" rows="4" required placeholder="Say hi, review a game, or leave a kind word!"></textarea>
+        </label>
+        <!-- Leave this empty (it's a trap for spam robots) -->
+        <label class="gb-trap" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
+        <p class="sf-privacy">🛡️ First name or initials only, please. No last names, emails, phone numbers or links.</p>
+        <button type="submit" class="society-submit">🌱 Sign it!</button>
+        <p class="sf-status" id="gbStatus" role="status"></p>
       </form>
     </div>
   </div>
@@ -357,10 +436,11 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=2026-10-20g"></script>
-  <script src="js/pixels.js?v=2026-10-20g"></script>
-  <script src="js/veg-icons.js?v=2026-10-20g"></script>
-  <script src="js/main.js?v=2026-10-20g"></script>
-  <script src="js/society.js?v=2026-10-20g"></script>
+  <script src="js/data.js?v=2026-10-20m"></script>
+  <script src="js/pixels.js?v=2026-10-20m"></script>
+  <script src="js/veg-icons.js?v=2026-10-20m"></script>
+  <script src="js/main.js?v=2026-10-20m"></script>
+  <script src="js/society.js?v=2026-10-20m"></script>
+  <script src="js/portfolio.js?v=2026-10-20m"></script>
 </body>
 </html>

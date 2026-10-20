@@ -7,6 +7,8 @@
  *   GET  /api/compost                                                      compost temperature log
  *   GET  /api/photo/<key>                                                  photo of an approved post
  *   POST /api/submit   (multipart, needs SOCIETY_PASSCODE)                 new post, waits for approval
+ *   GET  /api/guestbook                                                    approved guestbook entries
+ *   POST /api/guestbook  { name, role?, avatar?, message, website, ms }    sign it (no passcode), waits for approval
  *
  * Admin (header "Authorization: Bearer <ADMIN_PASSWORD>"):
  *   GET    /api/admin/posts?status=pending|approved|rejected
@@ -18,6 +20,9 @@
  *   PATCH  /api/admin/projects/<id>     { name?, emoji?, description?, status? }
  *   POST   /api/admin/compost           { logged_on, temp_f, pile?, turned?, moisture?, notes? }
  *   DELETE /api/admin/compost/<id>
+ *   GET    /api/admin/guestbook?status=pending|approved|rejected
+ *   PATCH  /api/admin/guestbook/<id>    { status?, name?, role?, avatar?, message? }
+ *   DELETE /api/admin/guestbook/<id>
  */
 
 const MAX_PHOTOS = 3;
@@ -26,6 +31,12 @@ const KINDS = ["journal", "project", "compost"];
 const LIMITS = { author: 40, title: 120, body: 4000, name: 80, emoji: 8, description: 400, pile: 40, moisture: 40, notes: 600 };
 const AUTH_WINDOW_MS = 15 * 60 * 1000;
 const AUTH_MAX_FAILURES = 8;
+// Guestbook: anyone can sign, so keep spam down
+const GB_LIMITS = { name: 40, role: 40, message: 600 };
+const GB_AVATARS = ["chicken", "flower", "heart", "sprout", "tomato", "silly", "bowl", "mystery"];
+const GB_PER_HOUR = 3;          // signings per visitor per hour
+const GB_MAX_PENDING = 200;     // stop taking new ones while this many wait for review
+const STATUSES = ["pending", "approved", "rejected"];
 
 export default {
   async fetch(request, env) {
@@ -77,6 +88,8 @@ async function route(request, env) {
   if (m === "GET" && path === "/api/compost") return getCompost(env);
   if (m === "GET" && path.startsWith("/api/photo/")) return getPhoto(env, path.slice("/api/photo/".length), false);
   if (m === "POST" && path === "/api/submit") return submit(request, env);
+  if (m === "GET" && path === "/api/guestbook") return getGuestbook(env);
+  if (m === "POST" && path === "/api/guestbook") return signGuestbook(request, env);
 
   if (path.startsWith("/api/admin/")) {
     await requireAdmin(request, env);
@@ -92,6 +105,9 @@ async function route(request, env) {
     if (what === "projects" && m === "PATCH" && id) return adminUpdateProject(request, env, id);
     if (what === "compost" && m === "POST" && !id) return adminAddCompost(request, env);
     if (what === "compost" && m === "DELETE" && id) return adminDeleteCompost(env, id);
+    if (what === "guestbook" && m === "GET" && !id) return adminListGuestbook(url, env);
+    if (what === "guestbook" && m === "PATCH" && id) return adminUpdateGuestbook(request, env, id);
+    if (what === "guestbook" && m === "DELETE" && id) return adminDeleteGuestbook(env, id);
   }
   throw new HttpError(404, "Not found.");
 }
@@ -253,6 +269,63 @@ async function submit(request, env) {
   return json({ ok: true, message: "Thanks! Yvy will take a look before it shows up on the site." }, 201);
 }
 
+/* ---------- guestbook ---------- */
+
+const publicEntry = (row) => ({
+  id: row.id, name: row.name, role: row.role, avatar: row.avatar, message: row.message, createdAt: row.created_at,
+});
+
+async function getGuestbook(env) {
+  const { results } = await env.DB.prepare(
+    "SELECT * FROM guestbook WHERE status = 'approved' ORDER BY created_at DESC LIMIT 100"
+  ).all();
+  return json({ entries: results.map(publicEntry) });
+}
+
+// Links, emails and phone numbers aren't allowed (spam, and kids' privacy)
+function hasContactInfo(text) {
+  return /(https?:\/\/|www\.|\b[a-z0-9-]+\.(com|net|org|io|ru|xyz|info|biz|co|me|ly)\b)/i.test(text) ||
+    /[^\s@]+@[^\s@]+\.[a-z]{2,}/i.test(text) ||
+    /(\d[\s().-]*){7,}/.test(text);
+}
+
+async function signGuestbook(request, env) {
+  const data = await readJson(request);
+  // Spam robots fill in the hidden "website" box or send the form instantly: say thanks, save nothing
+  const thanks = json({ ok: true, message: "Thanks for signing! Yvy will read it before it shows up. ♥" }, 201);
+  if (clean(data.website, 200) || Number(data.ms) < 2500) return thanks;
+
+  const name = clean(data.name, GB_LIMITS.name);
+  const role = clean(data.role, GB_LIMITS.role);
+  const message = clean(data.message, GB_LIMITS.message);
+  const avatar = GB_AVATARS.includes(data.avatar) ? data.avatar : GB_AVATARS[0];
+  if (!name) throw new HttpError(400, "Add your first name or initials.");
+  if (message.length < 2) throw new HttpError(400, "Write a little message first!");
+  if (hasContactInfo(`${name} ${role} ${message}`)) {
+    throw new HttpError(400, "Please leave out links, emails and phone numbers.");
+  }
+
+  // A hash of the visitor's address (not the address itself) for the per-hour limit
+  const ip = request.headers.get("CF-Connecting-IP") || "local";
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`yvygrounds-guestbook:${ip}`));
+  const who = [...new Uint8Array(digest)].slice(0, 12).map((b) => b.toString(16).padStart(2, "0")).join("");
+  const hourAgo = Date.now() - 60 * 60 * 1000;
+  const [{ n: recent }, { n: pending }] = await Promise.all([
+    env.DB.prepare("SELECT COUNT(*) AS n FROM guestbook_hits WHERE who = ? AND at > ?").bind(who, hourAgo).first(),
+    env.DB.prepare("SELECT COUNT(*) AS n FROM guestbook WHERE status = 'pending'").first(),
+  ]);
+  if (recent >= GB_PER_HOUR) throw new HttpError(429, "You've signed a lot already! Try again in an hour.");
+  if (pending >= GB_MAX_PENDING) throw new HttpError(503, "The guestbook is full for now. Please try again in a few days!");
+
+  await env.DB.batch([
+    env.DB.prepare("INSERT INTO guestbook (id, name, role, avatar, message, status, created_at) VALUES (?, ?, ?, ?, ?, 'pending', ?)")
+      .bind(newId(), name, role, avatar, message, now()),
+    env.DB.prepare("INSERT INTO guestbook_hits (who, at) VALUES (?, ?)").bind(who, Date.now()),
+    env.DB.prepare("DELETE FROM guestbook_hits WHERE at < ?").bind(hourAgo),
+  ]);
+  return thanks;
+}
+
 /* ---------- admin ---------- */
 
 async function adminListPosts(url, env) {
@@ -342,5 +415,38 @@ async function adminAddCompost(request, env) {
 
 async function adminDeleteCompost(env, id) {
   await env.DB.prepare("DELETE FROM compost_logs WHERE id = ?").bind(id).run();
+  return json({ ok: true });
+}
+
+async function adminListGuestbook(url, env) {
+  const status = url.searchParams.get("status") || "pending";
+  if (!STATUSES.includes(status)) throw new HttpError(400, "Unknown status.");
+  const { results } = await env.DB.prepare(
+    `SELECT * FROM guestbook WHERE status = ? ORDER BY created_at ${status === "pending" ? "ASC" : "DESC"} LIMIT 200`
+  ).bind(status).all();
+  return json({ entries: results.map((r) => ({ ...publicEntry(r), status: r.status })) });
+}
+
+async function adminUpdateGuestbook(request, env, id) {
+  const data = await readJson(request);
+  const row = await env.DB.prepare("SELECT * FROM guestbook WHERE id = ?").bind(id).first();
+  if (!row) throw new HttpError(404, "Entry not found.");
+  const next = {
+    status: data.status ?? row.status,
+    name: data.name !== undefined ? clean(data.name, GB_LIMITS.name) : row.name,
+    role: data.role !== undefined ? clean(data.role, GB_LIMITS.role) : row.role,
+    avatar: data.avatar !== undefined ? (GB_AVATARS.includes(data.avatar) ? data.avatar : row.avatar) : row.avatar,
+    message: data.message !== undefined ? clean(data.message, GB_LIMITS.message) : row.message,
+  };
+  if (!STATUSES.includes(next.status)) throw new HttpError(400, "Unknown status.");
+  if (!next.name) throw new HttpError(400, "Name can't be empty.");
+  if (!next.message) throw new HttpError(400, "Message can't be empty.");
+  await env.DB.prepare("UPDATE guestbook SET status = ?, name = ?, role = ?, avatar = ?, message = ?, reviewed_at = ? WHERE id = ?")
+    .bind(next.status, next.name, next.role, next.avatar, next.message, now(), id).run();
+  return json({ ok: true });
+}
+
+async function adminDeleteGuestbook(env, id) {
+  await env.DB.prepare("DELETE FROM guestbook WHERE id = ?").bind(id).run();
   return json({ ok: true });
 }

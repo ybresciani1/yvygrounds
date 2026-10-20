@@ -54,6 +54,250 @@ window.YVY = {
   ],
 
   /*
+   * RÉSUMÉ: shown two ways from this one list.
+   *   - the RPG character sheet on the main page (section #resume, js/portfolio.js)
+   *   - the plain printable page, resume.html ("📄 boring printable version"; js/resume-page.js)
+   * This is a public page: no phone number, and no names of private families.
+   * RPG-only bits (class, bars, stats, quest names, item emoji) don't show on the printable page.
+   */
+  resume: {
+    name: "Yvanna “Yvy” Bresciani",
+    headline: "Environmental & Outdoor Educator | Curriculum Developer | Educational Program Leader",
+    location: "San Diego, CA",
+    site: "yvygrounds.com",
+    startYear: 2009,   // first year working with kids; the RPG level is years since then
+    summary: "Bilingual educator and program leader with 10+ years of experience in early childhood development, inquiry-based learning, and experiential education. Specializing in Reggio Emilia-inspired, Montessori, and Forest School pedagogies, with expertise in outdoor classroom development, environmental stewardship, curriculum design, and community engagement. Experienced in mentoring educators, coordinating volunteers, developing educational partnerships, and securing $10,000+ annually in grant funding. Passionate about creating inclusive, child-centered learning environments that foster curiosity, ecological literacy, creativity, and meaningful connections with the natural world.",
+
+    // RPG sheet only
+    rpg: {
+      cls: "Garden Educator",
+      subclass: "Game Maker",
+      alignment: "Chaotic Good (with chickens)",
+      bars: [   // value out of max
+        { label: "HP", name: "Patience with 3-year-olds", value: 99, max: 99, color: "#ff6fa8" },
+        { label: "MP", name: "Mud Power", value: 87, max: 99, color: "#5aa8f0" },
+      ],
+      stats: [  // out of 20. Tweak these, they're for fun!
+        { emoji: "🌱", name: "Gardening", value: 19 },
+        { emoji: "🧒", name: "Kid Wrangling", value: 20 },
+        { emoji: "📚", name: "Curriculum Design", value: 18 },
+        { emoji: "🗣️", name: "Bilingual (EN/ES)", value: 18 },
+        { emoji: "🤝", name: "Mentoring Teachers", value: 17 },
+        { emoji: "💰", name: "Grant Hunting", value: 16 },
+        { emoji: "🎮", name: "Game Making", value: 14 },
+        { emoji: "🐔", name: "Chicken Diplomacy", value: 20 },
+        { emoji: "🤸", name: "Handstand", value: 3 },
+      ],
+    },
+
+    // "Core competencies" (printable) = the INVENTORY (RPG sheet)
+    skills: [
+      { emoji: "🌳", name: "Outdoor & Environmental Education" },
+      { emoji: "🎨", name: "Reggio Emilia, Montessori & Forest School Pedagogies" },
+      { emoji: "🔍", name: "Inquiry-Based & Emergent Curriculum Development" },
+      { emoji: "🧑‍🏫", name: "Educational Leadership & Teacher Mentorship" },
+      { emoji: "💰", name: "Grant Funding & Community Partnerships" },
+      { emoji: "🗣️", name: "Bilingual Education (English/Spanish)" },
+      { emoji: "🌻", name: "Garden Program Development & Sustainability" },
+      { emoji: "🙋", name: "Volunteer Coordination & Community Engagement" },
+      { emoji: "💛", name: "Early Childhood Development & Social-Emotional Learning" },
+      { emoji: "📸", name: "Educational Documentation & Family Communication" },
+      { emoji: "🕹️", name: "Educational Game Design (web games)" },
+    ],
+
+    // PROFESSIONAL EXPERIENCE = the QUEST LOG. current: true marks an active quest.
+    // section: "childcare" files it under "Professional Nanny & Childcare Experience" on the printable page.
+    jobs: [
+      { quest: "Grow a School Garden (in Two Languages)", current: true,
+        role: "Garden Educator & Outdoor Education Specialist", org: "Longfellow Spanish Immersion School",
+        place: "San Diego, CA", dates: "08/2025 – Present", ages: "UTK–8th Grade",
+        points: [
+          "Designed and facilitated inquiry-based garden curriculum integrating environmental science, sustainability, food systems, and ecological exploration for students from UTK through 8th grade.",
+          "Integrated bilingual English/Spanish learning opportunities and culturally responsive teaching practices into hands-on environmental education.",
+          "Secured $10,000 annually in grant funding through external partnerships, including SAGE, to support garden education and long-term program sustainability.",
+          "Led school garden operations, including seasonal planning, planting, composting, irrigation, harvesting, and habitat development.",
+          "Organized campus-wide cleanup and beautification initiatives, coordinating students, families, and community volunteers to strengthen environmental stewardship.",
+          "Collaborated with teachers, administrators, and community organizations to develop interdisciplinary outdoor learning experiences and expand program resources.",
+        ] },
+      { quest: "The Mud Kitchen Saga", current: true,
+        role: "Educator, Garden Educator & Outdoor Specialist / Outdoor Pedagogical Team Lead", org: "Dot to Dot Academy",
+        place: "Carmel Valley, CA", dates: "08/2024 – Present",
+        points: [
+          "Designed and implemented Reggio Emilia-inspired curriculum rooted in inquiry, sensory exploration, loose parts play, and children's emerging interests.",
+          "Led the development of outdoor learning environments, supporting educators in using natural spaces as intentional extensions of the classroom.",
+          "Mentored teaching teams in reflective practice, pedagogical documentation, collaborative curriculum development, and child-centered educational approaches.",
+          "Established a certified Monarch Fellowship Garden & Pollinator Hub, cultivating and distributing native milkweed and nectar plants while engaging children in habitat conservation and ecological stewardship.",
+          "Designed a collaborative mud kitchen and facilitated long-term light, shadow, and natural-material investigations to promote creativity, scientific thinking, and social development.",
+          "Led food and art atelier experiences integrating nutrition, cultural food traditions, process-based art, and sustainable materials.",
+        ] },
+      { quest: "Enter the VR Dimension",
+        role: "Youth Interaction Designer", org: "Notion Theory",
+        place: "", dates: "01/2025 – 06/2025",
+        points: [
+          "Contributed child-development expertise to the design of age-appropriate, engaging, and developmentally responsive virtual reality experiences.",
+          "Supported child-centered user experience research, including usability, cognitive development, emotional engagement, and accessibility considerations.",
+          "Advised on ethical design practices, digital safety, screen-time management, and positive social interactions in immersive environments.",
+        ] },
+      { quest: "Guide of the Tiny Explorers",
+        role: "Montessori Lead Guide / Substitute Educator", org: "Encinitas Country Day School",
+        place: "Encinitas, CA", dates: "12/2020 – 10/2021",
+        points: [
+          "Developed and implemented Montessori- and Reggio-inspired learning experiences for children ages 2–6, supporting independence, exploration, and holistic development.",
+          "Mentored and coordinated teaching staff while supporting classroom operations and after-school programming.",
+          "Strengthened family engagement through developmental documentation, digital portfolios, newsletters, and ongoing communication.",
+        ] },
+      { quest: "The Forest School Path",
+        role: "Lead Teacher & Co-Teacher", org: "The Native School / Our Piccola Accademia",
+        place: "Carlsbad, CA", dates: "06/2019 – 12/2020",
+        points: [
+          "Led indoor and outdoor educational programming rooted in Reggio Emilia, Forest School, and child-centered learning philosophies.",
+          "Designed experiential curriculum incorporating nature exploration, children's yoga, creative expression, and social-emotional development.",
+          "Mentored educators, coordinated school events, and maintained communication between families, teaching teams, and school leadership.",
+        ] },
+      { quest: "First Classroom",
+        role: "Teacher / Floater / Substitute Educator", org: "Saint David's Preschool",
+        place: "San Diego, CA", dates: "06/2017 – 06/2019",
+        points: [
+          "Facilitated Reggio Emilia-inspired learning experiences supporting children's cognitive, social, emotional, and creative development.",
+          "Developed classroom curriculum, documented learning progress, and collaborated with educators and families to support individual developmental needs.",
+        ] },
+      { quest: "15 Years of Tiny Bosses", section: "childcare",
+        role: "Professional Nanny, Household Manager & Child Development Specialist", org: "Private Families & Accredited Respite Care",
+        place: "California & Colorado", dates: "2009 – 2024",
+        points: [
+          "Provided individualized care and developmentally responsive learning experiences for infants through school-age children, including children with disabilities and additional support needs.",
+          "Integrated Montessori, RIE, Reggio Emilia, and nature-based approaches into daily routines, practical life experiences, and child-led learning.",
+          "Led multi-family nanny shares for up to three infants and toddlers, introducing Spanish language exposure and Baby ASL.",
+          "Collaborated with families and speech, occupational, and physical therapy providers to support developmental goals, communication, social-emotional growth, and individualized care.",
+          "Managed household schedules, coordinated care arrangements, and maintained detailed developmental documentation and family communication.",
+        ] },
+    ],
+
+    // SELECTED PROJECTS & COMMUNITY LEADERSHIP = ACHIEVEMENTS (RPG sheet)
+    projects: [
+      { emoji: "🦋", name: "Monarch Fellowship Garden & Pollinator Hub", text: "Established a certified community habitat supporting native plants, pollinator conservation, and experiential ecological education." },
+      { emoji: "💰", name: "School Garden Funding & Development", text: "Secured $10,000+ annually through external partnerships, including SAGE, to sustain garden-based education and environmental programming." },
+      { emoji: "🧹", name: "Campus Cleanup & Beautification Leadership", text: "Organized collaborative stewardship initiatives engaging students, families, and volunteers in improving shared school environments." },
+      { emoji: "🎮", name: "Educational Game Development", text: "Created Master Composter Quest, Tijuana Estuary Explorer, and Rabbit & Frog: Gardenbound, combining environmental themes with interactive educational experiences.", link: "#games" },
+      { emoji: "🎪", name: "Community Event Leadership", text: "Planned and coordinated large-scale community events with up to 14,000 attendees, including volunteer management, logistics, vendor coordination, and outreach." },
+      { emoji: "🏆", name: "PETA Star Street Teamer of the Year", text: "Award recipient for volunteer outreach.", recognition: true },
+      { emoji: "🥾", name: "Founder of Baby Back Hikes (2016)", text: "Supporting family engagement with outdoor experiences.", recognition: true },
+    ],
+
+    // EDUCATION + CERTIFICATIONS = TRAINING (RPG sheet)
+    education: [
+      { school: "San Diego Miramar College", points: ["Associate Teacher Certificate (High Honors)", "43 Early Childhood Development units", "Family Home Daycare Training Certificate", "GPA: 3.9"] },
+      { school: "Cornell University", points: ["Nanny Certification, 2023"] },
+    ],
+    certifications: [
+      { area: "Child Development & Educational Pedagogy", text: "RIE Educaring and Nanny Nurture training; Reggio Emilia, Montessori, Forest School, and ECERS-3 professional training." },
+      { area: "Outdoor Education & Wellness", text: "Take Me Outside training; Children's Yoga Certification (Yoga Ed); Stanford University Child Nutrition and Cooking." },
+      { area: "Health, Safety & Specialized Care", text: "Pediatric CPR/AED and First Aid training; TrustLine certification; Safe Sleep Ambassador training; newborn care and postpartum doula training." },
+    ],
+    languages: [
+      { name: "English", level: "Fluent" },
+      { name: "Spanish", level: "Fluent" },
+      { name: "Baby ASL", level: "Experienced" },
+    ],
+  },
+
+  /*
+   * HIRE ME / COMMISSION ME: the shop counter (section #shop).
+   * "Ask at the counter" opens the same "Write to me" email picker.
+   */
+  shop: {
+    keeper: "Yvy",
+    greeting: "Welcome to Yvy's Garden & Game Shop! Everything here is made to order. Have a look around, then come chat with me at the counter!",
+    items: [
+      { emoji: "🌱", name: "Garden Workshops", tag: "schools · camps · clubs",
+        blurb: "Hands-on garden lessons on seeds, soil, compost and pollinators, for any age from UTK up. In English or Español." },
+      { emoji: "🏡", name: "Outdoor Classroom Design", tag: "schools · preschools",
+        blurb: "Turn a yard, courtyard or school garden into a living classroom: mud kitchens, loose parts, pollinator gardens and habitat spaces." },
+      { emoji: "📚", name: "Curriculum Design", tag: "UTK–8th grade",
+        blurb: "Inquiry-based garden and environmental curriculum inspired by Reggio Emilia, Montessori and Forest School." },
+      { emoji: "🤝", name: "Teacher Mentoring", tag: "teaching teams",
+        blurb: "Coaching on outdoor learning, documentation and child-led projects, so your team feels at home teaching outside." },
+      { emoji: "🎮", name: "Custom Mini-Games", tag: "classrooms · events",
+        blurb: "A little browser game for your class, garden program or event, bilingual if you like. Just like the ones in my portal!" },
+      { emoji: "🧸", name: "Kid-Centered Design Help", tag: "apps · games · VR",
+        blurb: "Child development know-how for your product: age-appropriate UX, playtesting with kids, safety and healthy screen time." },
+    ],
+    price: "Ask me!",   // price tag on every item
+    closing: "Don't see what you need? Ask anyway! I love a weird request.",
+    // Pay / tip jar. venmo: your Venmo username without the @ ("" hides the button).
+    // zelle: true shows a "Copy my Zelle email" button (uses the email address above).
+    venmo: "YBresciani",
+    zelle: true,
+    payNote: "Already booked? Pay here. Or just tip the chickens 🐔",
+  },
+
+  /*
+   * GUESTBOOK (section #guestbook): visitors sign it (first name only), and nothing shows
+   * until Yvy approves it on society-admin.html → Guestbook. Signed entries live in the API.
+   * kindWords are testimonials Yvy adds by hand (excerpts from reference letters). They show
+   * first, with a ★ ribbon, sorted by date (oldest first), so new ones can go anywhere in the list.
+   * Initials + a role only: no last names, phone numbers, emails, kids' names, schools or health details.
+   * date: "YYYY-MM-DD", or "YYYY-MM" / "YYYY" when the letter has no exact date.
+   */
+  guestbook: {
+    intro: "Sign my guestbook! Leave a hello, a game review, or a kind word. I read every entry before it goes up ♥",
+    roles: ["Visitor", "Game player", "Parent", "Student", "Garden Society member", "Teacher / coworker", "Collaborator"],
+    avatars: ["chicken", "flower", "heart", "sprout", "tomato", "silly", "bowl", "mystery"],   // pixel sprites from js/pixels.js
+    kindWords: [
+      // Pattern: { name: "A.B.", role: "Teacher", avatar: "flower", date: "2026-10-01", text: "..." },
+      // Undated letter; "this year" in it is 2012 (the Zombie Walk's 5th year, after 2011)
+      { name: "M.K.", role: "Volunteer coordinator", avatar: "mystery", date: "2012",
+        text: "For the last 5 years, we have held an event called the Long Beach Zombie Walk. … In all, we had over 14,000 people come to our event. … With virtually little experience in volunteer management, Ms. Bresciani managed, with no oversight, over 35 volunteers. … Yvanna's professionalism, intuitive management skills, and astounding leadership abilities were crucial to our success. … She's a natural leader, a team-player, and an innovative thinker." },
+      { name: "P.M.", role: "Parent", avatar: "heart", date: "2015-12-03",
+        text: "She was wonderful with both of my boys. … When interacting with both of my boys, they always were very excited about different activities she had planned. She was very patient, sweet, and creative, and always found a way to multitask efficiently throughout her time with us. … I cannot recommend Yvanna enough." },
+      { name: "J.R.", role: "Dad (Care.com review)", avatar: "sprout", date: "2016-05-17",
+        text: "Yvanna was a spectacular addition to our family! … Yvanna took initiative in her work: setting up a binder with information about family events around the city, feedback from each day of care, and other helpful information. We absolutely loved her and would recommend her services to anyone lucky enough to have her!" },
+      { name: "J.E.", role: "Neighbor & friend", avatar: "chicken", date: "2016-07-17",
+        text: "Yvanna Bresciani is one of the most disciplined and punctual people I've ever known. Her ability to work efficiently under stressful conditions and nerve-wrecking deadlines speaks volumes about her hard work, determination and her composed demeanor. … Yvanna is a compassionate and hardworking individual with perseverance and ambition." },
+      { name: "M.S.", role: "Parent Education instructor", avatar: "flower", date: "2016-07-28",
+        text: "Yvanna did a great job helping and playing with the children, selecting age appropriate toys and understanding the basic needs of children this age. … She has incredible patience with children and looks at ease around them. … I think she would make a valued teacher and caregiver of any children in her care." },
+      { name: "K.R.", role: "Mom", avatar: "tomato", date: "2016-11-07",
+        text: "In the time Yvanna has been with us, she became a beloved part of our lives. … Even our neighbors frequently commented to me on how consistently loving, patient, and kind Yvanna was with both children. … She is a great multi-tasker and very creative." },
+      { name: "V.J.", role: "Parent", avatar: "heart", date: "2016-11-08",
+        text: "Yvanna is a very reliable person, we are very blessed to have her supporting our family. She is consistent, flexible, loving, nurturing, and very responsible. … When I arrive home my youngest daughter is always sad to see Yvanna leave, one strong indicator that she is connected and bonded to my kids." },
+      { name: "L.M.", role: "Parent (Montessori classroom)", avatar: "sprout", date: "2021-10-02",
+        text: "Yvanna was the Montessori guide for both my son and daughter in their toddler class. She was able to build trust with them in a very short period of time and spark their interest while keeping to the curriculum. … Miss Yvanna's focus on social-emotional learning really paid off. … It clearly worked because both of my children flourished while in her classroom." },
+      { name: "H.M.", role: "Parent", avatar: "flower", date: "2022-09-22",
+        text: "It was an absolute privilege to have Yvanna as our nanny. She is reliable, loving, communicative, and dedicated to children's growth and development. … Yvanna was thoughtful in organizing activities and spaces that helped my daughter hit her developmental milestones in a way that was safe and creative. … Her warm energy is contagious." },
+      { name: "S.L. & S.S.", role: "Parents", avatar: "silly", date: "2023-03-21",
+        text: "Her creativity knows no bounds as she regularly provides our son with engaging and fun activities such as art projects, games, singing, dancing, and yoga. Our son has always been excited to spend time with her and has never been bored in her care. … She is an excellent caregiver who genuinely cares for children." },
+      // Online review, about 2+ years into a nanny job that started 11/2021 (date is an estimate)
+      { name: "K.T.", role: "Mom", avatar: "flower", date: "2024",
+        text: "We have been so incredibly lucky to have Yvanna as our son's nanny for the last 2+ years. … Yvanna provides him with an amazing, adventure-filled learning environment. … Yvanna is a wonderfully communicative, reliable, and kind caregiver. Any family will be lucky to have her." },
+      // Undated: Facebook comment (date is a guess; kids were in her Reggio Emilia preschool class)
+      { name: "R.", role: "Parent (Reggio Emilia preschool)", avatar: "heart", date: "2019",
+        text: "She's amazing!! My kids were with her for several years at a Reggio Emilia preschool. She is lovely and super nurturing." },
+      // Undated handwritten note (date is a guess)
+      { name: "V.P.", role: "Parent", avatar: "chicken", date: "2025",
+        text: "Yvanna is a lovely person inside and out! She provides a safe and happy environment for our kiddos to learn about nature. [My daughter] loves visiting the garden and Yvanna's chickens :) Thanks for being you!! :)" },
+      // Holiday cards from the Dot to Dot team, December 2025 ("all the best for 2026")
+      { name: "F.", role: "Coworker", avatar: "flower", date: "2025-12",
+        text: "I love how much passion and love you bring for the children. Thank you for everything you do." },
+      { name: "A.", role: "Coworker", avatar: "sprout", date: "2025-12",
+        text: "Thank you for everything that you do! I appreciate the unique perspective you bring + the calm + curious lens you share with the children." },
+      { name: "J.", role: "Coworker", avatar: "heart", date: "2025-12",
+        text: "I miss seeing you everyday! I admire your love & patience that you bring to the children every day. I want to be in a classroom & learn from you. Thank you for everything you do for the children & all of the care that you put into everything you do." },
+      { name: "E.", role: "Coworker", avatar: "tomato", date: "2025-12",
+        text: "I see the love & passion you pour into every interaction, provocation, and plant that has come into [Dot to Dot]; it's truly magical. Grateful to have you a part of our community!" },
+      { name: "N.", role: "Coworker & friend", avatar: "silly", date: "2025-12",
+        text: "Something I always admire about you is the strength you carry at your core. You are so strong, caring, and thoughtful. … Your heart is a gift to everyone you come in contact with. … You deeply inspire me to be a better giving human." },
+      { name: "M.", role: "Coworker", avatar: "mystery", date: "2025-12",
+        text: "Your contributions to [Dot to Dot] have been and will continue to inspire us, grow us and move us in the direction of our collective vision! Thank you for your partnership as an educator/mentor/friend. … Thank you for the life you bring into our outdoors. … You are a beautiful soul and I'm blessed to have you on our team. Cheers to love, to light, to magic and this beautiful gift we call life ♥" },
+      // School newsletter shout-out (date is a guess: Longfellow garden classes, 2025–26 school year)
+      { name: "Anonymous", role: "School newsletter shout-out", avatar: "sprout", date: "2026",
+        text: "Huge thanks to Ms. Yvy! Your gardening classes are a highlight for so many students. Thank you for sharing your passion for nature and for your patience in helping every little 'seedling' thrive. Our school is a much brighter (and greener!) place because of you!" },
+      // Thank-you texts after a babysitting weekend (two parents in a group chat)
+      { name: "L.A. & family", role: "Parents (babysitting)", avatar: "heart", date: "2026-10-04",
+        text: "Thank you so much for watching them, we appreciate you and everything you did so much!! 💙💙💙 … We appreciate you so much! It was so great seeing you! ❤️❤️" },
+    ],
+  },
+
+  /*
    * GAMES (the portal shows them in this order: move an entry up or down to reorder)
    *  type:     "garden", "silly", "story" or "mystery", or a list like ["silly", "story"]
    *  url:      link to play it (Vercel, itch.io, etc.). "" shows "coming soon".
@@ -134,6 +378,7 @@ window.YVY = {
   photos: {
     me: [           // images/me/        (the first one becomes the "click my head" photo; it's pinned so it always shows)
       { src: "images/me/the-best.jpg",       caption: "Certified the best. Source: me ✨", pin: true },
+      { src: "images/me/garden-class-chickens.jpg", caption: "Garden class, starring Riot and Beyonce as special guest speakers 🎤🐔" },
       { src: "images/me/fairy-flower.jpg",   caption: "Tiny fairy, giant flower. Scale is a social construct 🌸", focus: "50% 72%" },
       { src: "images/me/fairy-leaves.jpg",   caption: "Fairy in the garden. You didn't see me 🧚" },
       { src: "images/me/pikachu.jpg",        caption: "Got swallowed by a Pikachu" },

@@ -26,9 +26,11 @@ Keep new work in that retro-but-cute style. It's meant to feel 2000s-maximalist,
 | `arcade/<game>/` | Mini games that run right on the site (`index.html` + `game.js`, shared `arcade/arcade.css`). Listed in `data.js` with `play:` |
 | `images/<album>/` | Photos: `me`, `club`, `students`, `pets`, `chickens`; game thumbnails in `games` |
 | `images/yvy-feelings/` | Yvy's sticker-sheet "feelings" poses, saved for later. **Not shown** on the site and excluded from Pages in `_config.yml`; `stickerSet()` in `data.js` can bring a sheet back |
+| `js/portfolio.js`, `css/portfolio.css` | Portfolio sections: résumé as an RPG character sheet (`#resume`), "Hire me" shop counter with Venmo/Zelle (`#shop`), guestbook (`#guestbook`). Content in `data.js` → `resume`, `shop`, `guestbook` |
+| `resume.html`, `js/resume-page.js`, `css/resume-page.css` | Plain printable résumé ("📄 boring printable version"), built from the same `data.js` → `resume`. Print → Save as PDF |
 | `js/society.js`, `css/society.css` | Garden Society section (journal, projects, compost chart, submit form). Talks to `society-api/` |
-| `society-admin.html`, `js/society-admin.js` | Yvy's private admin page: approve/reject submissions, manage projects, log compost temps (password-protected by the API; `noindex`) |
-| `society-api/` | Cloudflare Worker + D1 database + KV photo storage backend for the Garden Society (deploy steps in its README). Excluded from Pages |
+| `society-admin.html`, `js/society-admin.js` | Yvy's private admin page: approve/reject Society submissions and guestbook signatures, manage projects, log compost temps (password-protected by the API; `noindex`) |
+| `society-api/` | Cloudflare Worker + D1 database + KV photo storage backend for the Garden Society and the guestbook (deploy steps in its README). Excluded from Pages |
 | `OPEN_ITEMS.md` | Running to-do list for the project |
 
 ## Conventions
@@ -44,6 +46,8 @@ Keep new work in that retro-but-cute style. It's meant to feel 2000s-maximalist,
 - Keep it working at phone width (~375px) with no horizontal scrolling. Breakpoints live at the bottom of `style.css`.
 - Keep image files small: game thumbnails ~400–640px wide, photos ≤1200px.
 - Photos of garden students may show minors. Don't add or caption them without Yvy confirming permission.
+- **The résumé is public**: no phone number and no names of private families (nanny jobs are one "Private Families" entry). The PDF in Yvy's Downloads has both, so don't publish it as-is.
+- **Guestbook signatures** may come from kids too: first name/initials only, no links/emails/phone numbers (the API rejects them), pending until Yvy approves.
 - **Garden Society submissions** may come from kids: collect first name/initials only (no emails), keep everything pending until Yvy approves, and keep the in-browser photo shrink (it strips EXIF/GPS). Secrets (`SOCIETY_PASSCODE`, `ADMIN_PASSWORD`) live only in Cloudflare (`wrangler secret put`), never in the repo.
 
 ## Games

@@ -4,6 +4,11 @@ Cloudflare Worker behind the **Garden Society** section of yvygrounds.com: membe
 entries, project updates and compost photos (with a passcode); Yvy approves them on
 `society-admin.html` and logs compost temperatures there.
 
+It also runs the **guestbook**: anyone can sign (no passcode, first name only), and entries stay
+pending until Yvy approves them on `society-admin.html` → Guestbook. Spam guards: a hidden trap field,
+a minimum time on the form, no links/emails/phone numbers, 3 signings per visitor per hour (tracked by a
+hash of the address, not the address), and a cap of 200 waiting entries.
+
 - **Worker**: `src/index.js` (routes listed at the top of the file)
 - **Database**: Cloudflare D1 `yvygrounds-society` (tables in `migrations/`)
 - **Photos**: Workers KV namespace `yvygrounds-society-photos` (free tier, no card needed; only approved photos are public)
@@ -31,6 +36,14 @@ npm run deploy                                      # also sets up api.yvyground
 ```
 
 To change the passcode later, run `npx wrangler secret put SOCIETY_PASSCODE` again (takes effect right away).
+
+## Updating (after a new migration, e.g. `0002_guestbook.sql`)
+
+```bash
+cd society-api
+npm run migrate:remote   # adds the new tables; already-applied migrations are skipped
+npm run deploy
+```
 
 ## Local testing
 

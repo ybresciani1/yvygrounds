@@ -1,5 +1,6 @@
 /*
- * Garden Society admin (society-admin.html): review submissions, manage projects, log compost temps.
+ * YvyGrounds admin (society-admin.html): review Garden Society submissions, manage projects,
+ * log compost temps, and approve guestbook signatures.
  * The admin password is kept only for this browser tab (sessionStorage) and sent to the API.
  */
 (function () {
@@ -16,6 +17,7 @@
   try { password = sessionStorage.getItem(KEY) || ""; } catch (e) { /* private mode */ }
   let projects = [];
   let reviewStatus = "pending";
+  let gbStatus = "pending";
   const blobUrls = [];
 
   const fmt = (iso) => new Date(iso.length === 10 ? iso + "T12:00:00" : iso)
@@ -48,6 +50,7 @@
     $("#admApp").hidden = false;
     projects = (await api("/api/admin/projects")).projects;
     showView("review");
+    countGuestbook();
   }
   $("#admLogin").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -65,7 +68,7 @@
   function showView(name) {
     document.querySelectorAll(".adm-tabs [data-view]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.view === name)));
     document.querySelectorAll(".adm-view").forEach((v) => { v.hidden = v.dataset.view !== name; });
-    ({ review: loadPosts, projects: loadProjects, compost: loadReadings })[name]();
+    ({ review: loadPosts, projects: loadProjects, compost: loadReadings, guestbook: loadGuestbook })[name]();
   }
   $(".adm-tabs").addEventListener("click", (e) => {
     const b = e.target.closest("[data-view]");
@@ -149,11 +152,11 @@
       loadPosts();
     } catch (err) { alert(err.message); btn.disabled = false; }
   });
-  document.querySelector(".adm-filter").addEventListener("click", (e) => {
+  document.querySelector("[data-view=review] .adm-filter").addEventListener("click", (e) => {
     const b = e.target.closest("[data-status]");
     if (!b) return;
     reviewStatus = b.dataset.status;
-    document.querySelectorAll(".adm-filter [data-status]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    e.currentTarget.querySelectorAll("[data-status]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
     loadPosts();
   });
 
@@ -228,6 +231,78 @@
     const btn = e.target.closest("[data-del]");
     if (!btn || !confirm("Delete this reading?")) return;
     try { await api(`/api/admin/compost/${btn.dataset.del}`, { method: "DELETE" }); loadReadings(); } catch (err) { alert(err.message); }
+  });
+
+  /* ---------- Guestbook ---------- */
+  const GB = window.YVY.guestbook || {};
+  const AVATARS = GB.avatars || ["chicken"];
+
+  async function countGuestbook() {
+    try {
+      const { entries } = await api("/api/admin/guestbook?status=pending");
+      $("#admGbCount").textContent = entries.length ? `(${entries.length})` : "";
+    } catch (e) { /* the badge just stays empty */ }
+  }
+
+  async function loadGuestbook() {
+    const box = $("#admGuestbook");
+    box.innerHTML = '<p class="society-empty">Loading…</p>';
+    try {
+      const { entries } = await api(`/api/admin/guestbook?status=${gbStatus}`);
+      if (gbStatus === "pending") $("#admGbCount").textContent = entries.length ? `(${entries.length})` : "";
+      else countGuestbook();
+      box.innerHTML = entries.length ? entries.map(gbEditor).join("") :
+        `<p class="society-empty">${gbStatus === "pending" ? "No new signatures. All caught up! 🎉" : "Nothing here."}</p>`;
+    } catch (err) { box.innerHTML = `<p class="sf-status is-error">${esc(err.message)}</p>`; }
+  }
+
+  function gbEditor(g) {
+    const roles = [...new Set([...(GB.roles || []), g.role].filter(Boolean))];
+    return `<article class="adm-card adm-post" data-id="${esc(g.id)}">
+      <p class="post-meta">📖 Guestbook · signed ${esc(fmt(g.createdAt))}</p>
+      <div class="adm-fields">
+        <label class="sf-row">Name <input name="name" value="${esc(g.name)}" maxlength="40"></label>
+        <label class="sf-row">Who
+          <select name="role"><option value="">(none)</option>${roles.map((r) => `<option${r === g.role ? " selected" : ""}>${esc(r)}</option>`).join("")}</select>
+        </label>
+        <label class="sf-row">Buddy
+          <select name="avatar">${AVATARS.map((a) => `<option${a === g.avatar ? " selected" : ""}>${esc(a)}</option>`).join("")}</select>
+        </label>
+        <label class="sf-row adm-wide">Message <textarea name="message" rows="3" maxlength="600">${esc(g.message)}</textarea></label>
+      </div>
+      <div class="adm-actions">
+        ${g.status !== "approved" ? '<button type="button" data-act="approved" class="adm-ok">✅ Approve</button>' : '<button type="button" data-act="save">💾 Save edits</button>'}
+        ${g.status !== "rejected" ? '<button type="button" data-act="rejected" class="adm-no">🙅 Reject</button>' : '<button type="button" data-act="pending">↩️ Back to waiting</button>'}
+        <button type="button" data-act="delete" class="adm-del">🗑️ Delete forever</button>
+      </div>
+    </article>`;
+  }
+
+  $("#admGuestbook").addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-act]");
+    if (!btn) return;
+    const card = btn.closest(".adm-post");
+    const act = btn.dataset.act;
+    if (act === "delete" && !confirm("Delete this guestbook entry forever? This can't be undone.")) return;
+    btn.disabled = true;
+    try {
+      if (act === "delete") {
+        await api(`/api/admin/guestbook/${card.dataset.id}`, { method: "DELETE" });
+      } else {
+        const f = (n) => card.querySelector(`[name=${n}]`).value;
+        const body = { name: f("name"), role: f("role"), avatar: f("avatar"), message: f("message") };
+        if (act !== "save") body.status = act;
+        await api(`/api/admin/guestbook/${card.dataset.id}`, { method: "PATCH", body: JSON.stringify(body) });
+      }
+      loadGuestbook();
+    } catch (err) { alert(err.message); btn.disabled = false; }
+  });
+  $("#admGbFilter").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-status]");
+    if (!b) return;
+    gbStatus = b.dataset.status;
+    e.currentTarget.querySelectorAll("[data-status]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    loadGuestbook();
   });
 
   if (password) signIn(password).catch(() => signOut());

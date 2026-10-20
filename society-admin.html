@@ -4,18 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="robots" content="noindex, nofollow">
-  <title>Garden Society Admin ★ YvyGrounds</title>
+  <title>YvyGrounds Admin ★ Garden Society &amp; Guestbook</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌻</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-20e">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-20e">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-20m">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-20m">
 </head>
 <body class="adm-body">
   <main class="adm">
     <p class="adm-back"><a href="./#society">« Back to YvyGrounds</a></p>
-    <h1 class="adm-title">🌻 Garden Society Admin</h1>
+    <h1 class="adm-title">🌻 YvyGrounds Admin</h1>
 
     <!-- Sign in -->
     <form class="adm-card adm-login" id="admLogin">
@@ -32,6 +32,7 @@
         <button type="button" role="tab" data-view="review" aria-selected="true">📬 Review <span id="admPendingCount"></span></button>
         <button type="button" role="tab" data-view="projects" aria-selected="false">🛠️ Projects</button>
         <button type="button" role="tab" data-view="compost" aria-selected="false">🌡️ Compost log</button>
+        <button type="button" role="tab" data-view="guestbook" aria-selected="false">📖 Guestbook <span id="admGbCount"></span></button>
         <button type="button" class="adm-signout" id="admSignOut">Sign out</button>
       </div>
 
@@ -77,10 +78,20 @@
         </form>
         <div id="admReadings"></div>
       </section>
+
+      <section class="adm-view" data-view="guestbook" hidden>
+        <div class="adm-filter" id="admGbFilter" role="group" aria-label="Show">
+          <button type="button" data-status="pending" aria-pressed="true">Waiting</button>
+          <button type="button" data-status="approved" aria-pressed="false">Approved</button>
+          <button type="button" data-status="rejected" aria-pressed="false">Rejected</button>
+        </div>
+        <p class="adm-hint">🛡️ Guestbook signers can be kids. Before approving, check there's no last name, school, address or other personal info. You can edit any entry first.</p>
+        <div id="admGuestbook"></div>
+      </section>
     </div>
   </main>
 
-  <script src="js/data.js?v=2026-10-20e"></script>
-  <script src="js/society-admin.js?v=2026-10-20e"></script>
+  <script src="js/data.js?v=2026-10-20m"></script>
+  <script src="js/society-admin.js?v=2026-10-20m"></script>
 </body>
 </html>

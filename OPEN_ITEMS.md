@@ -35,6 +35,15 @@ Live now at **http://yvygrounds.com/** (HTTPS certificate provisioning is pendin
 - [x] Photos of Yvy (17 in the album; 48 feelings stickers saved in images/yvy-feelings, not shown)
 - [ ] Photos for the Garden Society, garden students and pets (get a parent/guardian OK for photos of kids)
 
+## 2b. Portfolio (résumé, shop, guestbook)
+
+- [x] **Guestbook API deployed** (October 20, 2026): `0002_guestbook.sql` applied, Worker redeployed to api.yvygrounds.com.
+- [x] Venmo: @YBresciani (`js/data.js` → `shop.venmo`). Zelle uses the email address.
+- [x] References 2012–2026 added to `js/data.js` → `guestbook.kindWords` (initials + role, excerpts). Dates for R., V.P. and the newsletter shout-out are guesses.
+- [ ] Add the more recent letters and the teacher letters (same pattern; they sort by date automatically).
+- [ ] Tweak the RPG stats and fun bits in `js/data.js` → `resume.rpg` if you want different numbers.
+- [ ] Optional: GitHub/itch.io/LinkedIn links for the résumé page.
+
 ## 3. Double-checks
 
 - [ ] OK to list *Mike & Yvy's Love Adventure* on the public portal?
