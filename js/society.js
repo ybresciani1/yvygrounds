@@ -73,7 +73,13 @@
   async function showJournal(panel) {
     let posts = [];
     let apiDown = false;
-    try { posts = (await api("/api/feed?kind=journal&limit=30")).posts || []; } catch (e) { apiDown = true; }
+    // Written entries come from the API; try twice before giving up (a blip shouldn't hide them)
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try { posts = (await api("/api/feed?kind=journal&limit=30")).posts || []; apiDown = false; break; } catch (e) {
+        apiDown = true;
+        if (attempt === 0) await new Promise((r) => setTimeout(r, 1500));
+      }
+    }
     const items = [
       ...posts.map((p) => ({ date: String(p.createdAt), html: postCard(p) })),
       ...clubPhotos().map((p) => ({ date: String(p.date), html: clubCard(p) })),
@@ -86,7 +92,9 @@
     const PER_PAGE = 6;
     const pages = Math.ceil(items.length / PER_PAGE);
     let page = 0;
-    panel.innerHTML = `<div class="journal-book">
+    // If the written entries didn't load, say so (with a retry) instead of quietly showing only photos
+    panel.innerHTML = `${apiDown ? `<p class="journal-missing">📓 The written journal entries didn't load. <button type="button" class="journal-retry">Try again</button></p>` : ""}
+    <div class="journal-book">
       <div class="journal-stage">
         <button class="arrow arrow-back" type="button" data-step="-1" aria-label="Previous journal page"${pages < 2 ? " hidden" : ""}>BACK</button>
         <div class="society-posts journal-page"></div>
@@ -103,6 +111,8 @@
       page += Number(b.dataset.step);
       show();
     }));
+    const retry = $(".journal-retry", panel);
+    if (retry) retry.addEventListener("click", () => openTab("journal"));
     show();
   }
 

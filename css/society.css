@@ -205,3 +205,7 @@
   .journal-stage { display: grid; grid-template-columns: auto auto; justify-content: center; gap: 14px 40px; }
   .journal-page { grid-column: 1 / -1; grid-row: 1; }
 }
+
+/* Shown above the photos when the written journal entries couldn't load */
+.journal-missing { margin: 0 0 12px; padding: 8px 12px; background: #fff6d6; border: 2px dashed #e0c98e; border-radius: 12px; text-align: center; font: 600 14px var(--f-round); color: #6b4a1f; }
+.journal-retry { margin-left: 6px; padding: 3px 12px; border: 2px solid var(--ink); border-radius: 999px; background: var(--yellow); color: var(--ink); font: 700 13px var(--f-round); cursor: pointer; }
