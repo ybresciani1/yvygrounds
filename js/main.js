@@ -238,13 +238,6 @@
     const dayOfYear = Math.floor((now - new Date(now.getFullYear(), 0, 0)) / 864e5);
     $("#historyFact").textContent = D.history.length ? D.history[dayOfYear % D.history.length] : "";
 
-    let visits = 1;
-    try {
-      visits = (parseInt(localStorage.getItem("yvy-visits"), 10) || 0) + 1;
-      localStorage.setItem("yvy-visits", String(visits));
-    } catch (e) { /* storage blocked, just show 1 */ }
-    $("#odometer").innerHTML = String(Math.min(visits, 999999)).padStart(6, "0").split("").map((d) => `<span>${d}</span>`).join("");
-
     document.querySelectorAll("[data-px]").forEach((el) => {
       const big = el.closest(".battle-on") ? 8 : el.closest(".portal-icon") ? 3 : el.closest(".stamp") ? 4 : 3;
       el.innerHTML = px(el.dataset.px, big);

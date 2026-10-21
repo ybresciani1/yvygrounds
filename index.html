@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-20u">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-20u">
-  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-20u">
-  <link rel="stylesheet" href="css/extras.css?v=2026-10-20u">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-21d">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-21d">
+  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-21d">
+  <link rel="stylesheet" href="css/extras.css?v=2026-10-21d">
 </head>
 <body>
 
@@ -27,16 +27,16 @@
 
     <header class="masthead">
       <div class="ng-bar">
-        <a href="#about">About YvyGrounds</a> |
         <a href="#games">Games</a> |
-        <a href="#scrapbook">Scrapbook</a> |
-        <a href="#critters">Critters</a> |
-        <a href="#growing">Garden Almanac</a> |
-        <a href="#society">Garden Society</a> |
         <a href="#hall">Hall of Fame</a> |
+        <a href="#society">Garden Society</a> |
+        <a href="#growing">Garden Almanac</a> |
+        <a href="#critters">Critters</a> |
+        <a href="#scrapbook">Scrapbook</a> |
+        <a href="#about">Dear Visitor</a> |
         <a href="#resume">Résumé</a> |
-        <a href="#shop">Hire Me</a> |
         <a href="#guestbook">Guestbook</a> |
+        <a href="#shop">Hire Me</a> |
         <a href="#about" data-write>Write to Me</a>
         <span class="ng-bar-right">★ Everything, by Yvy. ★</span>
       </div>
@@ -56,15 +56,13 @@
       </div>
 
       <nav class="tabs" aria-label="Main">
+        <!-- One tab per chapter (the signposts between sections) -->
         <a href="#home">Home</a>
-        <a href="#games">Games</a>
-        <a href="#scrapbook">Scrapbook</a>
+        <a href="#play">Games</a>
+        <a href="#society">Garden</a>
         <a href="#critters">Critters</a>
-        <a href="#society">Society</a>
-        <a href="#resume">Résumé</a>
-        <a href="#shop">Hire Me</a>
-        <a href="#guestbook">Guestbook</a>
-        <a href="#about">About Yvy</a>
+        <a href="#meet">Meet Yvy</a>
+        <a href="#work">Hire Me</a>
       </nav>
     </header>
 
@@ -97,17 +95,6 @@
             <a class="pill pill-orange" href="#about" data-write>Write<br>to me</a>
             <a class="pill pill-green" href="#about"><small>About me</small>Yvy!</a>
           </div>
-
-          <!-- AIM-style away message (data.js → currently) -->
-          <div class="aim" id="aim" hidden>
-            <div class="aim-bar"><span class="aim-man" aria-hidden="true">🏃</span> Yvy's Away Message <span class="aim-x" aria-hidden="true">✕</span></div>
-            <div class="aim-body">
-              <p class="aim-away" id="aimAway"></p>
-              <p class="aim-label">Currently:</p>
-              <ul class="aim-lines" id="aimLines"></ul>
-              <p class="aim-updated" id="aimUpdated"></p>
-            </div>
-          </div>
         </div>
 
         <aside class="side-right">
@@ -118,12 +105,23 @@
               <p id="historyFact"></p>
             </div>
           </div>
-          <div class="counter">
-            <p>Your visits here:</p>
-            <div class="odometer" id="odometer"></div>
+          <!-- AIM-style away message (data.js → currently) -->
+          <div class="aim" id="aim" hidden>
+            <div class="aim-bar"><span class="aim-man" aria-hidden="true">🏃</span> Yvy's Away Message <span class="aim-x" aria-hidden="true">✕</span></div>
+            <div class="aim-body">
+              <p class="aim-away" id="aimAway"></p>
+              <p class="aim-label">Currently:</p>
+              <ul class="aim-lines" id="aimLines"></ul>
+              <p class="aim-updated" id="aimUpdated"></p>
+            </div>
           </div>
         </aside>
       </section>
+
+      <!-- ===== Chapter: Play &amp; Learn ===== -->
+      <div class="chapter-sign" id="play">
+        <p class="chapter-board"><span aria-hidden="true">🌱</span> Play &amp; Learn</p>
+      </div>
 
       <!-- ===== Game of the Week (iCarly) ===== -->
       <section id="featured" class="featured">
@@ -183,29 +181,16 @@
         </div>
       </section>
 
-      <!-- ===== Scrapbook (Amanda Please scrapbook) ===== -->
-      <section id="scrapbook" class="scrapbook">
-        <h2 class="scrap-title">My Yvy Scrapbook</h2>
-        <p class="scrap-sub">Remember to click on the arrows, please!</p>
-        <div class="scrap-tabs" id="scrapTabs" role="tablist" aria-label="Photo albums"></div>
-        <div class="scrap-stage">
-          <button class="arrow arrow-back" id="scrapPrev" type="button" aria-label="Previous photo">BACK</button>
-          <figure class="polaroid" id="polaroid">
-            <button class="polaroid-photo" id="polaroidPhoto" type="button" aria-label="Open photo larger"></button>
-            <figcaption id="polaroidCaption"></figcaption>
-          </figure>
-          <button class="arrow arrow-next" id="scrapNext" type="button" aria-label="Next photo">NEXT</button>
-        </div>
-        <p class="scrap-count" id="scrapCount"></p>
-      </section>
-
-      <!-- ===== Critters (Animal Crossing) ===== -->
-      <section id="critters" class="critters grass">
-        <h2 class="leaf-title"><span>Critter Corner</span></h2>
-        <h3 class="critter-group">The Flock 🐔</h3>
-        <div class="critter-cards" id="flockCards"></div>
-        <h3 class="critter-group">Pets 🐾</h3>
-        <div class="critter-cards" id="petCards"></div>
+      <!-- ===== Rabbit & Frog hall of fame (data.js → hallOfFame; students come from the API) ===== -->
+      <section id="hall" class="hall" hidden>
+        <h2 class="hall-title">Gardenbound Hall of Fame</h2>
+        <p class="hall-intro" id="hallIntro"></p>
+        <figure class="hall-cert" id="hallCert" hidden>
+          <a id="hallCertLink" target="_blank" rel="noopener"><img id="hallCertImg" loading="lazy" data-fallback="📜"></a>
+          <figcaption id="hallCertCaption"></figcaption>
+        </figure>
+        <div class="hall-grades" id="hallGrades"></div>
+        <div class="hall-photos" id="hallPhotos"></div>
       </section>
 
       <!-- ===== Garden Society: journal, projects, compost (js/society.js + society-api/) ===== -->
@@ -240,12 +225,45 @@
         <p class="society-cta"><button type="button" class="society-submit" id="societySubmitBtn">✏️ Submit an entry</button></p>
       </section>
 
-      <!-- ===== Rabbit & Frog hall of fame (data.js → hallOfFame; students come from the API) ===== -->
-      <section id="hall" class="hall" hidden>
-        <h2 class="hall-title"><span aria-hidden="true">🐰</span> Gardenbound Hall of Fame <span aria-hidden="true">🐸</span></h2>
-        <p class="hall-intro" id="hallIntro"></p>
-        <div class="hall-grades" id="hallGrades"></div>
-        <div class="hall-photos" id="hallPhotos"></div>
+      <!-- ===== Critters (Animal Crossing) ===== -->
+      <section id="critters" class="critters grass">
+        <h2 class="leaf-title"><span>Critter Corner</span></h2>
+        <h3 class="critter-group">The Flock 🐔</h3>
+        <div class="critter-cards" id="flockCards"></div>
+        <h3 class="critter-group">Pets 🐾</h3>
+        <div class="critter-cards" id="petCards"></div>
+      </section>
+
+      <!-- ===== Scrapbook (Amanda Please scrapbook) ===== -->
+      <section id="scrapbook" class="scrapbook">
+        <h2 class="scrap-title">My Yvy Scrapbook</h2>
+        <p class="scrap-sub">Remember to click on the arrows, please!</p>
+        <div class="scrap-tabs" id="scrapTabs" role="tablist" aria-label="Photo albums"></div>
+        <div class="scrap-stage">
+          <button class="arrow arrow-back" id="scrapPrev" type="button" aria-label="Previous photo">BACK</button>
+          <figure class="polaroid" id="polaroid">
+            <button class="polaroid-photo" id="polaroidPhoto" type="button" aria-label="Open photo larger"></button>
+            <figcaption id="polaroidCaption"></figcaption>
+          </figure>
+          <button class="arrow arrow-next" id="scrapNext" type="button" aria-label="Next photo">NEXT</button>
+        </div>
+        <p class="scrap-count" id="scrapCount"></p>
+      </section>
+
+      <!-- ===== Chapter: Meet Ms. Yvy ===== -->
+      <div class="chapter-sign" id="meet">
+        <p class="chapter-board"><span aria-hidden="true">💛</span> Meet Ms. Yvy</p>
+      </div>
+
+      <!-- ===== About (Animal Crossing letter) ===== -->
+      <section id="about" class="about">
+        <div class="letter">
+          <div class="stamp" aria-hidden="true"><span data-px="flower"></span></div>
+          <p class="letter-to">Dear Visitor,</p>
+          <div id="aboutText" class="letter-body"></div>
+          <p class="letter-from">Love,<br>Yvy ♥</p>
+          <div class="letter-links" id="letterLinks"></div>
+        </div>
       </section>
 
       <!-- ===== Résumé as an RPG character sheet (data.js → resume, built by js/portfolio.js) ===== -->
@@ -258,6 +276,26 @@
           <a class="rpg-btn rpg-btn-hire" href="#shop">💼 Hire me!</a>
         </p>
       </section>
+
+      <!-- ===== Guestbook (data.js → guestbook; signed entries come from the API) ===== -->
+      <section id="guestbook" class="guestbook">
+        <h2 class="gb-title">✎ Sign My Guestbook! ✎</h2>
+        <p class="gb-intro" id="gbIntro"></p>
+        <p class="gb-cta"><button type="button" class="society-submit" id="gbSignBtn">✏️ Sign the guestbook</button></p>
+        <!-- One entry at a time, flipped with the arrows (like the scrapbook) -->
+        <div class="gb-stage">
+          <button class="arrow arrow-back" id="gbPrev" type="button" aria-label="Previous guestbook entry">BACK</button>
+          <div class="gb-page" id="gbEntries" aria-live="polite"></div>
+          <button class="arrow arrow-next" id="gbNext" type="button" aria-label="Next guestbook entry">NEXT</button>
+        </div>
+        <p class="scrap-count gb-count" id="gbCount"></p>
+        <div id="gbNote"></div>
+      </section>
+
+      <!-- ===== Chapter: Work With Me ===== -->
+      <div class="chapter-sign" id="work">
+        <p class="chapter-board"><span aria-hidden="true">🛒</span> Work With Me</p>
+      </div>
 
       <!-- ===== Hire me / commission me: shop counter (data.js → shop) ===== -->
       <section id="shop" class="shop">
@@ -276,39 +314,6 @@
         <div class="shop-pay" id="shopPay"></div>
       </section>
 
-      <!-- ===== Guestbook (data.js → guestbook; signed entries come from the API) ===== -->
-      <section id="guestbook" class="guestbook">
-        <h2 class="gb-title">✎ Sign My Guestbook! ✎</h2>
-        <p class="gb-intro" id="gbIntro"></p>
-        <p class="gb-cta"><button type="button" class="society-submit" id="gbSignBtn">✏️ Sign the guestbook</button></p>
-        <!-- One entry at a time, flipped with the arrows (like the scrapbook) -->
-        <div class="gb-stage">
-          <button class="arrow arrow-back" id="gbPrev" type="button" aria-label="Previous guestbook entry">BACK</button>
-          <div class="gb-page" id="gbEntries" aria-live="polite"></div>
-          <button class="arrow arrow-next" id="gbNext" type="button" aria-label="Next guestbook entry">NEXT</button>
-        </div>
-        <p class="scrap-count gb-count" id="gbCount"></p>
-        <div id="gbNote"></div>
-      </section>
-
-      <!-- ===== About (Animal Crossing letter) ===== -->
-      <section id="about" class="about">
-        <div class="letter">
-          <div class="stamp" aria-hidden="true"><span data-px="flower"></span></div>
-          <p class="letter-to">Dear Visitor,</p>
-          <div id="aboutText" class="letter-body"></div>
-          <p class="letter-from">Love,<br>Yvy ♥</p>
-          <div class="letter-links" id="letterLinks"></div>
-        </div>
-        <div class="badges" aria-label="Site badges">
-          <span class="badge badge-a">MADE WITH ♥</span>
-          <span class="badge badge-b">🐔 CHICKEN APPROVED</span>
-          <span class="badge badge-c">BEST VIEWED 800×600</span>
-          <span class="badge badge-d">🌱 GROWN NOT BOUGHT</span>
-          <span class="badge badge-e">NO WEEDS ALLOWED</span>
-        </div>
-      </section>
-
     </main>
   </div>
 
@@ -321,6 +326,13 @@
       <div class="tracks" aria-hidden="true"></div>
     </div>
     <div class="construction" aria-hidden="true"><span>🚧 ALWAYS UNDER CONSTRUCTION 🚧</span></div>
+    <div class="badges footer-badges" aria-label="Site badges">
+      <span class="badge badge-a">MADE WITH ♥</span>
+      <span class="badge badge-b">🐔 CHICKEN APPROVED</span>
+      <span class="badge badge-c">BEST VIEWED 800×600</span>
+      <span class="badge badge-d">🌱 GROWN NOT BOUGHT</span>
+      <span class="badge badge-e">NO WEEDS ALLOWED</span>
+    </div>
     <p class="copyright">© <span id="year"></span> YvyGrounds · made with ♥, dirt &amp; pixels by <b>ybresciani</b></p>
   </footer>
 
@@ -487,12 +499,13 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=2026-10-20u"></script>
-  <script src="js/pixels.js?v=2026-10-20u"></script>
-  <script src="js/veg-icons.js?v=2026-10-20u"></script>
-  <script src="js/main.js?v=2026-10-20u"></script>
-  <script src="js/society.js?v=2026-10-20u"></script>
-  <script src="js/portfolio.js?v=2026-10-20u"></script>
-  <script src="js/extras.js?v=2026-10-20u"></script>
+  <script src="js/data.js?v=2026-10-21d"></script>
+  <script src="js/pixels.js?v=2026-10-21d"></script>
+  <script src="js/veg-icons.js?v=2026-10-21d"></script>
+  <script src="js/main.js?v=2026-10-21d"></script>
+  <script src="js/society.js?v=2026-10-21d"></script>
+  <script src="js/portfolio.js?v=2026-10-21d"></script>
+  <script src="js/extras.js?v=2026-10-21d"></script>
+  <script src="js/pixel-emoji.js?v=2026-10-21d"></script>
 </body>
 </html>

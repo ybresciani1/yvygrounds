@@ -28,6 +28,10 @@ window.YVY = {
   // "Attention Players!" message on the welcome card.
   announcement: "New gardening games and silly games sprout here every season. Check the Yvy Portal below!",
 
+  // Pixel emoji: every emoji on the page gets a blocky pixel-art look (js/pixel-emoji.js),
+  // except in the Garden Almanac. false = normal emoji everywhere.
+  pixelEmoji: true,
+
   // "Currently…" AIM-style away message on the welcome card. Update whenever!
   // Each line: [label, emoji, text]. Remove a line to hide it. updated: "YYYY-MM-DD".
   currently: {
@@ -52,8 +56,14 @@ window.YVY = {
   // only with a parent's OK) on society-admin.html → Hall of Fame. First name + last initial only.
   hallOfFame: {
     game: "Rabbit & Frog: Gardenbound",
-    intro: "These garden heroes finished Rabbit & Frog: Gardenbound and earned their very own 3D Rabbit & Frog sculpture and a garden starter kit! 🐰🐸🌱",
-    empty: "The first Gardenbound graduates are on their way. Could you be next? 🌱",
+    intro: "These garden heroes finished Rabbit & Frog: Gardenbound and earned their very own 3D Rabbit & Frog sculpture and a garden starter kit!",
+    empty: "The first Gardenbound graduates are on their way. Could you be next?",
+    // The certificate players earn, shown under the intro (click opens it full size)
+    certificate: {
+      src: "images/hall/certificate-sample.jpg",
+      alt: "Sample Rabbit & Frog: Gardenbound Certificate of Completion for “Silly Goose”, with six island badges and the line “Present this certificate to Miss Yvy to earn a reward!”",
+      caption: "Finish the game, print your certificate, and bring it to Miss Yvy!",
+    },
   },
 
   // Seasonal decorations: things gently falling in the background, plus a ticker line.

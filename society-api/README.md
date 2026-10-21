@@ -11,7 +11,8 @@ hash of the address, not the address), and a cap of 200 waiting entries.
 
 Also: the "You are visitor #…" counter (`/api/visit`, once per address every 12 hours), arcade high
 scores (`/api/scores`, 3-letter initials, rude ones blocked, impossible scores refused per game in
-`GAMES`), and the Rabbit & Frog hall of fame (`/api/hall`; Yvy adds students and photos on the admin
+`GAMES`), the Critter Corner pet counter (`/api/pets`, batched, 600 pets per visitor an hour; critters listed in
+`CRITTERS`), and the Rabbit & Frog hall of fame (`/api/hall`; Yvy adds students and photos on the admin
 page, photos stored in KV under `hall/`).
 
 - **Worker**: `src/index.js` (routes listed at the top of the file)

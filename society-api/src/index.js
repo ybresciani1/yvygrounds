@@ -14,6 +14,8 @@
  *   POST /api/scores     { game, initials, score }                          add a high score (3-letter initials)
  *   GET  /api/hall                                                          Rabbit & Frog hall of fame
  *   GET  /api/hall-photo/<key>                                              a hall of fame photo
+ *   GET  /api/pets                                                          community pet counts per critter
+ *   POST /api/pets       { pets: { peaches: 3, riot: 1 } }                  add pets (sent in small batches)
  *
  * Admin (header "Authorization: Bearer <ADMIN_PASSWORD>"):
  *   GET    /api/admin/posts?status=pending|approved|rejected
@@ -58,6 +60,11 @@ const BAD_INITIALS = new Set(["ASS", "FUK", "FUC", "FCK", "FUQ", "SEX", "CUM", "
   "JEW", "NAZ", "HOE", "SUK", "SUC", "PUS", "VAG", "XXX", "KYS", "DMN", "SHT", "SHI", "POS", "PEN", "GOD", "HIV", "LSD", "THC", "ANL", "ANS",
   "BCH", "BJS", "COK", "CUK", "DIE", "FAP", "GOK", "JIZ", "KIL", "NUT", "PRN", "RAP", "SUX", "TWT", "WAP", "WTH"]);
 const GRADES = ["TK", "K", "1", "2", "3", "4", "5", "6", "7", "8"];
+// Critter Corner pet counter. Keys are the critter's name in lowercase letters (see js/extras.js → petKey).
+// Add a new critter here when it joins Critter Corner in data.js.
+const CRITTERS = ["riot", "beyonce", "snow", "peaches", "bojjii", "lychee", "penny"];
+const PETS_PER_BATCH = 60;      // one batch covers a few seconds of clicking
+const PETS_PER_HOUR = 600;      // per visitor
 
 export default {
   async fetch(request, env) {
@@ -116,6 +123,8 @@ async function route(request, env) {
   if (m === "POST" && path === "/api/scores") return addScore(request, env);
   if (m === "GET" && path === "/api/hall") return getHall(env);
   if (m === "GET" && path.startsWith("/api/hall-photo/")) return getHallPhoto(env, path.slice("/api/hall-photo/".length));
+  if (m === "GET" && path === "/api/pets") return getPets(env);
+  if (m === "POST" && path === "/api/pets") return addPets(request, env);
 
   if (path.startsWith("/api/admin/")) {
     await requireAdmin(request, env);
@@ -383,6 +392,48 @@ async function adminListScores(url, env) {
 async function adminDeleteScore(env, id) {
   await env.DB.prepare("DELETE FROM scores WHERE id = ?").bind(id).run();
   return json({ ok: true });
+}
+
+/* ---------- Critter Corner pet counter ---------- */
+
+async function petCounts(env) {
+  const { results } = await env.DB.prepare("SELECT key, count FROM pets").all();
+  const counts = Object.fromEntries(CRITTERS.map((k) => [k, 0]));
+  results.forEach((r) => { if (r.key in counts) counts[r.key] = r.count; });
+  return { counts, total: Object.values(counts).reduce((a, b) => a + b, 0) };
+}
+
+async function getPets(env) {
+  return json(await petCounts(env));
+}
+
+// The site sends a batch like { pets: { peaches: 3, riot: 1 } } every few seconds of petting.
+// Each visitor can add up to PETS_PER_HOUR an hour; anything over that is quietly dropped.
+async function addPets(request, env) {
+  const data = await readJson(request);
+  const batch = data && typeof data.pets === "object" && data.pets ? data.pets : {};
+  const adds = [];
+  let n = 0;
+  for (const key of CRITTERS) {
+    const k = Math.floor(Number(batch[key]) || 0);
+    if (k > 0) { adds.push([key, k]); n += k; }
+  }
+  if (!n) throw new HttpError(400, "No pets to add.");
+  if (n > PETS_PER_BATCH) throw new HttpError(400, "That's a lot of pets at once!");
+
+  const who = await visitorHash(request, "pets");
+  const hourAgo = Date.now() - 60 * 60 * 1000;
+  const { used } = await env.DB.prepare("SELECT COALESCE(SUM(n), 0) AS used FROM pet_hits WHERE who = ? AND at > ?").bind(who, hourAgo).first();
+  if (used + n <= PETS_PER_HOUR) {
+    await env.DB.batch([
+      ...adds.map(([key, k]) => env.DB.prepare(
+        "INSERT INTO pets (key, count) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET count = count + excluded.count"
+      ).bind(key, k)),
+      env.DB.prepare("INSERT INTO pet_hits (who, n, at) VALUES (?, ?, ?)").bind(who, n, Date.now()),
+      env.DB.prepare("DELETE FROM pet_hits WHERE at < ?").bind(hourAgo),
+    ]);
+  }
+  return json(await petCounts(env));
 }
 
 /* ---------- Rabbit & Frog hall of fame ---------- */

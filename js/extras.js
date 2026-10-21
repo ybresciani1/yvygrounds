@@ -88,8 +88,17 @@
     };
     const title = $("#critters .leaf-title");
     if (!title) return;
-    title.insertAdjacentHTML("afterend", '<p class="pet-total" id="petTotal" aria-live="polite"></p>');
+    title.insertAdjacentHTML("afterend", `
+      <details class="pet-board" id="petBoard" hidden>
+        <summary>
+          <span class="pet-board-title">🏆 Most Petted</span>
+          <span class="pet-board-total" id="petCommunity" aria-live="polite"></span>
+        </summary>
+        <ol class="pet-board-list" id="petBoardList"></ol>
+      </details>
+      <p class="pet-total" id="petTotal" aria-live="polite"></p>`);
     show();
+    const community = buildPetBoard();
 
     document.addEventListener("click", (e) => {
       const btn = e.target.closest("button[data-pet]");
@@ -99,9 +108,104 @@
       pets.counts[name] = (pets.counts[name] || 0) + 1;
       store.set(KEY, JSON.stringify(pets));
       show();
+      community.add(name);
       chirp(btn.dataset.sound);
       heartBurst(btn);
     });
+  }
+
+  // Community "Most Petted" board: everyone's pets, counted by the Worker (society-api → /api/pets).
+  // Clicks are sent in small batches a couple of seconds after the petting stops.
+  // If the API can't be reached, the board stays hidden and petting still works.
+  function buildPetBoard() {
+    const petKey = (name) => String(name).toLowerCase().replace(/[^a-z]/g, "");
+    const critters = [...(D.flock || []), ...(D.pets || [])].map((c) => ({ ...c, key: petKey(c.name) }));
+    let counts = null;              // from the API
+    let pending = {};               // pets not sent yet
+    let sending = false;
+    let timer = null;
+    const medals = ["🥇", "🥈", "🥉"];
+
+    const render = () => {
+      if (!counts) return;
+      const merged = critters.map((c) => ({ ...c, n: (counts[c.key] || 0) + (pending[c.key] || 0) }))
+        .sort((a, b) => b.n - a.n);
+      const total = merged.reduce((a, c) => a + c.n, 0);
+      $("#petCommunity").textContent = `♥ ${total.toLocaleString("en-US")} pet${total === 1 ? "" : "s"} from the whole community`;
+      const list = $("#petBoardList");
+      list.innerHTML = "";
+      merged.forEach((c, i) => {
+        const li = document.createElement("li");
+        li.innerHTML = '<span class="pb-rank"></span><span class="pb-photo"></span><span class="pb-name"></span><span class="pb-count"></span>';
+        li.children[0].textContent = c.n ? medals[i] || `${i + 1}.` : "·";
+        if (c.photo) {
+          const img = document.createElement("img");
+          img.src = c.photo;
+          img.alt = "";
+          img.loading = "lazy";
+          img.dataset.fallback = "🐾";
+          if (c.focus) img.style.objectPosition = c.focus.includes("%") ? c.focus : "";
+          li.children[1].appendChild(img);
+        }
+        li.children[2].textContent = c.name;
+        li.children[3].textContent = `♥ ${c.n.toLocaleString("en-US")}`;
+        list.appendChild(li);
+      });
+      $("#petBoard").hidden = false;
+    };
+
+    const load = async () => {
+      if (!API) return;
+      try {
+        const res = await fetch(`${API}/api/pets`);
+        if (!res.ok) return;
+        counts = (await res.json()).counts || {};
+        render();
+      } catch (e) { /* board stays hidden */ }
+    };
+
+    // text/plain keeps it a "simple" request (no CORS preflight), and keepalive lets it finish as the page closes
+    const flush = async () => {
+      clearTimeout(timer);
+      if (sending || !API || !Object.keys(pending).length) return;
+      const batch = pending;
+      pending = {};
+      sending = true;
+      try {
+        const res = await fetch(`${API}/api/pets`, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=UTF-8" },
+          body: JSON.stringify({ pets: batch }),
+          keepalive: true,
+        });
+        if (res.ok) { counts = (await res.json()).counts || counts; }
+      } catch (e) { /* lost this batch; no big deal */ }
+      sending = false;
+      render();
+      if (Object.keys(pending).length) timer = setTimeout(flush, 2500);
+    };
+
+    const add = (name) => {
+      const key = petKey(name);
+      pending[key] = (pending[key] || 0) + 1;
+      // The server takes up to 60 pets a batch, so send early during a petting frenzy
+      if (Object.values(pending).reduce((a, b) => a + b, 0) >= 50) { flush(); return; }
+      render();
+      clearTimeout(timer);
+      timer = setTimeout(flush, 2500);
+    };
+
+    document.addEventListener("visibilitychange", () => { if (document.hidden) flush(); });
+    window.addEventListener("pagehide", flush);
+    // Load when Critter Corner comes near the screen, then refresh every minute while the page is open
+    const io = new IntersectionObserver((entries) => {
+      if (!entries.some((x) => x.isIntersecting)) return;
+      io.disconnect();
+      load();
+      setInterval(() => { if (!document.hidden && !Object.keys(pending).length) load(); }, 60000);
+    }, { rootMargin: "300px" });
+    io.observe($("#critters"));
+    return { add };
   }
 
   function heartBurst(el) {
@@ -246,6 +350,13 @@
     const ORDER = ["TK", "K", "1", "2", "3", "4", "5", "6", "7", "8"];
     const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
     $("#hallIntro").textContent = H.intro || "";
+    if (H.certificate && H.certificate.src) {
+      $("#hallCertImg").src = H.certificate.src;
+      $("#hallCertImg").alt = H.certificate.alt || "Gardenbound certificate";
+      $("#hallCertLink").href = H.certificate.src;
+      $("#hallCertCaption").textContent = H.certificate.caption || "";
+      $("#hallCert").hidden = false;
+    }
     fetch(`${API}/api/hall`).then((r) => (r.ok ? r.json() : Promise.reject())).then(({ students }) => {
       students = students || [];
       if (!students.length) {

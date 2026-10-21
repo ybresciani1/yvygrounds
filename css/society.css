@@ -1,7 +1,5 @@
 /* ---------- Garden Society (js/society.js) ---------- */
 
-/* 7th tab in the main nav */
-.tabs a:nth-child(7) { background: linear-gradient(#ffd9b3, #ffa45c 55%, #f07d2a); -webkit-text-stroke-color: #6b2d00; text-shadow: 0 2px 0 #6b2d00; }
 
 .society {
   background:

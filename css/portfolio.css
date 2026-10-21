@@ -1,15 +1,5 @@
 /* ---------- Portfolio: RPG résumé, shop counter, guestbook (js/portfolio.js) ---------- */
 
-/* Main nav tabs 6–9 (Résumé, Hire Me, Guestbook, About Yvy) */
-.tabs a:nth-child(6) { background: linear-gradient(#cfd4ff, #7f8cff 55%, #5560e0); -webkit-text-stroke-color: #1d2270; text-shadow: 0 2px 0 #1d2270; }
-.tabs a:nth-child(7) { background: linear-gradient(#ffd9b3, #ffa45c 55%, #f07d2a); -webkit-text-stroke-color: #6b2d00; text-shadow: 0 2px 0 #6b2d00; }
-.tabs a:nth-child(8) { background: linear-gradient(#ffd0d0, #ff7a8a 55%, #e8506a); -webkit-text-stroke-color: #6e1426; text-shadow: 0 2px 0 #6e1426; }
-.tabs a:nth-child(9) { background: linear-gradient(#fff2a6, var(--yellow) 55%, #f0b400); -webkit-text-stroke-color: #6b4a00; text-shadow: 0 2px 0 #6b4a00; }
-/* Nine tabs: a bit smaller so they fit in one row (phones scroll the bar sideways) */
-.tabs a { font-size: 15px; padding: 10px 10px 8px; letter-spacing: .5px; }
-@media (max-width: 1000px) {
-  .tabs a { font-size: 13px; padding: 8px 8px 6px; letter-spacing: 0; }
-}
 
 /* Shared chunky buttons */
 .rpg-btn {
