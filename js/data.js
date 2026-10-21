@@ -563,8 +563,40 @@ window.YVY = {
       { src: "images/me/one-piece.jpg",        caption: "Straw Hat crew, reporting for treasure duty 🍊🏴‍☠️", focus: "35% 35%" },
       { src: "images/me/witch.jpg",            caption: "Garden witch mode: weeds, be gone 🌿✨", focus: "50% 25%" },
     ],
-    club:     [],   // images/club/      Garden Society
-    students: [],   // images/students/  garden students
+    club: [         // images/club/      Garden Society (families gave the OK to post these)
+      { src: "images/club/coop-check-in.jpg",  caption: "Chicken check-in at the coop 🐔", focus: "50% 55%" },
+      { src: "images/club/chicken-arch.jpg",   caption: "Proud chicken holder under the garden arch", focus: "50% 35%" },
+      { src: "images/club/chicken-cuddle.jpg", caption: "Chicken cuddles (the chicken approves) 🐔", focus: "50% 40%" },
+      { src: "images/club/chicken-huddle.jpg", caption: "Chicken huddle! 🐔🐔", focus: "50% 45%" },
+      { src: "images/club/painting-rocks.jpg", caption: "Painting garden rocks, one careful stroke at a time 🎨", focus: "45% 35%" },
+      { src: "images/club/rock-show.jpg",      caption: "Rock show! Fresh-painted and ready to flex 💪", focus: "50% 40%" },
+      { src: "images/club/craft-time.jpg",     caption: "Craft time at the picnic tables", focus: "40% 50%" },
+      { src: "images/club/markers-out.jpg",    caption: "Markers out, garden art in progress 🖍️", focus: "55% 45%" },
+      { src: "images/club/picnic-tables.jpg",  caption: "Busy hands, busy tables", focus: "50% 55%" },
+      { src: "images/club/green-onions.jpg",   caption: "Washing fresh-picked green onions 🧅", focus: "55% 55%" },
+    ],
+    students: [     // images/students/  garden students (families gave the OK to post these)
+      { src: "images/students/sunflowers.jpg",        caption: "Sunflowers reaching for the sky 🌻", focus: "50% 25%" },
+      { src: "images/students/worm-hello.jpg",        caption: "Hello, worm! Compost crew member of the day 🪱", focus: "45% 55%" },
+      { src: "images/students/bug-buddies.jpg",       caption: "Pill bug meet and greet 🐞", focus: "40% 60%" },
+      { src: "images/students/garden-trex.jpg",       caption: "A wild T. rex is guarding the garden beds 🦖", focus: "60% 50%" },
+      { src: "images/students/magnifying-glass.jpg",  caption: "Magnifying glass mission: tiny things up close 🔍", focus: "50% 50%" },
+      { src: "images/students/soil-hands.jpg",        caption: "Hands full of happy soil", focus: "50% 60%" },
+      { src: "images/students/sifting-seeds.jpg",     caption: "Sifting seeds, one tiny speck at a time", focus: "50% 40%" },
+      { src: "images/students/bee-hotel-flowers.jpg", caption: "Nasturtiums decorating the bee hotel 🐝", focus: "40% 50%" },
+      { src: "images/students/bee-hotel-jar.jpg",     caption: "Homemade bee hotel, now accepting tenants 🐝", focus: "50% 40%" },
+      { src: "images/students/yvy-zucchini.jpg",      caption: "Me vs. a zucchini that got WAY too big 🥒", focus: "50% 30%" },
+      { src: "images/students/painted-rocks.jpg",     caption: "A whole table of painted garden rocks 🎨", focus: "50% 50%" },
+      { src: "images/students/garden-trail.jpg",      caption: "Garden explorers hitting the trail", focus: "50% 60%" },
+      { src: "images/students/soil-huddle.jpg",       caption: "Everybody wants a look at the soil 👀", focus: "50% 40%" },
+      { src: "images/students/watering-duty.jpg",     caption: "Watering duty with the big green can 💧", focus: "50% 45%" },
+      { src: "images/students/raised-bed.jpg",        caption: "Raised bed bursting with greens 🥬", focus: "50% 60%" },
+      { src: "images/students/passion-vine.jpg",      caption: "Passion vine climbing the garden fence", focus: "50% 40%" },
+      { src: "images/students/nature-museum.jpg",     caption: "Nature museum day: skulls, bugs and treasures 💀🦋", focus: "50% 50%" },
+      { src: "images/students/whiteboard-doodles.jpg", caption: "Whiteboard doodles: seeds and one very leggy bug 🕷️", focus: "50% 50%" },
+      { src: "images/students/outdoor-classroom.jpg", caption: "Outdoor classroom, all set for seed day", focus: "50% 55%" },
+      { src: "images/students/seed-lab.jpg",          caption: "Seed lab stations, ready to go 🌱", focus: "50% 50%" },
+    ],
     pets: [         // images/pets/
       // Peaches (fox-faced Pomeranian)
       { src: "images/pets/peaches-hehe-bite.jpg",       caption: "Hehe, bite playing. Tiny teeth, big love 😬" },
@@ -754,6 +786,19 @@ window.YVY = {
         label: "UC Master Gardeners: Composting basics",
         url: "https://ucanr.edu/site/uc-master-gardeners-san-luis-obispo-county/composting-basics",
       },
+      // Yvy's compost photos (images/compost/), a slideshow in the Compost tab before member posts.
+      // date: "YYYY-MM-DD" shows on the photo; list them oldest first.
+      // Families gave the OK to post these.
+      photos: [
+        { date: "2026-04-23", src: "images/compost/sorting-scraps.jpg",    caption: "Sorting scraps: greens vs. browns 🥬🍂", focus: "45% 50%" },
+        { date: "2026-04-30", src: "images/compost/scrap-bucket.jpg",      caption: "Feeding the scrap bucket (it's always hungry)", focus: "50% 50%" },
+        { date: "2026-05-07", src: "images/compost/turning-the-pile.jpg",  caption: "Turning the big pile. Arm day, compost edition 💪", focus: "35% 50%" },
+        { date: "2026-05-07", src: "images/compost/compost-crew.jpg",      caption: "The compost crew, shovels ready", focus: "60% 50%" },
+        { date: "2026-05-21", src: "images/compost/fresh-greens.jpg",      caption: "Fresh greens on top of the pile 🌿", focus: "60% 40%" },
+        { date: "2026-05-21", src: "images/compost/pitchfork-power.jpg",   caption: "Pitchfork power: chop it, mix it, fluff it", focus: "55% 50%" },
+        { date: "2026-08-27", src: "images/compost/compost-to-garden.jpg", caption: "Compost goes in, plants grow up 🌱", focus: "50% 50%" },
+        { date: "2026-09-03", src: "images/compost/chicken-helpers.jpg",   caption: "Chickens on compost duty, with an audience 🐔", focus: "50% 55%" },
+      ],
     },
   },
 

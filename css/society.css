@@ -107,6 +107,11 @@
 .compost-guide { font: 600 12px/1.5 var(--f-round); color: #5a4a6e; margin: 10px 2px; }
 .compost-guide a { color: var(--purple); }
 .compost-photos-title { margin: 16px 0 8px; font: 700 18px var(--f-round); }
+/* Compost slideshow: reuses the scrapbook's .scrap-stage / .polaroid / .arrow styles */
+.compost-slides { text-align: center; margin: 4px 0 18px; }
+.compost-slides .polaroid { margin: 14px 0 0; text-align: left; }
+.compost-slides .polaroid-photo { display: block; }
+.polaroid-date { display: block; font: 9px var(--f-pixel); color: var(--purple); margin-bottom: 6px; }
 
 /* Submit */
 .society-cta { margin: 16px 0 0; }

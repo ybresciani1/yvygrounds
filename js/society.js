@@ -87,8 +87,57 @@
     return { icon: "🧊", label: "Cool. Turn it or add greens", cls: "cool" };
   }
 
+  // Yvy's own compost photos (data.js → society.compost.photos), shown as a scrapbook-style
+  // slideshow (same polaroid + BACK/NEXT arrows as the photo scrapbook). They live on the
+  // site, so they show even when the notebook API is napping.
+  const compostPhotos = () => (C.photos || []).filter((p) => p && p.src);
+  function compostGallery() {
+    if (!compostPhotos().length) return "";
+    return `<div class="compost-slides">
+      <div class="scrap-stage">
+        <button class="arrow arrow-back" type="button" data-step="-1" aria-label="Previous compost photo">BACK</button>
+        <figure class="polaroid">
+          <a class="polaroid-photo" target="_blank" rel="noopener" aria-label="Open photo larger"></a>
+          <figcaption></figcaption>
+        </figure>
+        <button class="arrow arrow-next" type="button" data-step="1" aria-label="Next compost photo">NEXT</button>
+      </div>
+      <p class="scrap-count" aria-live="polite"></p>
+    </div>`;
+  }
+  function wireCompostSlides(panel) {
+    const box = $(".compost-slides", panel);
+    const photos = compostPhotos();
+    if (!box || !photos.length) return;
+    let i = 0;
+    const show = () => {
+      i = (i + photos.length) % photos.length;
+      const p = photos[i];
+      const link = $(".polaroid-photo", box);
+      link.href = p.src;
+      link.innerHTML = `<img src="${esc(p.src)}" alt="${esc(p.caption || "Compost photo")}"${p.focus ? ` style="object-position:${esc(p.focus)}"` : ""}>`;
+      $("figcaption", box).innerHTML =
+        (p.date ? `<span class="polaroid-date">${esc(fmtDate(p.date))}</span>` : "") + esc(p.caption || "");
+      $(".scrap-count", box).textContent = `${i + 1} / ${photos.length}`;
+    };
+    box.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-step]");
+      if (btn) { i += Number(btn.dataset.step); show(); }
+    });
+    show();
+  }
+
   async function showCompost(panel) {
-    const [{ logs }, { posts }] = await Promise.all([api("/api/compost"), api("/api/feed?kind=compost&limit=12")]);
+    let logs, posts;
+    try {
+      [{ logs }, { posts }] = await Promise.all([api("/api/compost"), api("/api/feed?kind=compost&limit=12")]);
+    } catch (e) {
+      const gallery = compostGallery();
+      if (!gallery) throw e;
+      panel.innerHTML = `${napping}<h4 class="compost-photos-title">Compost photos</h4>${gallery}`;
+      wireCompostSlides(panel);
+      return;
+    }
     // Latest reading for each pile
     const latestByPile = [...new Map(logs.map((l) => [l.pile, l])).values()];
     panel.innerHTML = `
@@ -112,8 +161,10 @@
         and above <b>${C.tooHot}°F</b> the helpful microbes start dying.
         Source: <a href="${esc(C.source.url)}" target="_blank" rel="noopener">${esc(C.source.label)}</a>.</p>
       <h4 class="compost-photos-title">Compost photos</h4>
-      ${posts.length ? `<div class="society-posts">${posts.map((p) => postCard(p)).join("")}</div>` : '<p class="society-empty">No compost photos yet. Submit one! 🪱</p>'}`;
+      ${compostGallery()}
+      ${posts.length ? `<div class="society-posts">${posts.map((p) => postCard(p)).join("")}</div>` : (C.photos || []).length ? "" : '<p class="society-empty">No compost photos yet. Submit one! 🪱</p>'}`;
     drawCompostChart($("#compostChart", panel), logs);
+    wireCompostSlides(panel);
   }
 
   // Line chart: one line per pile, hot-zone band, crosshair tooltip (mouse + keyboard)
