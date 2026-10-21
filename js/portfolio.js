@@ -85,8 +85,8 @@
     ];
 
     box.innerHTML = `
-      <div class="rpg-card">
-        <div class="rpg-portrait">${portrait}</div>
+      <div class="rpg-card${me && me.wide ? " has-wide" : ""}">
+        <div class="rpg-portrait${me && me.wide ? " is-wide" : ""}">${portrait}</div>
         <p class="rpg-name">${esc(R.name)}</p>
         <p class="rpg-level">LV <b>${level}</b></p>
         <div class="rpg-bar rpg-exp">

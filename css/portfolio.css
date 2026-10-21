@@ -508,3 +508,11 @@
   .devlog-btn { margin-left: 8px; }
   .devlog-body { padding: 12px 12px 0; }
 }
+
+/* Wide (4:3) character portrait: fills the card instead of the small square */
+.rpg-portrait.is-wide { width: 100%; height: auto; aspect-ratio: 4 / 3; }
+@media (max-width: 820px) {
+  .rpg-card.has-wide { display: block; }
+  .rpg-card.has-wide > .rpg-portrait { width: min(100%, 360px); margin: 0 auto 10px; }
+  .rpg-card.has-wide > .rpg-name, .rpg-card.has-wide > .rpg-level { text-align: center; }
+}

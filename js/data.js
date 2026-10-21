@@ -109,7 +109,8 @@ window.YVY = {
     // RPG sheet only
     rpg: {
       // Character portrait (cropped at the collar). Leave out to use the first photo of Yvy.
-      portrait: { src: "images/me/psylocke.jpg", alt: "Yvy cosplaying Psylocke at San Diego Comic-Con" },
+      // wide: true for a 4:3 picture (fills the card); otherwise it's a small square.
+      portrait: { src: "images/me/witch.jpg", wide: true, alt: "Yvy as a garden witch in a flowered purple hat, casting glowing green vine magic" },
       cls: "Garden Educator",
       subclass: "Game Maker",
       alignment: "Chaotic Good (with chickens)",
