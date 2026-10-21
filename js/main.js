@@ -192,6 +192,7 @@
     const next = D.games.filter((g) => g.play && isLocked(g)).sort((a, b) => String(a.date).localeCompare(String(b.date)))[0];
     const extra = [
       next ? `🕹️ Next arcade game: ${next.title}, unlocking ${unlockDay(next)}!` : "",
+      (seasonNow() || {}).ticker || "",
     ].filter(Boolean);
     const items = [...D.ticker, ...extra].map((t) => `<span>${esc(t)}</span>`).join("");
     $("#ticker").innerHTML = items + items; // doubled for a seamless loop

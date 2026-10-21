@@ -218,7 +218,7 @@
   }
 
   // Turned on one at a time as each feature is finished and checked
-  const ON = { away: false, pets: false, konami: false, season: false, visitor: false };
+  const ON = { away: true, pets: true, konami: true, season: true, visitor: true };
   if (ON.away) buildAway();
   if (ON.pets) buildPets();
   if (ON.konami) buildKonami();
