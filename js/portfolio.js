@@ -206,9 +206,9 @@
         </div>
       </article>`;
 
-    // Kind words go oldest first (by date), so new letters can be added anywhere in data.js
-    const kind = (G.kindWords || []).filter((k) => k && k.name && k.text)
-      .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+    // Kind words and visitor signatures are mixed together, newest first (by date),
+    // so new letters can be added anywhere in data.js
+    const kind = (G.kindWords || []).filter((k) => k && k.name && k.text);
     // One entry at a time, flipped with BACK / NEXT (like the scrapbook)
     let pages = [];
     let index = 0;
@@ -234,9 +234,14 @@
     });
 
     const render = (signed, note) => {
-      pages = [...kind.map((k) => entry(k, true)), ...signed.map((s) => entry({
-        name: s.name, role: s.role, avatar: s.avatar, text: s.message, date: s.createdAt,
-      }, false))];
+      const all = [
+        ...kind.map((k) => ({ e: k, star: true })),
+        ...signed.map((s) => ({ e: { name: s.name, role: s.role, avatar: s.avatar, text: s.message, date: s.createdAt }, star: false })),
+      ];
+      // Dates are "YYYY", "YYYY-MM", "YYYY-MM-DD" or full timestamps, so text order works
+      all.sort((a, b) => String(b.e.date || "").localeCompare(String(a.e.date || "")));
+      pages = all.map(({ e, star }) => entry(e, star));
+      index = 0;
       showPage(0);
       $("#gbNote").innerHTML = note || "";
     };

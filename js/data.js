@@ -285,8 +285,9 @@ window.YVY = {
   /*
    * GUESTBOOK (section #guestbook): visitors sign it (first name only), and nothing shows
    * until Yvy approves it on society-admin.html → Guestbook. Signed entries live in the API.
-   * kindWords are testimonials Yvy adds by hand (excerpts from reference letters). They show
-   * first, with a ★ ribbon, sorted by date (oldest first), so new ones can go anywhere in the list.
+   * kindWords are testimonials Yvy adds by hand (excerpts from reference letters), with a ★ ribbon.
+   * The guestbook shows everything newest first (kind words and signatures mixed, by date),
+   * so new ones can go anywhere in the list.
    * Initials + a role only: no last names, phone numbers, emails, kids' names, schools or health details.
    * date: "YYYY-MM-DD", or "YYYY-MM" / "YYYY" when the letter has no exact date.
    */
