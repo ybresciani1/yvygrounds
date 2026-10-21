@@ -1,6 +1,8 @@
 /*
- * Pixel emoji: every emoji on the page is redrawn on a tiny 16×16 canvas and shown scaled up
- * with crisp, blocky pixels (NES style). Turn it off with data.js → pixelEmoji: false.
+ * Pixel emoji: every emoji on the page is swapped for an original hand-drawn 12×12 pixel sprite
+ * (js/emoji-sprites.js), shown scaled up with crisp, blocky pixels (NES style). An emoji without a
+ * sprite yet is drawn on a tiny 16×16 canvas from the device's own emoji instead.
+ * Turn it all off with data.js → pixelEmoji: false.
  * Skips the Garden Almanac (#growing), form fields, SVG, and anything inside .no-pixel.
  * Text symbols like ♥ ★ ✿ stay text (they keep their CSS colors); only real emoji are swapped.
  * Content added later (guestbook pages, pop-ups, falling leaves...) is caught by a MutationObserver.
@@ -17,8 +19,36 @@
   const HAS_EMOJI = /\p{Emoji_Presentation}|️/u;
   const cache = new Map();
 
+  // Hand-drawn sprites (js/emoji-sprites.js): { "🐔": { c: { K: "#2b1a52", ... }, g: ["....", ...] } }
+  const SPRITES = window.YvyEmojiSprites || {};
+  const spriteFor = (emoji) => SPRITES[emoji] || SPRITES[emoji.replace(/️/g, "")] || SPRITES[`${emoji}️`];
+
+  function drawSprite(s) {
+    const h = s.g.length;
+    const w = Math.max(...s.g.map((row) => row.length));
+    const c = document.createElement("canvas");
+    c.width = w;
+    c.height = h;
+    const ctx = c.getContext("2d");
+    s.g.forEach((row, y) => {
+      [...row].forEach((ch, x) => {
+        if (ch === "." || !s.c[ch]) return;
+        ctx.fillStyle = s.c[ch];
+        ctx.fillRect(x, y, 1, 1);
+      });
+    });
+    return { url: c.toDataURL("image/png"), ratio: w / h };
+  }
+
   function pixelUrl(emoji) {
     if (cache.has(emoji)) return cache.get(emoji);
+    const sprite = spriteFor(emoji);
+    if (sprite) {
+      const out = drawSprite(sprite);
+      cache.set(emoji, out);
+      return out;
+    }
+    // No hand-drawn sprite yet: shrink the device's own emoji onto a tiny canvas instead
     const c = document.createElement("canvas");
     const ctx = c.getContext("2d");
     const font = `${GRID - 2}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Segoe UI Symbol",sans-serif`;
