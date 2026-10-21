@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-20p">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-20p">
-  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-20p">
-  <link rel="stylesheet" href="css/extras.css?v=2026-10-20p">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-20r">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-20r">
+  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-20r">
+  <link rel="stylesheet" href="css/extras.css?v=2026-10-20r">
 </head>
 <body>
 
@@ -33,6 +33,7 @@
         <a href="#critters">Critters</a> |
         <a href="#growing">Garden Almanac</a> |
         <a href="#society">Garden Society</a> |
+        <a href="#hall">Hall of Fame</a> |
         <a href="#resume">Résumé</a> |
         <a href="#shop">Hire Me</a> |
         <a href="#guestbook">Guestbook</a> |
@@ -161,6 +162,12 @@
               <h3>Latest 5 Sprouts</h3>
               <ol id="latestList"></ol>
             </div>
+            <!-- Arcade leaderboards (data.js → arcadeScores, js/extras.js); hidden if the API can't be reached -->
+            <div class="hiscores" id="hiscores" hidden>
+              <h3>🏆 High Scores</h3>
+              <div class="hiscores-tabs" id="hiscoresTabs" role="group" aria-label="Pick a game"></div>
+              <ol class="hiscores-list" id="hiscoresList"></ol>
+            </div>
             <!-- Real hit counter (society-api → /api/visit); hidden if the API can't be reached -->
             <div class="visitor" id="visitor" hidden>
               <p>You are visitor</p>
@@ -231,6 +238,14 @@
           <p class="growing-source" id="growingSource"></p>
         </div>
         <p class="society-cta"><button type="button" class="society-submit" id="societySubmitBtn">✏️ Submit an entry</button></p>
+      </section>
+
+      <!-- ===== Rabbit & Frog hall of fame (data.js → hallOfFame; students come from the API) ===== -->
+      <section id="hall" class="hall" hidden>
+        <h2 class="hall-title"><span aria-hidden="true">🐰</span> Gardenbound Hall of Fame <span aria-hidden="true">🐸</span></h2>
+        <p class="hall-intro" id="hallIntro"></p>
+        <div class="hall-grades" id="hallGrades"></div>
+        <div class="hall-photos" id="hallPhotos"></div>
       </section>
 
       <!-- ===== Résumé as an RPG character sheet (data.js → resume, built by js/portfolio.js) ===== -->
@@ -472,12 +487,12 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=2026-10-20p"></script>
-  <script src="js/pixels.js?v=2026-10-20p"></script>
-  <script src="js/veg-icons.js?v=2026-10-20p"></script>
-  <script src="js/main.js?v=2026-10-20p"></script>
-  <script src="js/society.js?v=2026-10-20p"></script>
-  <script src="js/portfolio.js?v=2026-10-20p"></script>
-  <script src="js/extras.js?v=2026-10-20p"></script>
+  <script src="js/data.js?v=2026-10-20r"></script>
+  <script src="js/pixels.js?v=2026-10-20r"></script>
+  <script src="js/veg-icons.js?v=2026-10-20r"></script>
+  <script src="js/main.js?v=2026-10-20r"></script>
+  <script src="js/society.js?v=2026-10-20r"></script>
+  <script src="js/portfolio.js?v=2026-10-20r"></script>
+  <script src="js/extras.js?v=2026-10-20r"></script>
 </body>
 </html>

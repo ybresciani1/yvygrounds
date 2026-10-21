@@ -41,6 +41,21 @@ window.YVY = {
     ],
   },
 
+  // Arcade leaderboards shown in the portal's "High Scores" box (scores live in the API).
+  // game = the arcade folder name; low: true means the fastest time wins (scores are in ms).
+  arcadeScores: [
+    { game: "tomato-tussle", title: "Tomato Tussle", unit: "pts" },
+    { game: "bowl-brawl", title: "Bowl Brawl", low: true, unit: "s" },
+  ],
+
+  // Rabbit & Frog hall of fame: students who finished the game. Yvy adds students (and photos,
+  // only with a parent's OK) on society-admin.html → Hall of Fame. First name + last initial only.
+  hallOfFame: {
+    game: "Rabbit & Frog: Gardenbound",
+    intro: "These garden heroes finished Rabbit & Frog: Gardenbound and earned their very own 3D Rabbit & Frog sculpture and a garden starter kit! 🐰🐸🌱",
+    empty: "The first Gardenbound graduates are on their way. Could you be next? 🌱",
+  },
+
   // Seasonal decorations: things gently falling in the background, plus a ticker line.
   // Months are 1–12. Add ?season=winter (or spring, summer, fall, spooky) to the address to preview one.
   seasons: [
@@ -93,6 +108,8 @@ window.YVY = {
 
     // RPG sheet only
     rpg: {
+      // Character portrait (cropped at the collar). Leave out to use the first photo of Yvy.
+      portrait: { src: "images/me/psylocke.jpg", alt: "Yvy cosplaying Psylocke at San Diego Comic-Con" },
       cls: "Garden Educator",
       subclass: "Game Maker",
       alignment: "Chaotic Good (with chickens)",

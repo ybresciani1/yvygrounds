@@ -68,7 +68,7 @@
   function showView(name) {
     document.querySelectorAll(".adm-tabs [data-view]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.view === name)));
     document.querySelectorAll(".adm-view").forEach((v) => { v.hidden = v.dataset.view !== name; });
-    ({ review: loadPosts, projects: loadProjects, compost: loadReadings, guestbook: loadGuestbook })[name]();
+    ({ review: loadPosts, projects: loadProjects, compost: loadReadings, guestbook: loadGuestbook, hall: loadHall, scores: loadScores })[name]();
   }
   $(".adm-tabs").addEventListener("click", (e) => {
     const b = e.target.closest("[data-view]");
@@ -303,6 +303,100 @@
     gbStatus = b.dataset.status;
     e.currentTarget.querySelectorAll("[data-status]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
     loadGuestbook();
+  });
+
+  /* ---------- Rabbit & Frog hall of fame ---------- */
+  const GRADE_LABEL = { TK: "TK", K: "K", 1: "1st", 2: "2nd", 3: "3rd", 4: "4th", 5: "5th", 6: "6th", 7: "7th", 8: "8th" };
+
+  // Shrink photos before upload; redrawing on a canvas also drops hidden location info (EXIF/GPS)
+  async function shrinkPhoto(file) {
+    let bitmap;
+    try { bitmap = await createImageBitmap(file, { imageOrientation: "from-image" }); } catch (e) {
+      throw new Error(`Couldn't read "${file.name}". Please use a JPG or PNG photo.`);
+    }
+    const scale = Math.min(1, 1200 / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.round(bitmap.width * scale);
+    canvas.height = Math.round(bitmap.height * scale);
+    canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    return new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.85));
+  }
+
+  async function loadHall() {
+    const box = $("#admHall");
+    try {
+      const res = await fetch(`${API}/api/hall`);
+      const { students } = await res.json();
+      box.innerHTML = students.length ? `<div class="ct-scroll adm-card"><table class="adm-table"><thead><tr><th>Name</th><th>Grade</th><th>Finished</th><th>Photo</th><th></th></tr></thead><tbody>
+        ${students.map((s) => `<tr><td>${esc(s.name)}</td><td>${esc(GRADE_LABEL[s.grade] || s.grade)}</td><td>${s.finishedOn ? esc(fmt(s.finishedOn)) : ""}</td>
+          <td>${s.photo ? `<a href="${esc(API + s.photo)}" target="_blank" rel="noopener">📷 view</a>` : ""}</td>
+          <td><button type="button" class="adm-del adm-small" data-del-hall="${esc(s.id)}" aria-label="Remove ${esc(s.name)}">🗑️</button></td></tr>`).join("")}
+        </tbody></table></div>` : '<p class="society-empty">No graduates yet. Add the first one above! 🐰🐸</p>';
+    } catch (err) { box.innerHTML = `<p class="sf-status is-error">${esc(err.message)}</p>`; }
+  }
+  $("#admNewHall").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target.elements;
+    const status = $("#admHallStatus");
+    const btn = e.target.querySelector("button[type=submit]");
+    btn.disabled = true;
+    status.className = "sf-status adm-wide";
+    try {
+      const fd = new FormData();
+      ["name", "grade", "finished_on", "caption"].forEach((k) => fd.append(k, f[k].value));
+      if (f.photo.files[0]) {
+        status.textContent = "Shrinking photo…";
+        fd.append("photo", await shrinkPhoto(f.photo.files[0]), "photo.jpg");
+      }
+      status.textContent = "Adding…";
+      const res = await fetch(`${API}/api/admin/hall`, { method: "POST", headers: { Authorization: `Bearer ${password}` }, body: fd });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) signOut("Signed out. Please sign in again.");
+      if (!res.ok) throw new Error(data.error || "Something went wrong.");
+      status.textContent = `Added ${f.name.value} 🎉`;
+      status.className = "sf-status adm-wide is-ok";
+      f.name.value = ""; f.caption.value = ""; f.photo.value = "";
+      loadHall();
+    } catch (err) {
+      status.textContent = err.message;
+      status.className = "sf-status adm-wide is-error";
+    }
+    btn.disabled = false;
+  });
+  $("#admHall").addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-del-hall]");
+    if (!btn || !confirm("Remove this student (and their photo) from the hall of fame?")) return;
+    try { await api(`/api/admin/hall/${btn.dataset.delHall}`, { method: "DELETE" }); loadHall(); } catch (err) { alert(err.message); }
+  });
+
+  /* ---------- Arcade scores ---------- */
+  const SCORE_GAMES = window.YVY.arcadeScores || [];
+  let scoreGame = SCORE_GAMES[0];
+  $("#admScoreGames").innerHTML = SCORE_GAMES.map((g, i) =>
+    `<button type="button" data-game="${esc(g.game)}" aria-pressed="${i === 0}">${esc(g.title)}</button>`).join("");
+  $("#admScoreGames").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-game]");
+    if (!b) return;
+    scoreGame = SCORE_GAMES.find((g) => g.game === b.dataset.game);
+    e.currentTarget.querySelectorAll("[data-game]").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    loadScores();
+  });
+  async function loadScores() {
+    const box = $("#admScores");
+    if (!scoreGame) { box.innerHTML = '<p class="society-empty">No arcade games with scores yet.</p>'; return; }
+    try {
+      const { scores } = await api(`/api/admin/scores?game=${encodeURIComponent(scoreGame.game)}`);
+      const show = (n) => (scoreGame.low ? `${(n / 1000).toFixed(3)} s` : `${n}`);
+      box.innerHTML = scores.length ? `<div class="ct-scroll adm-card"><table class="adm-table"><thead><tr><th>#</th><th>Initials</th><th>Score</th><th>Date</th><th></th></tr></thead><tbody>
+        ${scores.map((s, i) => `<tr><td>${i + 1}</td><td>${esc(s.initials)}</td><td>${esc(show(s.score))}</td><td>${esc(fmt(s.createdAt))}</td>
+          <td><button type="button" class="adm-del adm-small" data-del-score="${esc(s.id)}" aria-label="Delete this score">🗑️</button></td></tr>`).join("")}
+        </tbody></table></div>` : '<p class="society-empty">No scores yet.</p>';
+    } catch (err) { box.innerHTML = `<p class="sf-status is-error">${esc(err.message)}</p>`; }
+  }
+  $("#admScores").addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-del-score]");
+    if (!btn || !confirm("Delete this score?")) return;
+    try { await api(`/api/admin/scores/${btn.dataset.delScore}`, { method: "DELETE" }); loadScores(); } catch (err) { alert(err.message); }
   });
 
   if (password) signIn(password).catch(() => signOut());

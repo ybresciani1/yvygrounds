@@ -196,6 +196,78 @@
     }
   }
 
+  /* ---------- Arcade high scores (portal side panel) ---------- */
+  function buildHiscores() {
+    const list = D.arcadeScores || [];
+    const box = $("#hiscores");
+    if (!box || !API || !list.length) return;
+    let current = list[0];
+    const fmt = (g, n) => (g.low ? `${(n / 1000).toFixed(3)}${g.unit || ""}` : `${n}${g.unit ? ` ${g.unit}` : ""}`);
+    const render = async () => {
+      $("#hiscoresTabs").querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.game === current.game)));
+      try {
+        const res = await fetch(`${API}/api/scores?game=${encodeURIComponent(current.game)}`);
+        if (!res.ok) throw new Error();
+        const scores = ((await res.json()).scores || []).slice(0, 5);
+        $("#hiscoresList").innerHTML = scores.length
+          ? scores.map((s) => `<li><b>${String(s.initials).replace(/[^A-Z]/g, "")}</b><span>${fmt(current, Number(s.score))}</span></li>`).join("")
+          : '<li class="hiscores-empty">No scores yet. Be the first!</li>';
+        box.hidden = false;
+      } catch (e) {
+        if (box.hidden) return;   // API down on first load: keep the box hidden
+        $("#hiscoresList").innerHTML = '<li class="hiscores-empty">Scores are napping 😴</li>';
+      }
+    };
+    $("#hiscoresTabs").innerHTML = list.map((g) => {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.game = g.game;
+      b.textContent = g.title;
+      return b.outerHTML;
+    }).join("");
+    $("#hiscoresTabs").addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-game]");
+      if (!b) return;
+      current = list.find((g) => g.game === b.dataset.game) || current;
+      render();
+    });
+    render();
+    // Refresh after the arcade pop-up closes, so a new high score shows right away
+    new MutationObserver(() => { if ($("#arcade") && $("#arcade").hidden) render(); })
+      .observe($("#arcade"), { attributes: true, attributeFilter: ["hidden"] });
+  }
+
+  /* ---------- Rabbit & Frog hall of fame ---------- */
+  function buildHall() {
+    const H = D.hallOfFame;
+    const root = $("#hall");
+    if (!H || !root || !API) return;
+    const GRADE_NAMES = { TK: "TK", K: "Kindergarten", 1: "1st grade", 2: "2nd grade", 3: "3rd grade", 4: "4th grade", 5: "5th grade", 6: "6th grade", 7: "7th grade", 8: "8th grade" };
+    const ORDER = ["TK", "K", "1", "2", "3", "4", "5", "6", "7", "8"];
+    const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    $("#hallIntro").textContent = H.intro || "";
+    fetch(`${API}/api/hall`).then((r) => (r.ok ? r.json() : Promise.reject())).then(({ students }) => {
+      students = students || [];
+      if (!students.length) {
+        $("#hallGrades").innerHTML = `<p class="hall-empty">${esc(H.empty || "")}</p>`;
+      } else {
+        $("#hallGrades").innerHTML = ORDER.filter((g) => students.some((s) => s.grade === g)).map((g) => {
+          const kids = students.filter((s) => s.grade === g);
+          return `<div class="hall-grade">
+            <h3>${esc(GRADE_NAMES[g] || g)} <span class="hall-count">${kids.length} 🏅</span></h3>
+            <ul>${kids.map((s) => `<li>${esc(s.name)}</li>`).join("")}</ul>
+          </div>`;
+        }).join("");
+        const photos = students.filter((s) => s.photo);
+        $("#hallPhotos").innerHTML = photos.map((s) => `<figure class="hall-photo">
+            <img src="${esc(API + s.photo)}" alt="${esc(s.caption || `${s.name} with their Rabbit & Frog prize`)}" loading="lazy" data-fallback="🏆">
+            <figcaption>${esc(s.caption || `${s.name}, ${GRADE_NAMES[s.grade] || s.grade}`)}</figcaption>
+          </figure>`).join("");
+      }
+      root.hidden = false;
+    }).catch(() => { /* API down: the section stays hidden */ });
+  }
+
   /* ---------- "You are visitor #…" ---------- */
   // Each browser gets counted once and keeps its number. If the API can't be reached, the box stays hidden.
   async function buildVisitor() {
@@ -218,10 +290,12 @@
   }
 
   // Turned on one at a time as each feature is finished and checked
-  const ON = { away: true, pets: true, konami: true, season: true, visitor: true };
+  const ON = { away: true, pets: true, konami: true, season: true, visitor: true, hiscores: true, hall: true };
   if (ON.away) buildAway();
   if (ON.pets) buildPets();
   if (ON.konami) buildKonami();
   if (ON.season) buildSeason();
   if (ON.visitor) buildVisitor();
+  if (ON.hiscores) buildHiscores();
+  if (ON.hall) buildHall();
 })();

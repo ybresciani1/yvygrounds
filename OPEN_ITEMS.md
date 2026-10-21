@@ -43,6 +43,10 @@ Live now at **http://yvygrounds.com/** (HTTPS certificate provisioning is pendin
 - [ ] Add the more recent letters and the teacher letters (same pattern; they sort by date automatically).
 - [ ] Tweak the RPG stats and fun bits in `js/data.js` → `resume.rpg` if you want different numbers.
 - [ ] Optional: GitHub/itch.io/LinkedIn links for the résumé page.
+- [x] "Behind the Game" devlogs for every game (`js/data.js` → `devlogs`). Rewrite the "What I learned" lines in your own words when you get a chance.
+- [ ] Update the "Currently…" away message now and then (`js/data.js` → `currently`), especially the "playing" line.
+- [ ] Add Gardenbound graduates (and photos, with a parent's OK) on the admin page → 🏅 Hall of Fame.
+- [ ] When Egg Catch (or any new arcade game) gets a leaderboard: add it to `GAMES` in `society-api/src/index.js`, to `arcadeScores` in `js/data.js`, and call `YvyScores.show(...)` at the end of a round.
 
 ## 3. Double-checks
 

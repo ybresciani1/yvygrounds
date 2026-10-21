@@ -26,9 +26,9 @@
     // EXP fills up over the year, and the level goes up every January
     const start = new Date(year, 0, 1);
     const exp = Math.round(((Date.now() - start) / (new Date(year + 1, 0, 1) - start)) * 100);
-    const me = (D.photos.me || [])[0];
+    const me = rpg.portrait || (D.photos.me || [])[0];
     const portrait = me
-      ? `<img src="${esc(me.src)}" alt="Yvy" data-fallback="🌟">`
+      ? `<img src="${esc(me.src)}" alt="${esc(me.alt || "Yvy")}" data-fallback="🌟">`
       : px("flower", 9);
 
     const bar = (b) => {

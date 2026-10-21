@@ -312,6 +312,18 @@
     SFX.fanfare();
     overMenu.hidden = false;
     document.getElementById("rematch").focus({ preventScroll: true });
+    // High scores (arcade/scores.js): fastest pounce in a 1-player match, lowest time wins
+    const fastestMs = human ? Math.round(fastest[human]) : 0;
+    if (fastestMs && window.YvyScores) {
+      setTimeout(() => {
+        if (state !== "over") return;
+        YvyScores.show({
+          game: "bowl-brawl", score: fastestMs, better: "low", format: (ms) => `${secs(ms)}s`,
+          onPlayAgain: () => startMatch(mode),
+          onClose: () => document.getElementById("rematch").focus({ preventScroll: true }),
+        });
+      }, 1600);
+    }
   }
 
   function pause() {
@@ -697,6 +709,7 @@
 
   window.addEventListener("keydown", (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey || e.key === "Tab" || e.key === "Shift") return;
+    if (window.YvyScores && YvyScores.isOpen()) return; // typing initials
     if (e.target.tagName === "BUTTON" && (e.key === " " || e.key === "Enter")) return; // let buttons work
     const key = e.key.toLowerCase();
     if (key === "m") { setMuted(!muted); return; }

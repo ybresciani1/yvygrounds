@@ -24,13 +24,15 @@ Keep new work in that retro-but-cute style. It's meant to feel 2000s-maximalist,
 | `js/veg-icons.js` | Hand-drawn 32×32 SVG vegetable icons for crops with no accurate emoji (cauliflower, beets, kale...). Use `icon: "name"` in `data.js`; shown at emoji size |
 | `js/main.js` | Renders everything from `data.js`; no framework |
 | `arcade/<game>/` | Mini games that run right on the site (`index.html` + `game.js`, shared `arcade/arcade.css`). Listed in `data.js` with `play:` |
+| `arcade/scores.js` | Shared high-score box (3-letter initials, top 10). A game calls `YvyScores.show({ game, score, better, format, onPlayAgain, onClose })` after a round and ignores its own keys while `YvyScores.isOpen()`. Add the game to `GAMES` in `society-api/src/index.js` and to `arcadeScores` in `data.js` |
 | `images/<album>/` | Photos: `me`, `club`, `students`, `pets`, `chickens`; game thumbnails in `games` |
 | `images/yvy-feelings/` | Yvy's sticker-sheet "feelings" poses, saved for later. **Not shown** on the site and excluded from Pages in `_config.yml`; `stickerSet()` in `data.js` can bring a sheet back |
-| `js/portfolio.js`, `css/portfolio.css` | Portfolio sections: résumé as an RPG character sheet (`#resume`), "Hire me" shop counter with Venmo/Zelle (`#shop`), guestbook (`#guestbook`). Content in `data.js` → `resume`, `shop`, `guestbook` |
+| `js/portfolio.js`, `css/portfolio.css` | Portfolio sections: résumé as an RPG character sheet (`#resume`), "Hire me" shop counter with Venmo/Zelle (`#shop`), guestbook (`#guestbook`), and the "Behind the Game" devlog plaques (📜 button on each game). Content in `data.js` → `resume`, `shop`, `guestbook`, `devlogs` |
+| `js/extras.js`, `css/extras.css` | Little extras: "Currently…" AIM away message (`currently`), pet-able critters, Konami code egg (↑↑↓↓←→←→BA, or tap the logo chicken 7×), seasonal decorations (`seasons`, preview with `?season=winter`), "You are visitor #…", the portal's High Scores box (`arcadeScores`) and the Rabbit & Frog Hall of Fame (`hallOfFame`). Each has an on/off switch in `ON` at the bottom |
 | `resume.html`, `js/resume-page.js`, `css/resume-page.css` | Plain printable résumé ("📄 boring printable version"), built from the same `data.js` → `resume`. Print → Save as PDF |
 | `js/society.js`, `css/society.css` | Garden Society section (journal, projects, compost chart, submit form). Talks to `society-api/` |
-| `society-admin.html`, `js/society-admin.js` | Yvy's private admin page: approve/reject Society submissions and guestbook signatures, manage projects, log compost temps (password-protected by the API; `noindex`) |
-| `society-api/` | Cloudflare Worker + D1 database + KV photo storage backend for the Garden Society and the guestbook (deploy steps in its README). Excluded from Pages |
+| `society-admin.html`, `js/society-admin.js` | Yvy's private admin page: approve/reject Society submissions and guestbook signatures, manage projects, log compost temps, add Hall of Fame students and photos, delete arcade scores (password-protected by the API; `noindex`) |
+| `society-api/` | Cloudflare Worker + D1 database + KV photo storage backend for the Garden Society, guestbook, visitor counter, arcade high scores and hall of fame (deploy steps in its README). Excluded from Pages |
 | `OPEN_ITEMS.md` | Running to-do list for the project |
 
 ## Conventions
@@ -47,6 +49,7 @@ Keep new work in that retro-but-cute style. It's meant to feel 2000s-maximalist,
 - Keep image files small: game thumbnails ~400–640px wide, photos ≤1200px.
 - Photos of garden students may show minors. Don't add or caption them without Yvy confirming permission.
 - **The résumé is public**: no phone number and no names of private families (nanny jobs are one "Private Families" entry). The PDF in Yvy's Downloads has both, so don't publish it as-is.
+- **Hall of Fame**: students are first name + last initial only, and photos go up only with a parent's OK (Yvy adds both on the admin page). **Arcade scores** use 3-letter initials only.
 - **Guestbook signatures** may come from kids too: first name/initials only, no links/emails/phone numbers (the API rejects them), pending until Yvy approves.
 - **Garden Society submissions** may come from kids: collect first name/initials only (no emails), keep everything pending until Yvy approves, and keep the in-browser photo shrink (it strips EXIF/GPS). Secrets (`SOCIETY_PASSCODE`, `ADMIN_PASSWORD`) live only in Cloudflare (`wrangler secret put`), never in the repo.
 

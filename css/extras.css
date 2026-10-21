@@ -140,3 +140,71 @@ body[data-season="winter"] .season-bit { color: #fff; text-shadow: 0 0 4px rgba(
   border-radius: 2px;
 }
 .visitor-since { color: #8a8492; font-size: 10px; }
+
+/* Arcade high scores (Newgrounds portal side panel) */
+.hiscores { background: var(--ng-panel); border: 2px solid #000; border-radius: 10px; overflow: hidden; color: #fff; }
+.hiscores h3 {
+  margin: 0;
+  padding: 6px 10px;
+  background: linear-gradient(#ffd25a, var(--ng-orange) 55%, #f07d00);
+  color: #fff;
+  font: 700 14px var(--f-round);
+  -webkit-text-stroke: 1px #6b2d00;
+  text-shadow: 0 2px 0 #6b2d00;
+}
+.hiscores-tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 8px 8px 0; }
+.hiscores-tabs button {
+  flex: 1 1 auto;
+  padding: 3px 6px;
+  border: 1px solid #555;
+  border-radius: 6px;
+  background: #34303b;
+  color: #ccc;
+  font: bold 10px var(--f-body);
+  cursor: pointer;
+}
+.hiscores-tabs button[aria-pressed="true"] { background: var(--ng-orange); border-color: #000; color: #2b1a52; }
+.hiscores-list { margin: 0; padding: 8px 10px 10px 30px; font: 9px/2 var(--f-pixel); }
+.hiscores-list li::marker { color: #8a8492; }
+.hiscores-list li b { font-weight: 400; color: var(--yellow); }
+.hiscores-list li span { float: right; color: #7dff7d; }
+.hiscores-list .hiscores-empty { list-style: none; margin-left: -20px; font: 600 12px/1.4 var(--f-round); color: #ccc; }
+
+/* Rabbit & Frog hall of fame */
+.hall {
+  text-align: center;
+  background: linear-gradient(#fff6c9, #ffe9a8);
+  border: 5px solid #fff;
+  border-radius: 28px;
+  box-shadow: 0 0 0 5px #e0a800, 0 10px 0 5px rgba(43, 26, 82, .2);
+  padding: 22px 20px 24px;
+}
+.hall[hidden] { display: none; }
+.hall-title {
+  margin: 0;
+  font: 400 clamp(26px, 5vw, 38px)/1.1 var(--f-logo);
+  color: #3f8f2e;
+  -webkit-text-stroke: 1px #1f4d15;
+  text-shadow: 2px 2px 0 #fff, 4px 5px 0 #e0a800;
+}
+.hall-intro { max-width: 620px; margin: 8px auto 16px; font: 400 20px/1.3 var(--f-hand); }
+.hall-empty { margin: 8px 0 0; font: 400 20px var(--f-hand); color: #6b4a1f; }
+.hall-grades { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+.hall-grade {
+  flex: 0 1 200px;
+  background: #fff;
+  border: 3px dashed #e0c98e;
+  border-radius: 18px;
+  padding: 10px 12px 12px;
+  box-shadow: 0 5px 0 rgba(224, 168, 0, .5);
+}
+.hall-grade h3 { margin: 0 0 6px; font: 700 17px var(--f-round); color: #6b4a1f; }
+.hall-count { background: #ffd23f; border-radius: 999px; padding: 1px 8px; font-size: 13px; }
+.hall-grade ul { list-style: none; margin: 0; padding: 0; font: 400 20px/1.35 var(--f-hand); }
+.hall-photos { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-top: 18px; }
+.hall-photos:empty { display: none; }
+.hall-photo { margin: 0; width: 170px; background: #fff; padding: 8px 8px 4px; box-shadow: 0 4px 10px rgba(0, 0, 0, .18); }
+.hall-photo:nth-child(odd) { transform: rotate(-2deg); }
+.hall-photo:nth-child(even) { transform: rotate(2deg); }
+.hall-photo img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.hall-photo figcaption { font: 400 17px/1.2 var(--f-hand); padding-top: 4px; }

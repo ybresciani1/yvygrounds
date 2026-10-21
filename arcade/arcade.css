@@ -96,3 +96,65 @@ body.embedded .arcade-back,
 body.embedded .arcade-title,
 body.embedded .arcade-help { display: none; }
 body.embedded .stage { width: min(100vw, calc(100vh * 4 / 3)); border: 0; border-radius: 0; box-shadow: none; }
+
+/* High scores box over the game screen (arcade/scores.js). Sized in cqw like the menus. */
+.scores {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  background: rgba(28, 25, 32, .78);
+  font-family: "Press Start 2P", monospace;
+}
+.scores-panel {
+  width: min(78cqw, 560px);
+  max-height: 92%;
+  overflow: auto;
+  padding: 3cqw 4cqw;
+  background: #1c1920;
+  border: .8cqw solid #ffa31a;
+  border-radius: 2cqw;
+  box-shadow: 0 0 0 .6cqw #000, 0 1.4cqw 0 .6cqw #000;
+  color: #fff;
+  text-align: center;
+}
+.scores-title { margin: 0 0 2cqw; font-size: 3.2cqw; color: #ffd23f; text-shadow: .4cqw .4cqw 0 #c4361b; }
+.scores-big { margin: 0 0 2cqw; font-size: 5cqw; color: #7dff7d; }
+.scores-label { display: grid; gap: 1.6cqw; justify-items: center; font-size: 2cqw; color: #ff8cc6; }
+.scores-input {
+  width: 22cqw;
+  padding: 1.2cqw 0 1.2cqw 1.6cqw;
+  background: #000;
+  border: .5cqw solid #ffa31a;
+  border-radius: 1cqw;
+  color: #ffd23f;
+  font: 5cqw "Press Start 2P", monospace;
+  letter-spacing: 1.6cqw;
+  text-align: center;
+  text-transform: uppercase;
+}
+.scores-input:focus { outline: .5cqw dashed #fff; outline-offset: .4cqw; }
+.scores-list { list-style: none; margin: 0 auto; padding: 0; width: min(100%, 46cqw); font-size: 2.2cqw; line-height: 1.9; }
+.scores-list li { display: grid; grid-template-columns: 6cqw 1fr auto; gap: 2cqw; text-align: left; }
+.scores-list li.is-you { color: #ffd23f; animation: scores-blink .8s steps(2) infinite; }
+@keyframes scores-blink { 50% { color: #ff8cc6; } }
+.scores-rank { color: #8a8492; }
+.scores-score { text-align: right; color: #7dff7d; }
+.scores-note { margin: 2cqw 0 0; font-size: 1.8cqw; color: #c9c3d6; }
+.scores-status { min-height: 1.4em; margin: 1.4cqw 0 0; font-size: 1.6cqw; color: #ff8cc6; }
+.scores-buttons { display: flex; justify-content: center; gap: 2cqw; margin-top: 2.4cqw; }
+.scores-buttons button {
+  padding: 1.6cqw 2.4cqw;
+  border: .6cqw solid #2b1a52;
+  border-radius: 2cqw;
+  background: #ffd23f;
+  color: #2b1a52;
+  font: 2cqw/1.3 "Press Start 2P", monospace;
+  box-shadow: 0 .8cqw 0 #2b1a52;
+  cursor: pointer;
+}
+.scores-buttons button.alt { background: #ff8cc6; }
+.scores-buttons button:disabled { opacity: .6; cursor: wait; }
+.scores-buttons button:focus-visible { outline: .6cqw dashed #fff; outline-offset: .4cqw; }
+@media (prefers-reduced-motion: reduce) { .scores-list li.is-you { animation: none; } }

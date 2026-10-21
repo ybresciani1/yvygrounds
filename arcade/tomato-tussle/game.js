@@ -280,6 +280,12 @@
     if (score > best) { best = score; newBest = score > 0; store.set(BEST_KEY, String(best)); }
     SFX.end();
     setState("over");
+    // High scores (arcade/scores.js): after the "Time's up!" panel has had a moment
+    if (score > 0 && window.YvyScores) {
+      setTimeout(() => {
+        if (state === "over") YvyScores.show({ game: "tomato-tussle", score, onPlayAgain: startGame, onClose: () => canvas.focus({ preventScroll: true }) });
+      }, 1400);
+    }
   }
 
   const mult = () => Math.min(4, 1 + Math.floor(combo / 5));
@@ -710,6 +716,7 @@
   function resume() { setState("play"); }
 
   function primary() {
+    if (window.YvyScores && YvyScores.isOpen()) return;
     if (state === "title") startGame();
     else if (state === "over" && stateT > 900) startGame();
     else if (state === "paused") resume();
@@ -729,6 +736,7 @@
   const KEYMAP = { q: 0, w: 1, e: 2, a: 3, s: 4, d: 5, z: 6, x: 7, c: 8, 7: 0, 8: 1, 9: 2, 4: 3, 5: 4, 6: 5, 1: 6, 2: 7, 3: 8 };
   window.addEventListener("keydown", (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (window.YvyScores && YvyScores.isOpen()) return; // typing initials
     if (e.target === muteBtn && (e.key === " " || e.key === "Enter")) return; // let the button work
     const key = e.key.toLowerCase();
     let handled = true;

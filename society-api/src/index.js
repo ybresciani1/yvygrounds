@@ -10,6 +10,10 @@
  *   GET  /api/guestbook                                                    approved guestbook entries
  *   POST /api/guestbook  { name, role?, avatar?, message, website, ms }    sign it (no passcode), waits for approval
  *   POST /api/visit                                                         count a visitor, returns { visitor: N }
+ *   GET  /api/scores?game=G                                                 arcade top 10
+ *   POST /api/scores     { game, initials, score }                          add a high score (3-letter initials)
+ *   GET  /api/hall                                                          Rabbit & Frog hall of fame
+ *   GET  /api/hall-photo/<key>                                              a hall of fame photo
  *
  * Admin (header "Authorization: Bearer <ADMIN_PASSWORD>"):
  *   GET    /api/admin/posts?status=pending|approved|rejected
@@ -24,6 +28,10 @@
  *   GET    /api/admin/guestbook?status=pending|approved|rejected
  *   PATCH  /api/admin/guestbook/<id>    { status?, name?, role?, avatar?, message? }
  *   DELETE /api/admin/guestbook/<id>
+ *   GET    /api/admin/scores?game=G     top 50 for one game, with ids
+ *   DELETE /api/admin/scores/<id>
+ *   POST   /api/admin/hall              multipart { name, grade, finished_on?, caption?, photo? }
+ *   DELETE /api/admin/hall/<id>         removes the student and their photo
  */
 
 const MAX_PHOTOS = 3;
@@ -38,6 +46,18 @@ const GB_AVATARS = ["chicken", "flower", "heart", "sprout", "tomato", "silly", "
 const GB_PER_HOUR = 3;          // signings per visitor per hour
 const GB_MAX_PENDING = 200;     // stop taking new ones while this many wait for review
 const STATUSES = ["pending", "approved", "rejected"];
+// Arcade games with a leaderboard. order "high" = more points wins; "low" = fastest time (ms) wins.
+// min/max throw out impossible scores.
+const GAMES = {
+  "tomato-tussle": { order: "high", min: 1, max: 20000 },
+  "bowl-brawl": { order: "low", min: 90, max: 3000 },
+};
+const SCORES_PER_HOUR = 20;
+// 3-letter initials that aren't allowed on the board
+const BAD_INITIALS = new Set(["ASS", "FUK", "FUC", "FCK", "FUQ", "SEX", "CUM", "DIK", "DIC", "KKK", "NIG", "NGR", "FAG", "TIT", "WTF", "STD", "GAY",
+  "JEW", "NAZ", "HOE", "SUK", "SUC", "PUS", "VAG", "XXX", "KYS", "DMN", "SHT", "SHI", "POS", "PEN", "GOD", "HIV", "LSD", "THC", "ANL", "ANS",
+  "BCH", "BJS", "COK", "CUK", "DIE", "FAP", "GOK", "JIZ", "KIL", "NUT", "PRN", "RAP", "SUX", "TWT", "WAP", "WTH"]);
+const GRADES = ["TK", "K", "1", "2", "3", "4", "5", "6", "7", "8"];
 
 export default {
   async fetch(request, env) {
@@ -92,6 +112,10 @@ async function route(request, env) {
   if (m === "GET" && path === "/api/guestbook") return getGuestbook(env);
   if (m === "POST" && path === "/api/guestbook") return signGuestbook(request, env);
   if (m === "POST" && path === "/api/visit") return countVisit(request, env);
+  if (m === "GET" && path === "/api/scores") return getScores(url, env);
+  if (m === "POST" && path === "/api/scores") return addScore(request, env);
+  if (m === "GET" && path === "/api/hall") return getHall(env);
+  if (m === "GET" && path.startsWith("/api/hall-photo/")) return getHallPhoto(env, path.slice("/api/hall-photo/".length));
 
   if (path.startsWith("/api/admin/")) {
     await requireAdmin(request, env);
@@ -110,6 +134,10 @@ async function route(request, env) {
     if (what === "guestbook" && m === "GET" && !id) return adminListGuestbook(url, env);
     if (what === "guestbook" && m === "PATCH" && id) return adminUpdateGuestbook(request, env, id);
     if (what === "guestbook" && m === "DELETE" && id) return adminDeleteGuestbook(env, id);
+    if (what === "scores" && m === "GET" && !id) return adminListScores(url, env);
+    if (what === "scores" && m === "DELETE" && id) return adminDeleteScore(env, id);
+    if (what === "hall" && m === "POST" && !id) return adminAddHall(request, env);
+    if (what === "hall" && m === "DELETE" && id) return adminDeleteHall(env, id);
   }
   throw new HttpError(404, "Not found.");
 }
@@ -296,6 +324,125 @@ async function countVisit(request, env) {
     env.DB.prepare("DELETE FROM visitor_hits WHERE at < ?").bind(since),
   ]);
   return json({ visitor: row.results[0] ? row.results[0].value : 0 });
+}
+
+/* ---------- arcade high scores ---------- */
+
+function gameOf(name) {
+  const game = GAMES[name];
+  if (!game) throw new HttpError(400, "Unknown game.");
+  return game;
+}
+
+async function topScores(env, name, limit) {
+  const game = gameOf(name);
+  const { results } = await env.DB.prepare(
+    `SELECT id, initials, score, created_at FROM scores WHERE game = ? ORDER BY score ${game.order === "low" ? "ASC" : "DESC"}, created_at ASC LIMIT ?`
+  ).bind(name, limit).all();
+  return results;
+}
+const publicScore = (r) => ({ initials: r.initials, score: r.score, createdAt: r.created_at });
+
+async function getScores(url, env) {
+  const name = url.searchParams.get("game");
+  return json({ scores: (await topScores(env, name, 10)).map(publicScore) });
+}
+
+async function addScore(request, env) {
+  const data = await readJson(request);
+  const name = clean(data.game, 40);
+  const game = gameOf(name);
+  const initials = clean(data.initials, 3).toUpperCase();
+  const score = Math.round(Number(data.score));
+  if (!/^[A-Z]{3}$/.test(initials)) throw new HttpError(400, "Pick 3 letters, A to Z.");
+  if (BAD_INITIALS.has(initials)) throw new HttpError(400, "Those letters aren't allowed. Try different ones!");
+  if (!Number.isFinite(score) || score < game.min || score > game.max) throw new HttpError(400, "That score doesn't look right.");
+
+  const who = await visitorHash(request, "scores");
+  const hourAgo = Date.now() - 60 * 60 * 1000;
+  const { n } = await env.DB.prepare("SELECT COUNT(*) AS n FROM score_hits WHERE who = ? AND at > ?").bind(who, hourAgo).first();
+  if (n >= SCORES_PER_HOUR) throw new HttpError(429, "Whoa, lots of high scores! Try again in a bit.");
+
+  const id = newId();
+  await env.DB.batch([
+    env.DB.prepare("INSERT INTO scores (id, game, initials, score, created_at) VALUES (?, ?, ?, ?, ?)").bind(id, name, initials, score, now()),
+    env.DB.prepare("INSERT INTO score_hits (who, at) VALUES (?, ?)").bind(who, Date.now()),
+    env.DB.prepare("DELETE FROM score_hits WHERE at < ?").bind(hourAgo),
+  ]);
+  const top = await topScores(env, name, 10);
+  const rank = top.findIndex((r) => r.id === id) + 1;   // 0 = didn't make the top 10
+  return json({ ok: true, rank, scores: top.map(publicScore) }, 201);
+}
+
+async function adminListScores(url, env) {
+  const name = url.searchParams.get("game");
+  const rows = await topScores(env, name, 50);
+  return json({ scores: rows.map((r) => ({ id: r.id, ...publicScore(r) })) });
+}
+
+async function adminDeleteScore(env, id) {
+  await env.DB.prepare("DELETE FROM scores WHERE id = ?").bind(id).run();
+  return json({ ok: true });
+}
+
+/* ---------- Rabbit & Frog hall of fame ---------- */
+
+const publicHall = (r) => ({
+  id: r.id, name: r.name, grade: r.grade, finishedOn: r.finished_on, caption: r.caption,
+  photo: r.photo ? `/api/hall-photo/${r.photo}` : null,
+});
+
+async function getHall(env) {
+  const { results } = await env.DB.prepare("SELECT * FROM hall ORDER BY finished_on, created_at").all();
+  return json({ students: results.map(publicHall) });
+}
+
+async function getHallPhoto(env, key) {
+  if (!/^hall\/[0-9a-f-]{36}\.(jpg|png|webp)$/.test(key)) throw new HttpError(404, "Not found.");
+  const { value, metadata } = await env.PHOTOS.getWithMetadata(key, { type: "stream" });
+  if (!value) throw new HttpError(404, "Not found.");
+  return new Response(value, {
+    headers: {
+      "Content-Type": (metadata && metadata.contentType) || "image/jpeg",
+      "Cache-Control": "public, max-age=3600",
+      "X-Content-Type-Options": "nosniff",
+    },
+  });
+}
+
+async function adminAddHall(request, env) {
+  let form;
+  try { form = await request.formData(); } catch { throw new HttpError(400, "Please send the form again."); }
+  const name = clean(form.get("name"), 40);
+  const grade = clean(form.get("grade"), 4).toUpperCase();
+  const finishedOn = clean(form.get("finished_on"), 10);
+  const caption = clean(form.get("caption"), 200);
+  if (!name) throw new HttpError(400, "Add the student's first name and last initial.");
+  if (!GRADES.includes(grade)) throw new HttpError(400, "Pick a grade.");
+  if (finishedOn && !/^\d{4}-\d{2}-\d{2}$/.test(finishedOn)) throw new HttpError(400, "Pick a date.");
+
+  const id = newId();
+  let key = "";
+  const file = form.get("photo");
+  if (file && typeof file === "object" && file.size > 0) {
+    if (file.size > MAX_PHOTO_BYTES) throw new HttpError(400, "That photo is too big.");
+    const bytes = await file.arrayBuffer();
+    const type = imageType(bytes);
+    if (!type) throw new HttpError(400, "Photos need to be JPG, PNG or WebP.");
+    key = `hall/${id}.${EXT[type]}`;
+    await env.PHOTOS.put(key, bytes, { metadata: { contentType: type } });
+  }
+  await env.DB.prepare("INSERT INTO hall (id, name, grade, finished_on, photo, caption, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)")
+    .bind(id, name, grade, finishedOn, key, caption, now()).run();
+  return json({ ok: true, id }, 201);
+}
+
+async function adminDeleteHall(env, id) {
+  const row = await env.DB.prepare("SELECT photo FROM hall WHERE id = ?").bind(id).first();
+  if (!row) throw new HttpError(404, "Student not found.");
+  if (row.photo) await env.PHOTOS.delete(row.photo);
+  await env.DB.prepare("DELETE FROM hall WHERE id = ?").bind(id).run();
+  return json({ ok: true });
 }
 
 /* ---------- guestbook ---------- */
