@@ -12,8 +12,8 @@
 
   const ALBUMS = [
     { key: "me",       label: "Yvy",             emoji: "🌟" },
-    { key: "club",     label: "Garden Society", emoji: "🌻" },
-    { key: "students", label: "Garden Students", emoji: "🌱" },
+    { key: "club",     label: "Garden Society", emoji: "🌻", dates: true },
+    { key: "students", label: "Garden Students", emoji: "🌱", dates: true },   // dates: show each photo's date under its caption
     { key: "pets",     label: "Pets",            emoji: "🐾" },
     { key: "chickens", label: "Chickens",        emoji: "🐔" },
   ];
@@ -514,6 +514,12 @@
       const p = list[scrap.index];
       photoBtn.innerHTML = imgTag(p.src, p.caption || album.label, album.emoji, p.focus);
       $("#polaroidCaption").textContent = p.caption || "";
+      if (album.dates && p.date) {
+        const when = document.createElement("span");
+        when.className = "polaroid-date";
+        when.textContent = new Date(p.date + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+        $("#polaroidCaption").appendChild(when);
+      }
       $("#scrapCount").textContent = `${scrap.index + 1} / ${list.length}`;
     } else {
       photoBtn.innerHTML = `<div class="placeholder"><span style="font-size:64px">${album.emoji}</span>${album.label} photos coming soon!</div>`;

@@ -1338,3 +1338,6 @@ main > .chapter-sign { margin-top: 44px; scroll-margin-top: 16px; text-align: ce
 
 /* 88×31 badges at the very bottom, in the meadow footer above the copyright line */
 .footer-badges { position: relative; margin-top: 16px; }
+
+/* Date under a scrapbook photo's caption (albums with dates: true in main.js → ALBUMS) */
+.polaroid-date { display: block; margin-top: 2px; font: 9px var(--f-pixel); color: var(--purple); letter-spacing: .5px; }
