@@ -112,11 +112,19 @@
   }
 
   // If a listed image is missing, show a cute placeholder instead of a broken icon.
-  function imgTag(src, alt, fallbackEmoji, focus) {
-    return `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" data-fallback="${esc(fallbackEmoji || "🌱")}"${focusStyle(focus)}>`;
+  function imgTag(src, alt, fallbackEmoji, focus, full) {
+    return `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" data-fallback="${esc(fallbackEmoji || "🌱")}"${full ? ` data-full="${esc(full)}"` : ""}${focusStyle(focus)}>`;
   }
+  // Wall frames are tiny, so they load a small copy from the album's thumbs/ folder
+  // (made by tools/photos.py). A photo with no thumbnail yet falls back to the full one.
+  const thumbOf = (src) => src.replace(/([^/]+)$/, "thumbs/$1");
   document.addEventListener("error", (e) => {
     const img = e.target;
+    if (img.tagName === "IMG" && img.dataset.full) {
+      img.src = img.dataset.full;
+      delete img.dataset.full;
+      return;
+    }
     if (img.tagName === "IMG" && img.dataset.fallback) {
       const span = document.createElement("span");
       span.className = "img-fallback";
@@ -184,7 +192,7 @@
       const slots = album === "me" || photos.length >= 4 ? photos : [...photos, ...placeholders[album]];
       const item = slots.length ? slots[n % slots.length] : emoji;
       html += typeof item === "object"
-        ? `<div class="oval" style="${style}">${imgTag(item.src, "", emoji, item.focus)}</div>`
+        ? `<div class="oval" style="${style}">${imgTag(thumbOf(item.src), "", emoji, item.focus, item.src)}</div>`
         : `<div class="oval oval-empty" style="${style}"><span>${item}</span></div>`;
     }
     wall.innerHTML = html;
