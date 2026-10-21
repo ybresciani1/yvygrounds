@@ -9,6 +9,7 @@
  *   POST /api/submit   (multipart, needs SOCIETY_PASSCODE)                 new post, waits for approval
  *   GET  /api/guestbook                                                    approved guestbook entries
  *   POST /api/guestbook  { name, role?, avatar?, message, website, ms }    sign it (no passcode), waits for approval
+ *   POST /api/visit                                                         count a visitor, returns { visitor: N }
  *
  * Admin (header "Authorization: Bearer <ADMIN_PASSWORD>"):
  *   GET    /api/admin/posts?status=pending|approved|rejected
@@ -90,6 +91,7 @@ async function route(request, env) {
   if (m === "POST" && path === "/api/submit") return submit(request, env);
   if (m === "GET" && path === "/api/guestbook") return getGuestbook(env);
   if (m === "POST" && path === "/api/guestbook") return signGuestbook(request, env);
+  if (m === "POST" && path === "/api/visit") return countVisit(request, env);
 
   if (path.startsWith("/api/admin/")) {
     await requireAdmin(request, env);
@@ -269,6 +271,33 @@ async function submit(request, env) {
   return json({ ok: true, message: "Thanks! Yvy will take a look before it shows up on the site." }, 201);
 }
 
+// A short hash of the visitor's address (never the address itself), for rate limits
+async function visitorHash(request, salt) {
+  const ip = request.headers.get("CF-Connecting-IP") || "local";
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`yvygrounds-${salt}:${ip}`));
+  return [...new Uint8Array(digest)].slice(0, 12).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/* ---------- hit counter ---------- */
+
+// The site calls this once per browser and remembers the number. The same address only
+// counts once every 12 hours, so reloads or a cleared browser don't run the number up.
+async function countVisit(request, env) {
+  const who = await visitorHash(request, "visit");
+  const since = Date.now() - 12 * 60 * 60 * 1000;
+  const recent = await env.DB.prepare("SELECT 1 FROM visitor_hits WHERE who = ? AND at > ? LIMIT 1").bind(who, since).first();
+  if (recent) {
+    const row = await env.DB.prepare("SELECT value FROM counters WHERE name = 'visitors'").first();
+    return json({ visitor: row ? row.value : 0 });
+  }
+  const [row] = await env.DB.batch([
+    env.DB.prepare("UPDATE counters SET value = value + 1 WHERE name = 'visitors' RETURNING value"),
+    env.DB.prepare("INSERT INTO visitor_hits (who, at) VALUES (?, ?)").bind(who, Date.now()),
+    env.DB.prepare("DELETE FROM visitor_hits WHERE at < ?").bind(since),
+  ]);
+  return json({ visitor: row.results[0] ? row.results[0].value : 0 });
+}
+
 /* ---------- guestbook ---------- */
 
 const publicEntry = (row) => ({
@@ -306,9 +335,7 @@ async function signGuestbook(request, env) {
   }
 
   // A hash of the visitor's address (not the address itself) for the per-hour limit
-  const ip = request.headers.get("CF-Connecting-IP") || "local";
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(`yvygrounds-guestbook:${ip}`));
-  const who = [...new Uint8Array(digest)].slice(0, 12).map((b) => b.toString(16).padStart(2, "0")).join("");
+  const who = await visitorHash(request, "guestbook");
   const hourAgo = Date.now() - 60 * 60 * 1000;
   const [{ n: recent }, { n: pending }] = await Promise.all([
     env.DB.prepare("SELECT COUNT(*) AS n FROM guestbook_hits WHERE who = ? AND at > ?").bind(who, hourAgo).first(),

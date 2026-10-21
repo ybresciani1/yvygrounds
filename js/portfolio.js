@@ -316,7 +316,61 @@
     });
   }
 
+  /* ---------- "Behind the Game" devlogs (data.js → devlogs, keyed by game title) ---------- */
+  // Animal Crossing museum plaque: the idea, a sketch, what went wrong, what I learned, tools.
+  function buildDevlogs() {
+    const box = $("#devlog");
+    if (!box) return;
+    let lastFocus = null;
+    const list = (items) => `<ul>${items.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>`;
+    const section = (icon, title, body) => (body ? `<section class="devlog-section"><h3><span aria-hidden="true">${icon}</span> ${esc(title)}</h3>${body}</section>` : "");
+
+    const open = (g, L) => {
+      lastFocus = document.activeElement;
+      $("#devlogTitle").textContent = g.title;
+      $("#devlogMeta").textContent = [L.made, L.status].filter(Boolean).join(" · ");
+      // Play link works like the portal's: arcade games open in the pop-up player, PG-13 games ask first
+      const play = g.play
+        ? `href="${esc(g.play)}" data-play="${esc(g.title)}"`
+        : g.url ? `href="${esc(g.url)}" target="_blank" rel="noopener"` : "";
+      const age = g.rated === "PG-13" ? ` data-age13="${esc(g.title)}" data-age-why="${esc(g.ratedFor || "")}"` : "";
+      $("#devlogBody").innerHTML = `
+        ${L.sketch ? `<figure class="devlog-sketch"><img src="${esc(L.sketch.src)}" alt="${esc(L.sketch.alt || L.sketch.caption || "Sketch")}" loading="lazy" data-fallback="✏️">
+          ${L.sketch.caption ? `<figcaption>${esc(L.sketch.caption)}</figcaption>` : ""}</figure>` : ""}
+        ${section("💡", "The idea", L.idea ? `<p>${esc(L.idea)}</p>` : "")}
+        ${section("💥", "What went wrong", L.wrong && L.wrong.length ? list(L.wrong) : "")}
+        ${section("🌱", "What I learned", L.learned && L.learned.length ? list(L.learned) : "")}
+        ${section("🧰", "Tools", L.tools && L.tools.length ? `<p class="devlog-tools">${L.tools.map((t) => `<span>${esc(t)}</span>`).join("")}</p>` : "")}
+        ${L.stats && L.stats.length ? `<dl class="devlog-stats">${L.stats.map(([icon, label, value]) =>
+          `<div><dt><span aria-hidden="true">${esc(icon)}</span> ${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join("")}</dl>` : ""}
+        ${play ? `<p class="devlog-play"><a class="rpg-btn rpg-btn-hire" ${play}${age}>▶ Play ${esc(g.title)}</a></p>` : ""}`;
+      box.hidden = false;
+      $("#devlogClose").focus();
+    };
+    const close = () => {
+      if (box.hidden) return;
+      box.hidden = true;
+      if (lastFocus) lastFocus.focus();
+    };
+
+    document.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-devlog]");
+      if (btn) {
+        const g = D.games.find((x) => x.title === btn.dataset.devlog);
+        const L = (D.devlogs || {})[btn.dataset.devlog];
+        if (g && L) open(g, L);
+        return;
+      }
+      // The play button hands off to the arcade player (or a new tab), so close the plaque
+      if (e.target.closest("#devlogBody a[href]")) setTimeout(close, 0);
+    });
+    $("#devlogClose").addEventListener("click", close);
+    box.addEventListener("click", (e) => { if (e.target === box) close(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+  }
+
   buildResume();
   buildShop();
   buildGuestbook();
+  buildDevlogs();
 })();

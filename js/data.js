@@ -28,6 +28,29 @@ window.YVY = {
   // "Attention Players!" message on the welcome card.
   announcement: "New gardening games and silly games sprout here every season. Check the Yvy Portal below!",
 
+  // "Currently…" AIM-style away message on the welcome card. Update whenever!
+  // Each line: [label, emoji, text]. Remove a line to hide it. updated: "YYYY-MM-DD".
+  currently: {
+    away: "brb, out in the garden 🌱",
+    updated: "2026-10-20",
+    lines: [
+      ["growing", "🥬", "kale, radishes & sweet peas"],
+      ["playing", "🎮", "my own games (for “testing”)"],     // SAMPLE: what are you playing?
+      ["Riot's mood", "🐔", "chaotic"],
+      ["learning", "🤸", "handstands (still one hiccup long)"],
+    ],
+  },
+
+  // Seasonal decorations: things gently falling in the background, plus a ticker line.
+  // Months are 1–12. Add ?season=winter (or spring, summer, fall, spooky) to the address to preview one.
+  seasons: [
+    { key: "winter", months: [12, 1, 2], fall: ["❄", "❅", "❆"], ticker: "❄️ Snow season at YvyGrounds. Bundle up, bawk!" },
+    { key: "spring", months: [3, 4, 5], fall: ["🌸", "🌼", "✿", "🌷"], ticker: "🌸 Spring planting season! Get those seeds in" },
+    { key: "summer", months: [6, 7, 8], fall: ["✨", "🫧", "🌻"], ticker: "☀️ Summer in the garden: water early, water deep" },
+    { key: "spooky", months: [10], fromDay: 15, fall: ["🍂", "🎃", "🍁", "🦇"], ticker: "🎃 Spooky season! The chickens are dressing up as chickens" },
+    { key: "fall", months: [9, 10, 11], fall: ["🍂", "🍁", "🍂"], ticker: "🍂 Fall at YvyGrounds: cool-season crops are going in" },
+  ],
+
   // Scrolling news ticker at the very top.
   ticker: [
     "★ Welcome to YvyGrounds! ★",
@@ -341,6 +364,109 @@ window.YVY = {
     { title: "??? Mystery Game ???", type: "mystery", date: "2026-10-18", url: "", thumb: "",
       blurb: "Something is sprouting... and it's a secret. Check back soon!" },
   ],
+
+  /*
+   * "BEHIND THE GAME" DEVLOGS: the 📜 button on a game in the portal opens its museum plaque.
+   * Keyed by the game's exact title. Every part is optional; empty sections don't show.
+   *   made, status: shown under the title
+   *   sketch: { src, caption } (images/devlogs/, ~640px)
+   *   idea, wrong [], learned [], tools [], stats [[emoji, label, value]]
+   * DRAFT: the facts (dates, commits, sizes, fixes) come from each game's code and commit history.
+   * The "what I learned" lines are a first draft: rewrite them in your own words!
+   */
+  devlogs: {
+    "Rabbit & Frog: Gardenbound": {
+      made: "Sep – Oct 2026", status: "still growing ✨",
+      sketch: { src: "images/devlogs/rabbit-frog-logo-1.jpg", caption: "Logo try #1 of 14", alt: "Crayon drawing of Rabbit in a straw hat and overalls sitting next to Frog" },
+      idea: "A game for my K–5 garden students all about seeds: how they pop, travel and get saved for next year. Rabbit and Frog sail between floating islands, and every station teaches a seed idea in English or Español. It started out as “Seed Quest · Misión Semilla” and got its new name in October.",
+      wrong: [
+        "Phones, phones, phones: the tap that opened a card also skipped it, long station names covered other buttons, and the storm's fog hid the Kraken on small screens.",
+        "It got slow. Some islands took up to 2 seconds to appear. After a whole performance plan, they open in under 130 ms and the download is about half the size.",
+        "The storm leaked memory every time you visited, and the Bee Garden sometimes ended on a blank white screen.",
+      ],
+      learned: [
+        "Test on a real phone early and often. Desktop lies!",
+        "Measure before fixing: the numbers showed exactly which islands were slow.",
+        "Playtesters find things you never will (thank you, Mike!).",
+        "Building bilingual from day one is way easier than translating later.",
+      ],
+      tools: ["three.js (3D)", "JavaScript", "Vite", "Custom watercolor shader", "Web Audio sound effects", "Read-aloud (browser speech)", "Playwright", "Vercel"],
+      stats: [["🛠️", "commits", "390"], ["🏝️", "islands", "18"], ["📄", "lines of code", "~98k"], ["🗣️", "languages", "EN · ES"]],
+    },
+    "Master Composter Quest": {
+      made: "Apr – Oct 2026",
+      idea: "What if you fell asleep in Master Composter class and woke up inside the compost? Wallace the worm guides you through seven dream levels about soil, composting and worm bins, from “Don't Compost This!” to planting seeds.",
+      wrong: [
+        "iPhone sound fought back: it took three different fixes in one day to get the sound effects playing on iOS.",
+        "Merging the new nightmare and lives system quietly deleted other features, so they had to be brought back.",
+        "A sticky-keys bug made the character drift after menus. And one crow animation was so ugly it got undone.",
+        "The whole game weighed 91 MB. Shrinking art, video and glow effects got it down to 15 MB.",
+      ],
+      learned: [
+        "Big files are slow files: compress videos and images before shipping (the credits video went from 50 MB to 8.8 MB).",
+        "One giant file is hard to work in. Splitting code into smaller pieces makes changes safer.",
+        "Holiday surprises and Easter eggs (hi, Riot and Beyonce!) give players a reason to come back.",
+      ],
+      tools: ["React", "Vite", "Tailwind CSS", "Pixel-art SVG sprites", "Vercel"],
+      stats: [["🛠️", "commits", "178"], ["🌙", "dream levels", "7"], ["🎃", "holiday themes", "5"], ["📦", "size", "91 → 15 MB"]],
+    },
+    "Tijuana Estuary Explorer": {
+      made: "May – Oct 2026", status: "rough draft",
+      sketch: { src: "images/devlogs/tijuana-field-journal.jpg", caption: "The field-journal look that won (two other styles didn't make it)", alt: "Concept screen: a ranger walking through a salt marsh, with a Nature Journal page and a battle panel against an oil spill" },
+      idea: "Walk a park ranger through ten zones of the Tijuana River Estuary, collect field data at 20 stations, and log wildlife, insects and plants in a Nature Journal. Then defend the estuary from oil spills, invasive giant reed and sewage plumes.",
+      wrong: [
+        "On day two I rebuilt the whole engine: top-down view out, a 6-layer side-scroller in.",
+        "Clouds vanished on iPhones and in the live version, and the title screen online didn't match the one on my computer.",
+        "Tilting the phone for the binoculars game made the view jitter left and right.",
+        "Timers broke when you switched tabs, until they ran on game time instead of the clock.",
+      ],
+      learned: [
+        "Choose the camera and the engine before making lots of art.",
+        "“Works on my computer” isn't done: always check the real live build.",
+        "Code reviews catch real bugs (ten of them in one pass!).",
+        "Only load things when they're needed: startup code dropped from ~400 KB to ~316 KB.",
+      ],
+      tools: ["JavaScript", "HTML5 Canvas", "Vite", "Open-Meteo live weather", "Phone gyroscope", "Watercolor sprites", "Vercel"],
+      stats: [["🛠️", "commits", "298"], ["🗺️", "zones", "10"], ["🔬", "field stations", "20"], ["🐦", "species", "250+"]],
+    },
+    "Mike & Yvy's Love Adventure": {
+      made: "Feb – Oct 2026", status: "started on Valentine's Day 💘",
+      idea: "Our love story as a retro pixel RPG, from a chaotic airport trip all the way to moving in, told across 38 scenes. Bonus: hold a button to dance.",
+      wrong: [
+        "It started as one giant 2,388-line web page. Splitting it into proper pieces took a whole rebuild.",
+        "Story bugs everywhere: players got stuck in place, dialogue leaked between scenes, a fight never started, and fades never faded.",
+        "The airport gate seats were off by a little (sorry, seat 12B).",
+      ],
+      learned: [
+        "Tests for the story flow (about 100 of them now) catch places where players get stuck.",
+        "Lots of small files beat one huge file.",
+        "Every sprite and sound can be made with code: the game ships with no art or audio files of its own.",
+      ],
+      tools: ["Phaser 3", "JavaScript", "Vite", "Vitest", "Code-drawn pixel art", "Web Audio", "Vercel"],
+      stats: [["🛠️", "commits", "112"], ["🎬", "scenes", "38"], ["✅", "tests", "~100"]],
+    },
+    "Tomato Tussle": {
+      made: "Oct 2026", status: "arcade game #1",
+      idea: "A 45-second garden defense: squirrels, crows and raccoons raid the beds, and you splat them with tomatoes to build combos up to ×4. Splat Riot or Beyonce and it's game over.",
+      wrong: ["Tosses felt laggy: every tap waited for a 150 ms tomato flight before the splat. Now the splat happens right on the tap."],
+      learned: ["Game feel is all about instant feedback: sound and splash the moment you tap."],
+      tools: ["JavaScript (no libraries)", "HTML canvas", "Web Audio synth sounds", "Pixel art in code"],
+      stats: [["⏱️", "round", "45 s"], ["🔥", "max combo", "×4"], ["📄", "lines of code", "761"]],
+    },
+    "Bowl Brawl": {
+      made: "Oct 2026", status: "arcade game #2",
+      idea: "Peaches vs. Lychee in a quick-draw duel over the food bowl. Wait for Bojjii's flag, then pounce, but watch out for fake-outs: a butterfly, a pancake, a sneeze or a fly! First to 3 wins.",
+      learned: ["A computer player that gets faster every round, and sometimes falls for fake-outs too, feels fairer and funnier than a perfect one."],
+      tools: ["JavaScript (no libraries)", "HTML canvas", "Web Audio synth sounds", "Pixel art in code"],
+      stats: [["🐾", "players", "1 or 2"], ["🏆", "first to", "3"], ["📄", "lines of code", "735"]],
+    },
+    "Who is my wife cheating with!?": {
+      status: "made with ALCaline",
+      idea: "A crime of passion, investigated entirely in MS Paint, in English or Español.",
+      tools: ["React", "Vite", "Canvas drawings", "Bilingual text"],
+      stats: [["🗣️", "lines of text", "~1,090 × 2"], ["🎵", "music tracks", "8"]],
+    },
+  },
 
   // Background photo wall: share of photo frames that stay as cute emoji frames
   // so it doesn't feel crowded. 0 = all photos, 0.3 = about 1 in 3, 1 = all emoji.

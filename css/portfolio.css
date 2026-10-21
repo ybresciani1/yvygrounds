@@ -445,3 +445,66 @@
   .gb-avatar { width: 48px; height: 48px; }
   .gb-avatar .px { width: 36px; height: auto; }
 }
+
+/* ===== "Behind the Game" devlogs: Animal Crossing museum plaque ===== */
+.game-list li.has-devlog { display: flex; flex-direction: column; }
+.game-list li.has-devlog .game { height: auto; flex: 1; }
+.devlog-btn {
+  align-self: flex-start;
+  margin: -4px 0 6px 90px;
+  padding: 3px 10px;
+  background: #3b2a1a;
+  color: #ffe9b8;
+  border: 2px solid #c9a46a;
+  border-radius: 999px;
+  font: 700 12px var(--f-round);
+  cursor: pointer;
+}
+.devlog-btn:hover { background: #5a3e24; color: #fff; }
+
+.devlog-card {
+  width: min(680px, 100%);
+  padding: 0 0 20px;
+  text-align: left;
+  background: #fbf3df;
+  box-shadow: 0 0 0 6px #6b4a2b, 0 0 0 9px #c9a46a;
+}
+.devlog-card .lightbox-close { z-index: 1; }
+/* Dark wood plaque with gold lettering */
+.plaque {
+  margin: 0;
+  padding: 22px 24px 18px;
+  text-align: center;
+  background:
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .04) 0 2px, transparent 2px 9px),
+    linear-gradient(#5a3e24, #3b2a1a);
+  border-bottom: 5px solid #c9a46a;
+}
+.plaque-kicker { margin: 0; font: 9px/1.6 var(--f-pixel); letter-spacing: 2px; color: #c9a46a; text-transform: uppercase; }
+.plaque h2, .devlog-card .plaque h2 {
+  margin: 4px 0 2px;
+  font: 400 clamp(26px, 5vw, 36px)/1.1 var(--f-logo);
+  color: #ffe08a;
+  text-shadow: 0 2px 0 #6b4a1f, 0 0 12px rgba(255, 210, 63, .35);
+}
+.plaque-meta { margin: 0; font: 600 13px var(--f-round); color: #e8d3a8; }
+.devlog-body { padding: 16px 22px 0; display: grid; gap: 12px; }
+.devlog-sketch { margin: 0; justify-self: center; background: #fff; padding: 8px 8px 4px; box-shadow: 0 3px 8px rgba(0, 0, 0, .2); transform: rotate(-1deg); max-width: 100%; }
+.devlog-sketch img { display: block; max-width: 100%; max-height: 280px; margin: 0 auto; }
+.devlog-sketch figcaption { font: 400 18px var(--f-hand); text-align: center; padding-top: 4px; }
+.devlog-section { background: #fff; border: 2px solid #ead9b5; border-radius: 14px; padding: 10px 14px; }
+.devlog-section h3 { margin: 0 0 4px; font: 700 16px var(--f-round); color: #6b4a2b; }
+.devlog-section p, .devlog-section ul { margin: 0; font: 400 18px/1.35 var(--f-hand); }
+.devlog-section ul { padding-left: 20px; }
+.devlog-section li + li { margin-top: 4px; }
+.devlog-tools { display: flex; flex-wrap: wrap; gap: 6px; }
+.devlog-tools span { background: #f3e6c8; border: 1px solid #d9c39a; border-radius: 999px; padding: 1px 10px; font: 600 13px var(--f-round); color: #5a3e24; }
+.devlog-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin: 0; }
+.devlog-stats div { background: #3b2a1a; border-radius: 10px; padding: 8px 10px; text-align: center; }
+.devlog-stats dt { font: 600 11px var(--f-round); color: #e8d3a8; }
+.devlog-stats dd { margin: 2px 0 0; font: 12px var(--f-pixel); color: #ffe08a; }
+.devlog-play { margin: 4px 0 0; text-align: center; }
+@media (max-width: 520px) {
+  .devlog-btn { margin-left: 8px; }
+  .devlog-body { padding: 12px 12px 0; }
+}

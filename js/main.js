@@ -188,9 +188,25 @@
 
   /* ---------- Ticker ---------- */
   function buildTicker() {
-    const items = D.ticker.map((t) => `<span>${esc(t)}</span>`).join("");
+    // Plus the next arcade release (games dated in the future, see OPEN_ITEMS.md) and the season's line
+    const next = D.games.filter((g) => g.play && isLocked(g)).sort((a, b) => String(a.date).localeCompare(String(b.date)))[0];
+    const extra = [
+      next ? `🕹️ Next arcade game: ${next.title}, unlocking ${unlockDay(next)}!` : "",
+    ].filter(Boolean);
+    const items = [...D.ticker, ...extra].map((t) => `<span>${esc(t)}</span>`).join("");
     $("#ticker").innerHTML = items + items; // doubled for a seamless loop
   }
+
+  // Current season from data.js → seasons (first match wins). ?season=winter previews one.
+  function seasonNow() {
+    const list = D.seasons || [];
+    const forced = new URLSearchParams(location.search).get("season");
+    if (forced) return list.find((s) => s.key === forced) || null;
+    const d = new Date();
+    const m = d.getMonth() + 1;
+    return list.find((s) => s.months.includes(m) && (!s.fromDay || d.getDate() >= s.fromDay)) || null;
+  }
+  window.yvySeason = seasonNow;
 
   /* ---------- Animal Crossing dialog (typewriter) ---------- */
   function buildDialog() {
@@ -287,9 +303,13 @@
       const inner =
         `<span class="game-thumb ${type}">${gameIcon(g)}</span>
          <span><span class="game-title">${esc(g.title)}</span> - ${esc(g.blurb)}<br>${tags}</span>`;
+      // "Behind the Game" devlog button sits next to the row link (js/portfolio.js opens it)
+      const devlog = (D.devlogs || {})[g.title] && !isLocked(g)
+        ? `<button type="button" class="devlog-btn" data-devlog="${esc(g.title)}">📜 Behind the Game</button>`
+        : "";
       return playable(g)
-        ? `<li><a class="game" ${gameLink(g)}>${inner}</a></li>`
-        : `<li><div class="game">${inner}</div></li>`;
+        ? `<li class="${devlog ? "has-devlog" : ""}"><a class="game" ${gameLink(g)}>${inner}</a>${devlog}</li>`
+        : `<li class="${devlog ? "has-devlog" : ""}"><div class="game">${inner}</div>${devlog}</li>`;
     }).join("");
   }
 
@@ -531,9 +551,11 @@
   /* ---------- Critters ---------- */
   function critterCard(c, kindField, emoji) {
     const photo = c.photo ? imgTag(c.photo, c.name, emoji, c.focus) : (emoji === "🐔" ? px("chicken", 6) : `<span>${emoji}</span>`);
+    // The photo is a button: click to pet (hearts + a little sound, js/extras.js)
     return `<article class="critter">
-      <div class="critter-photo">${photo}</div>
+      <button type="button" class="critter-photo" data-pet="${esc(c.name)}" data-sound="${esc(kindField === "breed" ? "chicken" : /cat/i.test(c.kind) ? "cat" : "dog")}" aria-label="Pet ${esc(c.name)}">${photo}</button>
       <span class="critter-name">${esc(c.name)}</span>
+      <p class="critter-pets" data-pets-for="${esc(c.name)}" aria-live="polite"></p>
       <p class="critter-kind">${esc(c[kindField])}</p>
       <p class="critter-fact">${esc(c.fact)}</p>
     </article>`;

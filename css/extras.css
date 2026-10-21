@@ -1,0 +1,142 @@
+/* ---------- Extras: away message, pet-able critters, Konami egg, seasons, hit counter (js/extras.js) ---------- */
+
+/* AIM-style away message window */
+.aim {
+  width: min(320px, 100%);
+  margin: 18px auto 0;
+  text-align: left;
+  background: #ece9d8;
+  border: 2px solid #0a246a;
+  border-radius: 8px 8px 4px 4px;
+  box-shadow: 4px 5px 0 rgba(43, 26, 82, .25);
+  transform: rotate(-1deg);
+}
+.aim-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 6px;
+  background: linear-gradient(#3a8cf0, #0a5fd8 45%, #0848b8);
+  color: #fff;
+  font: bold 12px Tahoma, Verdana, sans-serif;
+  border-radius: 5px 5px 0 0;
+  text-shadow: 1px 1px 0 #00246b;
+}
+.aim-man { font-size: 13px; filter: hue-rotate(10deg); }
+.aim-x {
+  margin-left: auto;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  font-size: 10px;
+  background: linear-gradient(#e8836c, #c4361b);
+  border: 1px solid #fff;
+  border-radius: 3px;
+}
+.aim-body {
+  margin: 4px;
+  padding: 8px 10px;
+  background: #fff;
+  border: 1px inset #b9b6a8;
+  font: 13px/1.45 Tahoma, Verdana, sans-serif;
+}
+.aim-away { margin: 0 0 6px; color: #0000ff; font-family: "Comic Sans MS", "Comic Sans", var(--f-hand); font-size: 14px; }
+.aim-label { margin: 0; font-weight: bold; color: #c00000; }
+.aim-lines { list-style: none; margin: 2px 0 0; padding: 0; }
+.aim-lines li { margin: 1px 0; }
+.aim-emoji { display: inline-block; width: 20px; }
+.aim-lines b { color: #0a246a; }
+.aim-updated { margin: 6px 0 0; font-size: 10px; color: #8a8492; text-align: right; }
+
+/* Pet-able critters */
+button.critter-photo { cursor: pointer; padding: 0; font: inherit; color: inherit; transition: transform .15s; }
+button.critter-photo:hover { transform: scale(1.05) rotate(-3deg); }
+button.critter-photo:active { transform: scale(.94); }
+.critter-pets { min-height: 1.2em; margin: 4px 0 0; font: 700 12px var(--f-round); color: #e0457b; }
+.pet-total {
+  margin: 4px auto 0;
+  text-align: center;
+  font: 700 15px var(--f-round);
+  color: #fff;
+  text-shadow: 0 2px 0 var(--green-dark), 2px 0 0 var(--green-dark), -2px 0 0 var(--green-dark), 0 -2px 0 var(--green-dark);
+}
+.pet-heart {
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  color: #ff4d8d;
+  font-size: 22px;
+  translate: -50% -50%;
+  animation: pet-heart .9s ease-out forwards;
+}
+@keyframes pet-heart {
+  to { transform: translate(var(--dx), var(--dy)) scale(.4); opacity: 0; }
+}
+
+/* Konami code: tomato cursor + raining chickens */
+body.tomato-cursor, body.tomato-cursor * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext y='26' font-size='26'%3E%F0%9F%8D%85%3C/text%3E%3C/svg%3E") 12 12, auto !important;
+}
+.egg-layer { position: fixed; inset: 0; z-index: 90; pointer-events: none; overflow: hidden; }
+.egg-chicken {
+  position: absolute;
+  top: -60px;
+  animation: egg-fall linear forwards;
+}
+@keyframes egg-fall {
+  to { transform: translateY(calc(100vh + 120px)) rotate(var(--spin)); }
+}
+.egg-toast {
+  position: fixed;
+  z-index: 95;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  max-width: calc(100vw - 32px);
+  background: var(--cream);
+  border-radius: 999px;
+  padding: 10px 22px;
+  box-shadow: 0 5px 0 #e8d9b0, 0 0 0 4px #fff, 0 8px 20px rgba(0, 0, 0, .25);
+  font: 700 15px var(--f-round);
+  text-align: center;
+}
+.egg-toast[hidden] { display: none; }
+
+/* Seasonal decorations: behind the page content, above the photo wall */
+.season-layer { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+.season-bit {
+  position: absolute;
+  top: -40px;
+  opacity: .8;
+  animation: season-fall linear infinite;
+}
+@keyframes season-fall {
+  0% { transform: translate(0, 0) rotate(0); }
+  50% { transform: translate(var(--sway), 55vh) rotate(160deg); }
+  100% { transform: translate(0, calc(100vh + 60px)) rotate(320deg); }
+}
+body[data-season="winter"] .season-bit { color: #fff; text-shadow: 0 0 4px rgba(90, 168, 240, .8); }
+
+/* "You are visitor #…" (Newgrounds portal side panel) */
+.visitor {
+  background: var(--ng-panel);
+  border: 2px solid #000;
+  border-radius: 10px;
+  padding: 10px;
+  text-align: center;
+  color: #fff;
+  font: bold 11px var(--f-body);
+}
+.visitor p { margin: 0; }
+.visitor-num { display: inline-flex; gap: 2px; margin: 6px 0 4px !important; background: #000; padding: 3px; border-radius: 4px; }
+.visitor-num span {
+  display: inline-block;
+  min-width: 16px;
+  padding: 2px 0;
+  background: linear-gradient(#333, #111 50%, #222);
+  color: var(--ng-orange);
+  font: 12px var(--f-pixel);
+  border-radius: 2px;
+}
+.visitor-since { color: #8a8492; font-size: 10px; }
