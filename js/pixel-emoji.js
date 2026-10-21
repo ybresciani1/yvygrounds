@@ -85,7 +85,7 @@
       img.src = url;
       img.alt = m[0];          // screen readers and copy/paste still get the emoji
       img.draggable = false;
-      if (ratio > 1) img.style.width = `${(1.15 * ratio).toFixed(2)}em`;
+      if (ratio > 1) img.style.setProperty("--px-ratio", ratio.toFixed(2));
       frag.appendChild(img);
       last = m.index + m[0].length;
     }

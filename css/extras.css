@@ -293,11 +293,19 @@ body[data-season="winter"] .season-bit { color: #fff; text-shadow: 0 0 4px rgba(
 .hall-cert a:hover img { transform: rotate(0) scale(1.02); }
 .hall-cert figcaption { margin-top: 10px; font: 400 19px/1.3 var(--f-hand); color: #6b4a1f; }
 
-/* Pixel emoji (js/pixel-emoji.js): emoji redrawn on a 16×16 canvas and scaled up with crisp pixels */
-.px-emoji {
-  display: inline-block;
-  width: 1.15em;
-  height: 1.15em;
+/* Pixel emoji (js/pixel-emoji.js): hand-drawn 12×12 sprites scaled up with crisp pixels.
+   Sized like text (1.15em of the font size around them). !important because photo frames
+   (.oval img, .polaroid-photo img...) stretch or position every <img> inside them. */
+img.px-emoji {
+  display: inline-block !important;
+  position: static !important;
+  width: calc(1.15em * var(--px-ratio, 1)) !important;
+  height: 1.15em !important;
+  max-width: none !important;
+  object-fit: fill !important;
+  background: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
   margin: 0 .03em;
   vertical-align: -.2em;
   image-rendering: crisp-edges;

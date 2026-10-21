@@ -2742,22 +2742,22 @@ window.YvyEmojiSprites = {
       "............",
     ],
   },
-  // 💅 Three fingertips with hot-pink painted nails and twinkly sparkles ("strutting the yard like it's a runway")
+  // 💅 Whole hand like the original emoji: five fingertips (four fingers and a thumb) with hot-pink nails, sparkles, wrist open at the bottom ("strutting the yard like it's a runway")
   "💅": {
     c: { K: "#2b1a52", S: "#e8b48a", P: "#ff4d8d", Y: "#ffd23f", W: "#ffffff" },
     g: [
       ".Y........Y.",
-      "YWY......YWY",
-      ".Y........Y.",
-      "..KK.KK.KK..",
-      ".KPPKPPKPPK.",
-      ".KSSKSSKSSK.",
-      ".KSSKSSKSSK.",
-      ".KSSSSSSSSK.",
+      "YWY..K...YWY",
+      ".Y.KKPKK..Y.",
+      "..KPKSKPKK..",
+      "..KSKSKSKPK.",
+      ".KKSKSKSKSK.",
+      "KPKSSSSSSSK.",
+      "KSSSSSSSSSK.",
       ".KSSSSSSSSK.",
       "..KSSSSSSK..",
       "...KSSSSK...",
-      "...KKKKKK...",
+      "...KSSSSK...",
     ],
   },
   // 🌟 Yvy's own star (her album label and photo fallback): a bright chunky star with a shine
