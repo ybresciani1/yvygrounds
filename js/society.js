@@ -51,11 +51,59 @@
   let projectsCache = null;
   const getProjects = async () => (projectsCache = projectsCache || (await api("/api/projects")).projects);
 
+  // Yvy's dated Garden Society photos (data.js → photos.club with a date) are journal entries too
+  const FOCUS_WORDS = { top: "50% 0%", bottom: "50% 100%", left: "0% 50%", right: "100% 50%", center: "50% 50%" };
+  const focusStyle = (focus) => {
+    const value = FOCUS_WORDS[focus] || String(focus || "").trim();
+    return value && /^[a-z0-9.%\s-]+$/i.test(value) ? ` style="object-position:${value}"` : "";
+  };
+  const clubPhotos = () => (((window.YVY && window.YVY.photos) || {}).club || []).filter((p) => p && p.src && p.date);
+  function clubCard(p) {
+    return `<article class="society-post club-post">
+      <a class="club-photo" href="${esc(p.src)}" target="_blank" rel="noopener"><img src="${esc(p.src)}" alt="${esc(p.caption || "Garden Society photo")}" loading="lazy" data-fallback="🌻"${focusStyle(p.focus)}></a>
+      <header>
+        ${p.caption ? `<h4>${esc(p.caption)}</h4>` : ""}
+        <p class="post-meta">📸 Garden Society · ${esc(fmtDate(p.date))}</p>
+      </header>
+    </article>`;
+  }
+
+  // Members' posts and the dated Garden Society photos, newest first.
+  // The photos still show if the notebook API is napping.
   async function showJournal(panel) {
-    const { posts } = await api("/api/feed?kind=journal&limit=30");
-    panel.innerHTML = posts.length
-      ? `<div class="society-posts">${posts.map((p) => postCard(p)).join("")}</div>`
-      : '<p class="society-empty">No journal entries yet. Be the first! ✏️</p>';
+    let posts = [];
+    let apiDown = false;
+    try { posts = (await api("/api/feed?kind=journal&limit=30")).posts || []; } catch (e) { apiDown = true; }
+    const items = [
+      ...posts.map((p) => ({ date: String(p.createdAt), html: postCard(p) })),
+      ...clubPhotos().map((p) => ({ date: String(p.date), html: clubCard(p) })),
+    ].sort((a, b) => b.date.localeCompare(a.date));
+    if (!items.length) {
+      panel.innerHTML = apiDown ? napping : '<p class="society-empty">No journal entries yet. Be the first! ✏️</p>';
+      return;
+    }
+    // 6 entries a page, flipped with BACK / NEXT like the compost photos
+    const PER_PAGE = 6;
+    const pages = Math.ceil(items.length / PER_PAGE);
+    let page = 0;
+    panel.innerHTML = `<div class="journal-book">
+      <div class="journal-stage">
+        <button class="arrow arrow-back" type="button" data-step="-1" aria-label="Previous journal page"${pages < 2 ? " hidden" : ""}>BACK</button>
+        <div class="society-posts journal-page"></div>
+        <button class="arrow arrow-next" type="button" data-step="1" aria-label="Next journal page"${pages < 2 ? " hidden" : ""}>NEXT</button>
+      </div>
+      <p class="scrap-count journal-count" aria-live="polite"${pages < 2 ? " hidden" : ""}></p>
+    </div>`;
+    const show = () => {
+      page = (page + pages) % pages;
+      $(".journal-page", panel).innerHTML = items.slice(page * PER_PAGE, (page + 1) * PER_PAGE).map((x) => x.html).join("");
+      $(".journal-count", panel).textContent = `Page ${page + 1} / ${pages}`;
+    };
+    panel.querySelectorAll(".journal-stage [data-step]").forEach((b) => b.addEventListener("click", () => {
+      page += Number(b.dataset.step);
+      show();
+    }));
+    show();
   }
 
   async function showProjects(panel) {
