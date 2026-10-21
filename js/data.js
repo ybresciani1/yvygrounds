@@ -114,7 +114,7 @@ window.YVY = {
     location: "San Diego, CA",
     site: "yvygrounds.com",
     startYear: 2009,   // first year working with kids; the RPG level is years since then
-    summary: "Bilingual educator and program leader with 10+ years of experience in early childhood development, inquiry-based learning, and experiential education. Specializing in Reggio Emilia-inspired, Montessori, and Forest School pedagogies, with expertise in outdoor classroom development, environmental stewardship, curriculum design, and community engagement. Experienced in mentoring educators, coordinating volunteers, developing educational partnerships, and securing $10,000+ annually in grant funding. Passionate about creating inclusive, child-centered learning environments that foster curiosity, ecological literacy, creativity, and meaningful connections with the natural world.",
+    summary: "Bilingual educator and program leader with 15+ years of experience in early childhood development, inquiry-based learning, and experiential education. Specializing in Reggio Emilia-inspired, Montessori, and Forest School pedagogies, with expertise in outdoor classroom development, environmental stewardship, curriculum design, and community engagement. Experienced in mentoring educators, coordinating volunteers, developing educational partnerships, and securing $10,000+ annually in grant funding. Passionate about creating inclusive, child-centered learning environments that foster curiosity, ecological literacy, creativity, and meaningful connections with the natural world.",
 
     // RPG sheet only
     rpg: {
