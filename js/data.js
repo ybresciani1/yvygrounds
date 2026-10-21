@@ -493,7 +493,8 @@ window.YVY = {
   // Weekly photo rotation: these albums show only this many photos at a time
   // (scrapbook, popup and photo wall), shuffled. A new set rotates in every Monday,
   // and over the weeks every photo gets its turn. Remove an album to show all of it.
-  // pin: true on a photo keeps it in every week, first (it counts toward the 10).
+  // pin: true on a photo keeps it in every week (it counts toward the 10). The first
+  // pinned photo always shows first; other pinned ones mix in with the rotating photos.
   weeklyPhotos: { me: 10, pets: 10, chickens: 10 },
   // Albums where everyone gets an equal share every week. A photo belongs to whoever's
   // name is in its file name or caption (group photos count for everyone in them).
@@ -522,7 +523,9 @@ window.YVY = {
   photos: {
     me: [           // images/me/        (the first one becomes the "click my head" photo; it's pinned so it always shows)
       { src: "images/me/the-best.jpg",       caption: "Certified the best. Source: me ✨", pin: true },
-      { src: "images/me/garden-class-chickens.jpg", caption: "Garden class, starring Riot and Beyonce as special guest speakers 🎤🐔" },
+      { src: "images/me/garden-class-chickens.jpg", caption: "Garden class, starring Riot and Beyonce as special guest speakers 🎤🐔", pin: true },
+      { src: "images/chickens/yvy-fake-chickens-1.jpg", caption: "Me and some very well-behaved chickens (they're fake)", focus: "30% 40%", pin: true },
+      { src: "images/me/trex-pinball.jpg",     caption: "T. rex vs. Jurassic Park pinball. Tiny arms, big score 🦖", focus: "40% 40%", pin: true },
       { src: "images/me/fairy-flower.jpg",   caption: "Tiny fairy, giant flower. Scale is a social construct 🌸", focus: "50% 72%" },
       { src: "images/me/fairy-leaves.jpg",   caption: "Fairy in the garden. You didn't see me 🧚" },
       { src: "images/me/pikachu.jpg",        caption: "Got swallowed by a Pikachu" },
@@ -536,9 +539,19 @@ window.YVY = {
       { src: "images/me/portrait-bw.jpg",    caption: "Black & white = very serious artist mode 🎞️" },
       { src: "images/me/black-tank.jpg",     caption: "Plotting my next game (it has chickens) 🎮", focus: "50% 15%" },
       { src: "images/me/car-selfie.jpg",     caption: "Road trip selfie, snacks within reach 🚗", focus: "55% 50%" },
-      { src: "images/me/dress-burgundy.jpg", caption: "Dress hunting: the mirror said yes 👗", focus: "50% 15%" },
-      { src: "images/me/dress-blue.jpg",     caption: "Feeling blue (the good kind)", focus: "50% 15%" },
       { src: "images/me/gingham.jpg",        caption: "Gingham + sunshine = picnic energy 🧺", focus: "50% 15%" },
+      { src: "images/me/pikachu-and-ash.jpg",  caption: "Pikachu and Ash, best-friend edition ⚡", focus: "60% 35%" },
+      { src: "images/me/chef-cosplay.jpg",     caption: "Chef squad, raccoon sous-chefs included 🦝🍳", focus: "50% 35%" },
+      { src: "images/me/pikachu-christmas.jpg", caption: "Double Pikachu, double peppermint mocha ☕⚡", focus: "50% 30%" },
+      { src: "images/me/naruto-family.jpg",    caption: "Believe it! Naruto family photo (Lychee joined the village) 🍥", focus: "50% 30%" },
+      { src: "images/me/dragon-queen.jpg",     caption: "Mother of dragons, on Eevee babysitting duty 🐉", focus: "45% 55%" },
+      { src: "images/me/dino-crew.jpg",        caption: "Dino crew at the movies. I'm the raptor 🦖", focus: "50% 50%" },
+      { src: "images/me/poncho.jpg",           caption: "Poncho twirl, sunshine mode 🌈", focus: "50% 25%" },
+      { src: "images/me/cat-in-the-hat.jpg",   caption: "Storytime with the Cat in the Hat 🎩📖", focus: "40% 40%" },
+      { src: "images/me/flower-crown.jpg",     caption: "Flower crown, fiesta colors 🌺", focus: "50% 30%" },
+      { src: "images/me/princess-peach.jpg",   caption: "Princess Peach, but make it pizza-delivery chic 🍑", focus: "35% 35%" },
+      { src: "images/me/one-piece.jpg",        caption: "Straw Hat crew, reporting for treasure duty 🍊🏴‍☠️", focus: "35% 35%" },
+      { src: "images/me/witch.jpg",            caption: "Garden witch mode: weeds, be gone 🌿✨", focus: "50% 25%" },
     ],
     club:     [],   // images/club/      Garden Society
     students: [],   // images/students/  garden students

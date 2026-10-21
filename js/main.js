@@ -40,10 +40,14 @@
     const limit = Number((D.weeklyPhotos || {})[key]) || 0;
     if (!limit || all.length <= limit) return all;
     if (weeklyCache[key]) return weeklyCache[key];
-    // pin: true photos always show, first and in order; the rest rotate in the spots left.
+    // pin: true photos show every week. The first pinned photo always leads; the other
+    // pinned ones mix in with this week's rotating photos, which fill the spots left.
     const pinned = all.filter((p) => p.pin);
     const rest = all.filter((p) => !p.pin);
-    return (weeklyCache[key] = [...pinned, ...weeklyPick(key, rest, Math.max(0, limit - pinned.length))]);
+    const [lead, ...alsoPinned] = pinned;
+    const picks = weeklyPick(key, rest, Math.max(0, limit - pinned.length));
+    const mixed = seededShuffle([...alsoPinned, ...picks], weekNo * 31 + key.length);
+    return (weeklyCache[key] = lead ? [lead, ...mixed] : mixed);
   }
   function weeklyPick(key, all, limit) {
     if (!limit) return [];
