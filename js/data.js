@@ -813,8 +813,8 @@ window.YVY = {
         label: "UC Master Gardeners: Composting basics",
         url: "https://ucanr.edu/site/uc-master-gardeners-san-luis-obispo-county/composting-basics",
       },
-      // Yvy's compost photos (images/compost/), a slideshow in the Compost tab before member posts.
-      // date: "YYYY-MM-DD" shows on the photo; list them oldest first.
+      // Yvy's compost photos (images/compost/): journal-style cards in the Compost tab, mixed with
+      // members' compost posts, newest first, 6 a page. date: "YYYY-MM-DD" shows on the card.
       // Families gave the OK to post these.
       photos: [
         { date: "2026-04-23", src: "images/compost/sorting-scraps.jpg",    caption: "Sorting scraps: greens vs. browns 🥬🍂", focus: "45% 50%" },

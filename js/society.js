@@ -58,62 +58,72 @@
     return value && /^[a-z0-9.%\s-]+$/i.test(value) ? ` style="object-position:${value}"` : "";
   };
   const clubPhotos = () => (((window.YVY && window.YVY.photos) || {}).club || []).filter((p) => p && p.src && p.date);
-  function clubCard(p) {
+  // A photo from data.js as a journal-style card: the photo, its caption, "📸 <label> · date"
+  function clubCard(p, label = "Garden Society", fallback = "🌻") {
     return `<article class="society-post club-post">
-      <a class="club-photo" href="${esc(p.src)}" target="_blank" rel="noopener"><img src="${esc(p.src)}" alt="${esc(p.caption || "Garden Society photo")}" loading="lazy" data-fallback="🌻"${focusStyle(p.focus)}></a>
+      <a class="club-photo" href="${esc(p.src)}" target="_blank" rel="noopener"><img src="${esc(p.src)}" alt="${esc(p.caption || `${label} photo`)}" loading="lazy" data-fallback="${fallback}"${focusStyle(p.focus)}></a>
       <header>
         ${p.caption ? `<h4>${esc(p.caption)}</h4>` : ""}
-        <p class="post-meta">📸 Garden Society · ${esc(fmtDate(p.date))}</p>
+        <p class="post-meta">📸 ${esc(label)}${p.date ? ` · ${esc(fmtDate(p.date))}` : ""}</p>
       </header>
     </article>`;
   }
 
-  // Members' posts and the dated Garden Society photos, newest first.
-  // The photos still show if the notebook API is napping.
-  async function showJournal(panel) {
-    let posts = [];
-    let apiDown = false;
-    // Written entries come from the API; try twice before giving up (a blip shouldn't hide them)
+  // Fetch members' posts of one kind, trying twice (a blip shouldn't hide them). null = didn't load.
+  async function feed(kind) {
     for (let attempt = 0; attempt < 2; attempt++) {
-      try { posts = (await api("/api/feed?kind=journal&limit=30")).posts || []; apiDown = false; break; } catch (e) {
-        apiDown = true;
+      try { return (await api(`/api/feed?kind=${kind}&limit=30`)).posts || []; } catch (e) {
         if (attempt === 0) await new Promise((r) => setTimeout(r, 1500));
       }
     }
-    const items = [
-      ...posts.map((p) => ({ date: String(p.createdAt), html: postCard(p) })),
-      ...clubPhotos().map((p) => ({ date: String(p.date), html: clubCard(p) })),
-    ].sort((a, b) => b.date.localeCompare(a.date));
-    if (!items.length) {
-      panel.innerHTML = apiDown ? napping : '<p class="society-empty">No journal entries yet. Be the first! ✏️</p>';
-      return;
-    }
-    // 6 entries a page, flipped with BACK / NEXT like the compost photos
-    const PER_PAGE = 6;
+    return null;
+  }
+
+  // The "book" the Journal and Compost tabs share: cards newest first, 6 a page,
+  // flipped with BACK / NEXT. items: [{ date, html }]. missing: a note shown above when
+  // members' posts didn't load (with a Try again button that reopens the tab).
+  const PER_PAGE = 6;
+  function renderBook(box, items, { what, missing, retryTab }) {
+    items = items.slice().sort((a, b) => b.date.localeCompare(a.date));
     const pages = Math.ceil(items.length / PER_PAGE);
     let page = 0;
-    // If the written entries didn't load, say so (with a retry) instead of quietly showing only photos
-    panel.innerHTML = `${apiDown ? `<p class="journal-missing">📓 The written journal entries didn't load. <button type="button" class="journal-retry">Try again</button></p>` : ""}
+    box.innerHTML = `${missing ? `<p class="journal-missing">${missing} <button type="button" class="journal-retry">Try again</button></p>` : ""}
     <div class="journal-book">
       <div class="journal-stage">
-        <button class="arrow arrow-back" type="button" data-step="-1" aria-label="Previous journal page"${pages < 2 ? " hidden" : ""}>BACK</button>
+        <button class="arrow arrow-back" type="button" data-step="-1" aria-label="Previous ${what} page"${pages < 2 ? " hidden" : ""}>BACK</button>
         <div class="society-posts journal-page"></div>
-        <button class="arrow arrow-next" type="button" data-step="1" aria-label="Next journal page"${pages < 2 ? " hidden" : ""}>NEXT</button>
+        <button class="arrow arrow-next" type="button" data-step="1" aria-label="Next ${what} page"${pages < 2 ? " hidden" : ""}>NEXT</button>
       </div>
       <p class="scrap-count journal-count" aria-live="polite"${pages < 2 ? " hidden" : ""}></p>
     </div>`;
     const show = () => {
       page = (page + pages) % pages;
-      $(".journal-page", panel).innerHTML = items.slice(page * PER_PAGE, (page + 1) * PER_PAGE).map((x) => x.html).join("");
-      $(".journal-count", panel).textContent = `Page ${page + 1} / ${pages}`;
+      $(".journal-page", box).innerHTML = items.slice(page * PER_PAGE, (page + 1) * PER_PAGE).map((x) => x.html).join("");
+      $(".journal-count", box).textContent = `Page ${page + 1} / ${pages}`;
     };
-    panel.querySelectorAll(".journal-stage [data-step]").forEach((b) => b.addEventListener("click", () => {
+    box.querySelectorAll(".journal-stage [data-step]").forEach((b) => b.addEventListener("click", () => {
       page += Number(b.dataset.step);
       show();
     }));
-    const retry = $(".journal-retry", panel);
-    if (retry) retry.addEventListener("click", () => openTab("journal"));
+    const retry = $(".journal-retry", box);
+    if (retry) retry.addEventListener("click", () => openTab(retryTab));
     show();
+  }
+
+  // Members' posts and the dated Garden Society photos, newest first.
+  // The photos still show if the notebook API is napping.
+  async function showJournal(panel) {
+    const posts = await feed("journal");
+    const items = [
+      ...(posts || []).map((p) => ({ date: String(p.createdAt), html: postCard(p) })),
+      ...clubPhotos().map((p) => ({ date: String(p.date), html: clubCard(p) })),
+    ];
+    if (!items.length) {
+      panel.innerHTML = posts ? '<p class="society-empty">No journal entries yet. Be the first! ✏️</p>' : napping;
+      return;
+    }
+    renderBook(panel, items, { what: "journal", retryTab: "journal",
+      missing: posts ? "" : "📓 The written journal entries didn't load." });
   }
 
   async function showProjects(panel) {
@@ -149,57 +159,15 @@
   // slideshow (same polaroid + BACK/NEXT arrows as the photo scrapbook). They live on the
   // site, so they show even when the notebook API is napping.
   const compostPhotos = () => (C.photos || []).filter((p) => p && p.src);
-  function compostGallery() {
-    if (!compostPhotos().length) return "";
-    return `<div class="compost-slides">
-      <div class="scrap-stage">
-        <button class="arrow arrow-back" type="button" data-step="-1" aria-label="Previous compost photo">BACK</button>
-        <figure class="polaroid">
-          <a class="polaroid-photo" target="_blank" rel="noopener" aria-label="Open photo larger"></a>
-          <figcaption></figcaption>
-        </figure>
-        <button class="arrow arrow-next" type="button" data-step="1" aria-label="Next compost photo">NEXT</button>
-      </div>
-      <p class="scrap-count" aria-live="polite"></p>
-    </div>`;
-  }
-  function wireCompostSlides(panel) {
-    const box = $(".compost-slides", panel);
-    const photos = compostPhotos();
-    if (!box || !photos.length) return;
-    let i = 0;
-    const show = () => {
-      i = (i + photos.length) % photos.length;
-      const p = photos[i];
-      const link = $(".polaroid-photo", box);
-      link.href = p.src;
-      link.innerHTML = `<img src="${esc(p.src)}" alt="${esc(p.caption || "Compost photo")}"${p.focus ? ` style="object-position:${esc(p.focus)}"` : ""}>`;
-      $("figcaption", box).innerHTML =
-        (p.date ? `<span class="polaroid-date">${esc(fmtDate(p.date))}</span>` : "") + esc(p.caption || "");
-      $(".scrap-count", box).textContent = `${i + 1} / ${photos.length}`;
-    };
-    box.addEventListener("click", (e) => {
-      const btn = e.target.closest("[data-step]");
-      if (btn) { i += Number(btn.dataset.step); show(); }
-    });
-    show();
-  }
 
+  // Compost tab: temperature readings + chart (from the API), then Yvy's compost photos and
+  // members' compost posts as journal-style cards, 6 a page. Photos show even if the API naps.
   async function showCompost(panel) {
-    let logs, posts;
-    try {
-      [{ logs }, { posts }] = await Promise.all([api("/api/compost"), api("/api/feed?kind=compost&limit=12")]);
-    } catch (e) {
-      const gallery = compostGallery();
-      if (!gallery) throw e;
-      panel.innerHTML = `${napping}<h4 class="compost-photos-title">Compost photos</h4>${gallery}`;
-      wireCompostSlides(panel);
-      return;
-    }
-    // Latest reading for each pile
-    const latestByPile = [...new Map(logs.map((l) => [l.pile, l])).values()];
+    const [logsRes, posts] = await Promise.all([api("/api/compost").catch(() => null), feed("compost")]);
+    const logs = logsRes ? logsRes.logs || [] : null;
+    const latestByPile = logs ? [...new Map(logs.map((l) => [l.pile, l])).values()] : [];
     panel.innerHTML = `
-      ${latestByPile.map((latest) => {
+      ${logs ? latestByPile.map((latest) => {
         const st = compostStatus(latest.temp_f);
         return `<div class="compost-hero">
           <div><p class="ch-label">Latest reading · ${esc(latest.pile)}</p>
@@ -207,22 +175,32 @@
             <p class="ch-date">${esc(fmtDate(latest.logged_on))}${latest.turned ? " · turned ↻" : ""}</p></div>
           <p class="ch-status ch-${st.cls}"><span aria-hidden="true">${st.icon}</span> ${esc(st.label)}</p>
         </div>`;
-      }).join("")}
-      <figure class="compost-chart" id="compostChart">
+      }).join("") : napping}
+      ${logs ? `<figure class="compost-chart" id="compostChart">
         <figcaption>Compost temperature (°F), logged by Yvy</figcaption>
-      </figure>
-      ${logs.length ? `<details class="compost-table"><summary>See every reading as a table</summary>
+      </figure>` : ""}
+      ${logs && logs.length ? `<details class="compost-table"><summary>See every reading as a table</summary>
         <div class="ct-scroll"><table><thead><tr><th>Date</th><th>Pile</th><th>Temp</th><th>Turned</th><th>Notes</th></tr></thead>
         <tbody>${logs.slice().reverse().map((l) => `<tr><td>${esc(fmtDate(l.logged_on))}</td><td>${esc(l.pile)}</td><td>${esc(l.temp_f)}°F</td><td>${l.turned ? "↻ yes" : ""}</td><td>${esc(l.notes)}${l.moisture ? ` <em>(${esc(l.moisture)})</em>` : ""}</td></tr>`).join("")}</tbody></table></div>
       </details>` : ""}
       <p class="compost-guide">🌡️ Guide: above <b>${C.hotLow}°F</b> kills most weed seeds and germs, turn it at <b>${C.turnAt}°F</b>,
         and above <b>${C.tooHot}°F</b> the helpful microbes start dying.
         Source: <a href="${esc(C.source.url)}" target="_blank" rel="noopener">${esc(C.source.label)}</a>.</p>
-      <h4 class="compost-photos-title">Compost photos</h4>
-      ${compostGallery()}
-      ${posts.length ? `<div class="society-posts">${posts.map((p) => postCard(p)).join("")}</div>` : (C.photos || []).length ? "" : '<p class="society-empty">No compost photos yet. Submit one! 🪱</p>'}`;
-    drawCompostChart($("#compostChart", panel), logs);
-    wireCompostSlides(panel);
+      <h4 class="compost-photos-title">Compost photos &amp; posts</h4>
+      <div class="compost-book"></div>`;
+    if (logs) drawCompostChart($("#compostChart", panel), logs);
+
+    const items = [
+      ...(posts || []).map((p) => ({ date: String(p.createdAt), html: postCard(p) })),
+      ...compostPhotos().map((p) => ({ date: String(p.date || ""), html: clubCard(p, "Compost", "🪱") })),
+    ];
+    const book = $(".compost-book", panel);
+    if (!items.length) {
+      book.innerHTML = posts ? '<p class="society-empty">No compost photos yet. Submit one! 🪱</p>' : "";
+      return;
+    }
+    renderBook(book, items, { what: "compost", retryTab: "compost",
+      missing: posts ? "" : "🪱 Members' compost posts didn't load." });
   }
 
   // Line chart: one line per pile, hot-zone band, crosshair tooltip (mouse + keyboard)
@@ -330,9 +308,15 @@
     panel.hidden = isAlmanac;
     $(".society-cta", root).hidden = isAlmanac;
     if (isAlmanac) return;
+    // Each load draws into its own fresh box. If another tab is opened before this one finishes,
+    // this box is no longer on the page, so a slow load can't overwrite the tab you picked.
+    const view = document.createElement("div");
+    view.className = "society-view";
+    view.innerHTML = '<p class="society-empty">Opening the notebook… 📓</p>';
+    panel.replaceChildren(view);
     panel.classList.add("is-loading");
-    try { await TABS[name](panel); } catch (e) { panel.innerHTML = napping; }
-    panel.classList.remove("is-loading");
+    try { await TABS[name](view); } catch (e) { view.innerHTML = napping; }
+    if (view.isConnected) panel.classList.remove("is-loading");
   }
 
   /* ---------- Submit form ---------- */
@@ -415,7 +399,11 @@
   $("#societyIntro").textContent = S.intro;
   root.querySelector(".society-tabs").addEventListener("click", (e) => {
     const b = e.target.closest("[data-tab]");
-    if (b) openTab(b.dataset.tab);
+    if (!b) return;
+    // A tab picked by hand wins: cancel the automatic "open the Journal" on page load
+    started = true;
+    io.disconnect();
+    openTab(b.dataset.tab);
   });
   buildForm();
   // Links to #growing / #almanac (e.g. the "Garden Almanac" link up top) open the Almanac tab
