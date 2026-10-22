@@ -506,3 +506,112 @@
   .rpg-card.has-wide > .rpg-portrait { width: min(100%, 360px); margin: 0 auto 10px; }
   .rpg-card.has-wide > .rpg-name, .rpg-card.has-wide > .rpg-level { text-align: center; }
 }
+
+/* ===== Guestbook pixel cards (click an entry; js/portfolio.js → cardHtml) ===== */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.gb-entry[role="button"] { cursor: pointer; transition: transform .15s; }
+.gb-entry[role="button"]:hover { transform: translateY(-2px) rotate(-.4deg); }
+.gb-entry[role="button"]:focus-visible { outline: 3px dashed var(--orange); outline-offset: 3px; }
+.gb-open { margin: 6px 0 0; font: 8px var(--f-pixel); color: var(--purple); text-align: right; }
+
+.gbc-wrap { position: relative; width: min(560px, 100%); max-height: 100%; overflow: auto; padding: 10px 6px 14px; }
+.gbc-wrap .lightbox-close { top: 0; right: 0; z-index: 2; }
+/* drop shadow lives on a wrapper, because the card's pixel corners are clipped */
+.gbc-shadow { filter: drop-shadow(6px 6px 0 rgba(43, 26, 82, .45)); }
+.pcard {
+  --paper: #fffdf6;
+  --edge: #c9b8f2;
+  --ink: #2b1a52;
+  position: relative;
+  padding: 26px 26px 22px;
+  background: var(--paper);
+  border: 4px solid var(--edge);
+  color: var(--ink);
+  font: 10px/2.1 var(--f-pixel);
+  text-align: left;
+  overflow-wrap: anywhere;
+  /* stepped "pixel" corners */
+  clip-path: polygon(0 8px, 4px 8px, 4px 4px, 8px 4px, 8px 0, calc(100% - 8px) 0, calc(100% - 8px) 4px, calc(100% - 4px) 4px, calc(100% - 4px) 8px, 100% 8px,
+    100% calc(100% - 8px), calc(100% - 4px) calc(100% - 8px), calc(100% - 4px) calc(100% - 4px), calc(100% - 8px) calc(100% - 4px), calc(100% - 8px) 100%,
+    8px 100%, 8px calc(100% - 4px), 4px calc(100% - 4px), 4px calc(100% - 8px), 0 calc(100% - 8px));
+  animation: pc-pop .45s steps(5) both;
+}
+@keyframes pc-pop {
+  from { transform: translateY(40px) scale(.35) rotate(-6deg); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+.pcard p { margin: 0 0 10px; }
+.pc-date { text-align: right; font-size: 8px; opacity: .75; }
+.pc-hello { margin-bottom: 12px !important; }
+.pc-text p { margin: 0 0 8px; }
+.pc-gap { margin: 0 0 8px !important; text-align: center; opacity: .5; }
+.pc-sign { margin: 14px 0 0 !important; text-align: right; }
+.pc-sign b, .pc-from b, .pc-cname b { font-weight: 400; color: var(--accent, #8a3fd1); }
+.pc-from { margin-top: 10px !important; text-align: right; font-size: 9px; }
+.pc-head { margin: 0 0 10px !important; padding: 0 34px; text-align: center; font-size: 14px; line-height: 1.6; }
+.pc-heart { font-family: Verdana, "Segoe UI Symbol", sans-serif; font-size: 1.3em; line-height: 1; color: var(--accent, #e0457b); }
+.pc-deco { position: absolute; font-size: 30px; line-height: 1; pointer-events: none; }
+.pc-d1 { top: 14px; left: 14px; }
+.pc-d2 { top: 14px; right: 14px; }
+
+/* Letter: cream paper with a lavender letterhead stripe */
+.pc-letter { --paper: #fffdf6; --edge: #c9b8f2; padding-top: 34px; }
+.pc-letterhead { position: absolute; top: 0; left: 0; right: 0; height: 14px; background: repeating-linear-gradient(90deg, #b39af0 0 12px, #d4c6f7 12px 24px); }
+/* Online review: white card, gold stars */
+.pc-review { --paper: #ffffff; --edge: #ffd23f; }
+.pc-stars { text-align: center; font-size: 22px; line-height: 1; letter-spacing: 2px; }
+/* Social comment: grey card, white bubble */
+.pc-comment { --paper: #eef0f4; --edge: #9a93a8; }
+.pc-crow { display: flex; gap: 10px; align-items: flex-start; }
+.pc-avatar { flex: none; width: 44px; height: 44px; display: grid; place-items: center; background: var(--pink-soft); border: 3px solid #fff; }
+.pc-cbubble { background: #fff; padding: 10px 12px; border: 3px solid #d6d9e0; }
+.pc-cbubble p { margin: 0; }
+.pc-cname { font-size: 9px; margin-bottom: 4px !important; }
+.pc-actions { margin: 8px 0 0 58px !important; font-size: 8px; color: #6b5a8a; }
+/* Index card: blue lines, pink margin line, purple ink */
+.pc-index {
+  --paper: #ffffff; --edge: #7cc6ff; --ink: #7d5ad4;
+  background: linear-gradient(#ff8cc6, #ff8cc6) 0 30px / 100% 3px no-repeat, repeating-linear-gradient(transparent 0 19px, #bfe3ff 19px 21px) 0 30px, #fff;
+  line-height: 21px;
+}
+/* Holiday card */
+.pc-holiday { --paper: #ffffff; --edge: #7cc85a; --accent: #e8352e; padding-top: 30px; }
+.pc-head-holiday { color: #3f8f2e; }
+/* School newsletter shout-out: navy with a gold edge */
+.pc-newsletter { --paper: #1b2a6b; --edge: #ffd23f; --ink: #ffffff; --accent: #ffd23f; padding-top: 30px; }
+.pc-head-news { color: #ffd23f; }
+/* Text messages: phone screen with chat bubbles */
+.pc-texts { --paper: #15131a; --edge: #5a5268; --ink: #ffffff; --accent: #7cc6ff; }
+.pc-chat { display: grid; gap: 10px; }
+.pc-bubble { justify-self: start; max-width: 85%; margin: 0 !important; padding: 8px 12px; background: #3a3a44; border: 3px solid #4a4a56; }
+/* Flower card */
+.pc-flowers { --paper: #ffffff; --edge: #ff8cc6; --accent: #e0457b; }
+.pc-flowerrow { text-align: center; font-size: 28px; line-height: 1; letter-spacing: 4px; }
+/* Thank-you card */
+.pc-thanks { --paper: #fff8e4; --edge: #e0c98e; --accent: #e0457b; padding-top: 32px; }
+/* Christmas card */
+.pc-christmas { --paper: #ffffff; --edge: #e8352e; --accent: #2e8b57; padding-top: 30px; }
+.pc-head-xmas span:first-child { color: #2e8b57; }
+.pc-head-xmas span:last-child { color: #e8352e; }
+/* Note card in blue ink */
+.pc-notecard { --paper: #ffffff; --edge: #5aa8f0; --ink: #2850c8; --accent: #2850c8; padding-top: 32px; }
+/* Gift tag with a black-and-gold ribbon */
+.pc-tag { --paper: #f4f4f4; --edge: #2b1a52; padding-top: 40px; text-align: center; }
+.pc-tag .pc-text, .pc-tag .pc-sign { text-align: center; }
+.pc-ribbon { position: absolute; top: 0; left: 0; right: 0; height: 18px; background: repeating-linear-gradient(90deg, #1b1b1b 0 16px, #1b1b1b 16px 18px), #1b1b1b; }
+.pc-ribbon::before, .pc-ribbon::after { content: ""; position: absolute; left: 0; right: 0; height: 2px; background: #e0a800; }
+.pc-ribbon::before { top: 5px; }
+.pc-ribbon::after { bottom: 5px; }
+.pc-ribbon i { position: absolute; top: -2px; left: 50%; width: 24px; height: 22px; margin-left: -12px; background: #1b1b1b; border: 3px solid #e0a800; }
+/* Doodle card: pink, flower + sun doodles */
+.pc-doodle { --paper: #fffaf0; --edge: #ff8cc6; --accent: #e0457b; padding-top: 54px; }
+/* Visitor guestbook page */
+.pc-guest { --paper: #f3eeff; --edge: #b39af0; padding-top: 30px; }
+.pc-head-guest { color: #7d5ad4; }
+
+@media (max-width: 520px) {
+  .pcard { padding: 22px 16px 18px; font-size: 9px; line-height: 2; }
+  .pc-head { font-size: 13px; }
+  .pc-deco { font-size: 24px; }
+}
+@media (prefers-reduced-motion: reduce) { .pcard { animation: none; } }

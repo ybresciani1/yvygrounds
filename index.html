@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-21q">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-21q">
-  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-21q">
-  <link rel="stylesheet" href="css/extras.css?v=2026-10-21q">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-21s">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-21s">
+  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-21s">
+  <link rel="stylesheet" href="css/extras.css?v=2026-10-21s">
 </head>
 <body>
 
@@ -392,6 +392,15 @@
     </div>
   </div>
 
+  <!-- Guestbook card: click an entry and a pixel-art version of the card/letter pops out (js/portfolio.js) -->
+  <div class="lightbox gbc-box" id="gbCardBox" hidden>
+    <div class="gbc-wrap" role="dialog" aria-modal="true" aria-labelledby="gbCardTitle">
+      <button class="lightbox-close" id="gbCardClose" type="button" aria-label="Close card">✕</button>
+      <h2 class="sr-only" id="gbCardTitle">Kind words card</h2>
+      <div class="gbc-shadow"><article class="pcard" id="gbCard"></article></div>
+    </div>
+  </div>
+
   <!-- Guestbook sign form -->
   <div class="lightbox" id="gbForm" hidden>
     <div class="lightbox-card sf-card gb-card" role="dialog" aria-modal="true" aria-labelledby="gbFormTitle">
@@ -499,14 +508,14 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=2026-10-21q"></script>
-  <script src="js/pixels.js?v=2026-10-21q"></script>
-  <script src="js/veg-icons.js?v=2026-10-21q"></script>
-  <script src="js/main.js?v=2026-10-21q"></script>
-  <script src="js/society.js?v=2026-10-21q"></script>
-  <script src="js/portfolio.js?v=2026-10-21q"></script>
-  <script src="js/extras.js?v=2026-10-21q"></script>
-  <script src="js/emoji-sprites.js?v=2026-10-21q"></script>
-  <script src="js/pixel-emoji.js?v=2026-10-21q"></script>
+  <script src="js/data.js?v=2026-10-21s"></script>
+  <script src="js/pixels.js?v=2026-10-21s"></script>
+  <script src="js/veg-icons.js?v=2026-10-21s"></script>
+  <script src="js/main.js?v=2026-10-21s"></script>
+  <script src="js/society.js?v=2026-10-21s"></script>
+  <script src="js/portfolio.js?v=2026-10-21s"></script>
+  <script src="js/extras.js?v=2026-10-21s"></script>
+  <script src="js/emoji-sprites.js?v=2026-10-21s"></script>
+  <script src="js/pixel-emoji.js?v=2026-10-21s"></script>
 </body>
 </html>

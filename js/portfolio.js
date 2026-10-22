@@ -197,20 +197,87 @@
 
     $("#gbIntro").textContent = G.intro || "";
 
-    const entry = (e, star) => `<article class="gb-entry${star ? " is-star" : ""}">
+    // Click (or Enter) an entry to open it as a pixel-art card
+    const entry = (e, star) => `<article class="gb-entry${star ? " is-star" : ""}" role="button" tabindex="0" aria-label="Open the card from ${esc(e.name)}">
         <div class="gb-avatar">${px(avatarOf(e.avatar), 4)}</div>
         <div class="gb-body">
           <p class="gb-meta"><b>${esc(e.name)}</b>${e.role ? ` <span class="gb-role">${esc(e.role)}</span>` : ""}${
             e.date ? ` <span class="gb-date">${esc(fmt(e.date))}</span>` : ""}${star ? ' <span class="gb-ribbon">★ kind words</span>' : ""}</p>
           <p class="gb-text">${esc(e.text)}</p>
+          <p class="gb-open" aria-hidden="true">💌 click to open the card</p>
         </div>
       </article>`;
+
+    /* Pixel-art card: what the original card or letter looked like, redrawn in pixels.
+       Styles match data.js → kindWords[].card. Signed visitor entries use "guest". */
+    const CARD_DECO = {
+      letter: '<div class="pc-letterhead"></div>',
+      review: '<p class="pc-stars" aria-label="5 stars">🌟🌟🌟🌟🌟</p>',
+      comment: "",
+      index: "",
+      holiday: '<p class="pc-head pc-head-holiday">Happy Holidays</p><span class="pc-deco pc-d1">❄️</span><span class="pc-deco pc-d2">✨</span>',
+      newsletter: '<p class="pc-head pc-head-news">Thank you!</p><span class="pc-deco pc-d1">🌟</span><span class="pc-deco pc-d2">🌱</span>',
+      texts: "",
+      flowers: '<p class="pc-flowerrow" aria-hidden="true">🌺🌸🌼🌸🌺</p>',
+      thanks: '<span class="pc-deco pc-d1">💛</span>',
+      christmas: '<p class="pc-head pc-head-xmas"><span>Merry</span> <span>Christmas</span></p><span class="pc-deco pc-d1">🎄</span><span class="pc-deco pc-d2">✨</span>',
+      notecard: '<span class="pc-deco pc-d1">💙</span>',
+      tag: '<div class="pc-ribbon" aria-hidden="true"><i></i></div>',
+      doodle: '<span class="pc-deco pc-d1">🌺</span><span class="pc-deco pc-d2">☀️</span>',
+      guest: '<p class="pc-head pc-head-guest">Guestbook</p><span class="pc-deco pc-d1">✏️</span>',
+    };
+    // The pixel font has no ♥, so hearts get a font that does
+    const t = (str) => esc(str).replace(/♥/g, '<span class="pc-heart">♥</span>');
+    function cardHtml(e, star) {
+      const style = CARD_DECO[e.card] !== undefined ? e.card : star ? "letter" : "guest";
+      const who = `<b>${esc(e.name)}</b>${e.role ? ` · ${esc(e.role)}` : ""}`;
+      const date = e.date ? `<p class="pc-date">${esc(fmt(e.date))}</p>` : "";
+      const parts = String(e.text).split(/\s*…\s*/).filter(Boolean);
+      let body;
+      if (style === "texts") {
+        body = `<div class="pc-chat">${parts.map((x) => `<p class="pc-bubble">${t(x)}</p>`).join("")}</div><p class="pc-from">${who}</p>`;
+      } else if (style === "comment") {
+        body = `<div class="pc-crow"><div class="pc-avatar">${px(avatarOf(e.avatar), 3)}</div>
+          <div class="pc-cbubble"><p class="pc-cname">${who}</p><p>${t(e.text)}</p></div></div><p class="pc-actions">Like · Reply</p>`;
+      } else if (style === "review") {
+        body = `<p class="pc-text">${t(e.text)}</p><p class="pc-from">${who}</p>`;
+      } else {
+        body = `${e.hello ? `<p class="pc-hello">${t(e.hello)}</p>` : ""}
+          <div class="pc-text">${parts.map((x) => `<p>${t(x)}</p>`).join('<p class="pc-gap">…</p>')}</div>
+          <p class="pc-sign">${e.closing ? `${t(e.closing)}<br>` : ""}${who}</p>`;
+      }
+      return { style, html: `${CARD_DECO[style]}${date}${body}` };
+    }
+
+    const cardBox = $("#gbCardBox");
+    let cardFocus = null;
+    const openCard = (item) => {
+      if (!cardBox || !item) return;
+      const { style, html } = cardHtml(item.e, item.star);
+      const card = $("#gbCard");
+      card.className = `pcard pc-${style}`;
+      card.innerHTML = html;
+      cardFocus = document.activeElement;
+      cardBox.hidden = false;
+      $("#gbCardClose").focus();
+    };
+    const closeCard = () => {
+      if (!cardBox || cardBox.hidden) return;
+      cardBox.hidden = true;
+      if (cardFocus) cardFocus.focus();
+    };
+    if (cardBox) {
+      $("#gbCardClose").addEventListener("click", closeCard);
+      cardBox.addEventListener("click", (ev) => { if (ev.target === cardBox) closeCard(); });
+      document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") closeCard(); });
+    }
 
     // Kind words and visitor signatures are mixed together, newest first (by date),
     // so new letters can be added anywhere in data.js
     const kind = (G.kindWords || []).filter((k) => k && k.name && k.text);
     // One entry at a time, flipped with BACK / NEXT (like the scrapbook)
     let pages = [];
+    let items = [];
     let index = 0;
     const showPage = (step) => {
       const page = $("#gbEntries");
@@ -231,7 +298,9 @@
     $(".gb-stage", root).addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft") turn(-1);
       if (e.key === "ArrowRight") turn(1);
+      if ((e.key === "Enter" || e.key === " ") && e.target.closest(".gb-entry")) { e.preventDefault(); openCard(items[index]); }
     });
+    $("#gbEntries").addEventListener("click", (e) => { if (e.target.closest(".gb-entry")) openCard(items[index]); });
 
     const render = (signed, note) => {
       const all = [
@@ -240,6 +309,7 @@
       ];
       // Dates are "YYYY", "YYYY-MM", "YYYY-MM-DD" or full timestamps, so text order works
       all.sort((a, b) => String(b.e.date || "").localeCompare(String(a.e.date || "")));
+      items = all;
       pages = all.map(({ e, star }) => entry(e, star));
       index = 0;
       showPage(0);
