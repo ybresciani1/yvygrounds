@@ -238,6 +238,10 @@
   --t-mush: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%233cc8c0'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23ffd23f'/%3E%3Crect x='2' y='1' width='1' height='1' fill='%23ffd23f'/%3E%3Crect x='1' y='2' width='1' height='1' fill='%23ffd23f'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23ffd23f'/%3E%3C/svg%3E");
   --t-run: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%23e2bf88'/%3E%3Crect x='0' y='3' width='1' height='1' fill='%239a8a74'/%3E%3Crect x='1' y='3' width='1' height='1' fill='%239a8a74'/%3E%3Crect x='2' y='3' width='1' height='1' fill='%239a8a74'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%239a8a74'/%3E%3Crect x='3' y='0' width='1' height='1' fill='%239a8a74'/%3E%3Crect x='3' y='1' width='1' height='1' fill='%239a8a74'/%3E%3Crect x='3' y='2' width='1' height='1' fill='%239a8a74'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%239a8a74'/%3E%3C/svg%3E");
   --t-worm: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%237a6a5c'/%3E%3Crect x='0' y='3' width='1' height='1' fill='%235c4f44'/%3E%3Crect x='1' y='3' width='1' height='1' fill='%235c4f44'/%3E%3Crect x='2' y='3' width='1' height='1' fill='%235c4f44'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%235c4f44'/%3E%3Crect x='3' y='0' width='1' height='1' fill='%235c4f44'/%3E%3Crect x='3' y='1' width='1' height='1' fill='%235c4f44'/%3E%3Crect x='3' y='2' width='1' height='1' fill='%235c4f44'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%235c4f44'/%3E%3Crect x='0' y='1' width='1' height='1' fill='%23f4a3b5'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23f4a3b5'/%3E%3C/svg%3E");
+  --t-bucket: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%2343a047'/%3E%3Crect x='0' y='0' width='1' height='1' fill='%232e7d32'/%3E%3Crect x='0' y='1' width='1' height='1' fill='%232e7d32'/%3E%3Crect x='0' y='2' width='1' height='1' fill='%232e7d32'/%3E%3Crect x='0' y='3' width='1' height='1' fill='%232e7d32'/%3E%3Crect x='2' y='1' width='1' height='1' fill='%2366bb6a'/%3E%3C/svg%3E");
+  --t-plank: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%23b07a45'/%3E%3Crect x='0' y='0' width='1' height='1' fill='%238f5d2a'/%3E%3Crect x='1' y='0' width='1' height='1' fill='%238f5d2a'/%3E%3Crect x='2' y='0' width='1' height='1' fill='%238f5d2a'/%3E%3Crect x='3' y='0' width='1' height='1' fill='%238f5d2a'/%3E%3Crect x='1' y='2' width='1' height='1' fill='%23c9935a'/%3E%3C/svg%3E");
+  --t-balls: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' shape-rendering='crispEdges'%3E%3Crect width='8' height='8' fill='%23efe9f7'/%3E%3Crect x='1' y='0' width='1' height='1' fill='%23e0525a'/%3E%3Crect x='0' y='1' width='1' height='1' fill='%23e0525a'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23e0525a'/%3E%3Crect x='2' y='1' width='1' height='1' fill='%23e0525a'/%3E%3Crect x='1' y='2' width='1' height='1' fill='%23e0525a'/%3E%3Crect x='5' y='0' width='1' height='1' fill='%2337a0e6'/%3E%3Crect x='4' y='1' width='1' height='1' fill='%2337a0e6'/%3E%3Crect x='5' y='1' width='1' height='1' fill='%2337a0e6'/%3E%3Crect x='6' y='1' width='1' height='1' fill='%2337a0e6'/%3E%3Crect x='5' y='2' width='1' height='1' fill='%2337a0e6'/%3E%3Crect x='3' y='4' width='1' height='1' fill='%23ffd23f'/%3E%3Crect x='2' y='5' width='1' height='1' fill='%23ffd23f'/%3E%3Crect x='3' y='5' width='1' height='1' fill='%23ffd23f'/%3E%3Crect x='4' y='5' width='1' height='1' fill='%23ffd23f'/%3E%3Crect x='3' y='6' width='1' height='1' fill='%23ffd23f'/%3E%3Crect x='7' y='4' width='1' height='1' fill='%237cc85a'/%3E%3Crect x='6' y='5' width='1' height='1' fill='%237cc85a'/%3E%3Crect x='7' y='5' width='1' height='1' fill='%237cc85a'/%3E%3Crect x='8' y='5' width='1' height='1' fill='%237cc85a'/%3E%3Crect x='7' y='6' width='1' height='1' fill='%237cc85a'/%3E%3Crect x='-1' y='4' width='1' height='1' fill='%23ff8cc6'/%3E%3Crect x='-2' y='5' width='1' height='1' fill='%23ff8cc6'/%3E%3Crect x='-1' y='5' width='1' height='1' fill='%23ff8cc6'/%3E%3Crect x='0' y='5' width='1' height='1' fill='%23ff8cc6'/%3E%3Crect x='-1' y='6' width='1' height='1' fill='%23ff8cc6'/%3E%3C/svg%3E");
+  --t-storage: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%23e88a8a'/%3E%3Crect x='0' y='3' width='1' height='1' fill='%23c85f5f'/%3E%3Crect x='1' y='3' width='1' height='1' fill='%23c85f5f'/%3E%3Crect x='2' y='3' width='1' height='1' fill='%23c85f5f'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%23c85f5f'/%3E%3Crect x='3' y='0' width='1' height='1' fill='%23c85f5f'/%3E%3Crect x='3' y='1' width='1' height='1' fill='%23c85f5f'/%3E%3Crect x='3' y='2' width='1' height='1' fill='%23c85f5f'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%23c85f5f'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23f3b0b0'/%3E%3C/svg%3E");
   --t-compost: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%236b4a2b'/%3E%3Crect x='0' y='3' width='1' height='1' fill='%234a321c'/%3E%3Crect x='1' y='3' width='1' height='1' fill='%234a321c'/%3E%3Crect x='2' y='3' width='1' height='1' fill='%234a321c'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%234a321c'/%3E%3Crect x='3' y='0' width='1' height='1' fill='%234a321c'/%3E%3Crect x='3' y='1' width='1' height='1' fill='%234a321c'/%3E%3Crect x='3' y='2' width='1' height='1' fill='%234a321c'/%3E%3Crect x='3' y='3' width='1' height='1' fill='%234a321c'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%237cc85a'/%3E%3C/svg%3E");
   --t-grape: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%235fae43'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%238a3fd1'/%3E%3Crect x='2' y='1' width='1' height='1' fill='%238a3fd1'/%3E%3Crect x='1' y='2' width='1' height='1' fill='%238a3fd1'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%238a3fd1'/%3E%3C/svg%3E");
   --t-passion: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%235fae43'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23b25bd6'/%3E%3Crect x='2' y='1' width='1' height='1' fill='%23b25bd6'/%3E%3Crect x='1' y='2' width='1' height='1' fill='%23ffd23f'/%3E%3Crect x='2' y='2' width='1' height='1' fill='%23ffd23f'/%3E%3C/svg%3E");
@@ -349,6 +353,98 @@ button.gm-building { filter: drop-shadow(1px 0 0 var(--ink)) drop-shadow(-1px 0 
 .gm-apple .gm-shape { background-image: var(--t-apple); }
 .gm-lemon .gm-shape { background-image: var(--t-lemon); }
 .gm-citrus .gm-shape { background-image: var(--t-citrus); }
+/* Spots that aren't rectangles (the L-shaped YMCA Room) only catch clicks on their shape, so the
+   shed and grass inside the L's corner stay clickable */
+button.gm-clip { pointer-events: none; }
+.gm-clip .gm-shape { pointer-events: auto; }
+
+/* The shelf by the sink, and the picnic table we use as a garden bench (tabletop with a bench on each side) */
+.gm-shelf .gm-shape { background-image: var(--t-shed); box-shadow: inset 0 0 0 2px #6b4220; }
+/* the middle shelf board */
+.gm-shelf .gm-shape::after { content: ""; position: absolute; left: 0; right: 0; top: calc(50% - 1px); height: 2px; background: #6b4220; }
+.gm-table .gm-shape { inset: 30% 0; background-image: var(--t-plank); }
+.gm-table::before,
+.gm-table::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  height: 18%;
+  background: #8f5d2a;
+  box-shadow: inset 0 -2px 0 #6b4220;
+}
+.gm-table::before { top: 0; }
+.gm-table::after { bottom: 0; }
+
+/* The farm cart, seen from above: brown wooden bed in a white metal frame, four wheels and a white handle */
+.gm-cart .gm-shape { inset: 4% 14% 20%; background-image: var(--t-plank); box-shadow: inset 0 0 0 3px #f4f1e8, inset 0 0 0 4px #9a8f84; }
+.gm-cart::before {
+  content: "";
+  position: absolute;
+  left: 34%;
+  right: 34%;
+  bottom: 0;
+  height: 20%;
+  border: 3px solid #f4f1e8;
+  border-top: 0;
+  filter: drop-shadow(0 0 1px var(--ink));
+}
+.gm-cart::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12%;
+  width: 14%;
+  height: 14%;
+  background: var(--ink);
+  box-shadow:
+    calc(var(--c) * 2.58) 0 0 var(--ink),
+    0 calc(var(--c) * 2.9) 0 var(--ink),
+    calc(var(--c) * 2.58) calc(var(--c) * 2.9) 0 var(--ink);
+}
+
+/* YMCA storage (crates, a darker pink than the room) and the YMCA's bin of play balls */
+.gm-storage .gm-shape { background-image: var(--t-storage); }
+.gm-balls .gm-shape { background: var(--t-balls) 0 0 / 16px 16px; box-shadow: inset 0 0 0 2px #9a8fb0; }
+
+/* The green compost bucket we carry to the cafeteria: a stepped bucket shape with a square handle */
+.gm-bucket .gm-shape {
+  background-image: var(--t-bucket);
+  box-shadow: inset 0 3px 0 #a5d6a7;
+  clip-path: polygon(0 0, 100% 0, 100% 75%, 85% 75%, 85% 100%, 15% 100%, 15% 75%, 0 75%);
+}
+.gm-handle {
+  position: absolute;
+  left: 22%;
+  right: 22%;
+  top: -40%;
+  height: 45%;
+  border: 2px solid var(--ink);
+  border-bottom: 0;
+  pointer-events: none;
+}
+
+/* Beyonce doing laps in the chicken run (her sprite faces left, so it flips when she runs right) */
+.gm-runner { position: absolute; z-index: 2; pointer-events: none; }
+.gm-runner-sprite {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: calc(var(--c) * 1.8);
+  height: calc(var(--c) * 1.8);
+  filter: drop-shadow(1px 0 0 #000) drop-shadow(-1px 0 0 #000) drop-shadow(0 1px 0 #000) drop-shadow(0 -1px 0 #000);
+  animation: gm-laps 7s linear infinite;
+}
+.gm-runner-sprite svg { display: block; width: 100%; height: 100%; animation: gm-hop .35s steps(2) infinite; }
+@keyframes gm-laps {
+  0% { left: 0; transform: scaleX(-1); }
+  46% { left: calc(100% - var(--c) * 1.8); transform: scaleX(-1); }
+  50% { left: calc(100% - var(--c) * 1.8); transform: scaleX(1); }
+  96% { left: 0; transform: scaleX(1); }
+  100% { left: 0; transform: scaleX(-1); }
+}
+@keyframes gm-hop { 50% { transform: translateY(-12%); } }
+
 /* Round spots only catch clicks on the circle itself, not the empty corners of their square */
 button.gm-tree, button.gm-compost, button.gm-mushrooms { pointer-events: none; }
 .gm-tree .gm-shape, .gm-compost .gm-shape, .gm-mushrooms .gm-shape { pointer-events: auto; }
@@ -486,6 +582,7 @@ button.gm-spot:focus-visible { outline: 3px dashed var(--pink); outline-offset: 
 @media (prefers-reduced-motion: reduce) {
   .gm-spot.is-on .gm-shape { animation: none; }
   .gm-alert { animation: none; }
+  .gm-runner-sprite, .gm-runner-sprite svg { animation: none; }
 }
 
 /* ---------- Lesson Board: its own chalkboard section under the Hall of Fame (main.js → buildLessonBoard) ---------- */

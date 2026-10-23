@@ -17,8 +17,13 @@
   const COLS = 40, ROWS = 52;
   const place = ([x, y, w, h]) =>
     `left:calc(var(--c) * ${x});top:calc(var(--c) * ${y});width:calc(var(--c) * ${w});height:calc(var(--c) * ${h})`;
-  const classes = (s) => `gm-spot gm-${s.kind}${s.tone ? " gm-" + s.tone : ""}`;
-  const label = (s) => (s.text ? `<span class="gm-text">${esc(s.text)}</span>` : "");
+  const classes = (s) => `gm-spot gm-${s.kind}${s.tone ? " gm-" + s.tone : ""}${s.clip ? " gm-clip" : ""}`;
+  // textAt: [x, y, w, h] inside the spot (grid squares) puts the label there instead of the middle
+  const label = (s) => (s.text ? `<span class="gm-text"${s.textAt ? ` style="inset:auto;${place(s.textAt)}"` : ""}>${esc(s.text)}</span>` : "");
+  // clip: a CSS polygon for spots that aren't rectangles (the L-shaped YMCA Room). Only the shape itself is clickable.
+  const shape = (s) => `<span class="gm-shape"${s.clip ? ` style="clip-path:${esc(s.clip)}"` : ""}></span>${s.kind === "bucket" ? '<span class="gm-handle" aria-hidden="true"></span>' : ""}`;
+  // runner: a critter's pixel sprite running laps inside the spot (Beyonce in the chicken run)
+  const runner = (s) => `<span class="gm-runner" style="${place([s.x, s.y, s.w, s.h])}" aria-hidden="true"><span class="gm-runner-sprite">${window.Pixel ? window.Pixel.svg(s.runner, 2) : ""}</span></span>`;
   // Spots with repairs to do get a little yellow "!" at their top-right corner (like a quest marker),
   // drawn after everything else so neighbors can't cover it
   const alert = (s) => `<span class="gm-alert" style="left:calc(var(--c) * ${s.x + s.w});top:calc(var(--c) * ${s.y})" aria-hidden="true">!</span>`;
@@ -116,12 +121,13 @@
         ${spots.map((s, i) => {
           const pieces = [[s.x, s.y, s.w, s.h]].concat(s.more || []);
           if (!s.name) {
-            return pieces.map((r, n) => `<div class="${classes(s)}" style="${place(r)}" aria-hidden="true"><span class="gm-shape"></span>${n ? "" : label(s)}</div>`).join("");
+            return pieces.map((r, n) => `<div class="${classes(s)}" style="${place(r)}" aria-hidden="true">${shape(s)}${n ? "" : label(s)}</div>`).join("");
           }
           // The first piece is the real button; extra pieces (the other arm of an L) just point to it
-          return `<button type="button" class="${classes(s)}" style="${place(pieces[0])}" data-i="${i}" aria-label="${esc(s.name)}${s.fix ? ", needs fixing" : ""}"><span class="gm-shape"></span>${label(s)}</button>`
+          return `<button type="button" class="${classes(s)}" style="${place(pieces[0])}" data-i="${i}" aria-label="${esc(s.name)}${s.fix ? ", needs fixing" : ""}">${shape(s)}${label(s)}</button>`
             + pieces.slice(1).map((r) => `<div class="${classes(s)} gm-more" style="${place(r)}" data-i="${i}" aria-hidden="true"><span class="gm-shape"></span></div>`).join("");
         }).join("")}
+        ${spots.filter((s) => s.runner).map(runner).join("")}
         ${spots.filter((s) => s.fix).map(alert).join("")}
       </div></div>
       <div class="gm-info" aria-live="polite">
@@ -147,6 +153,12 @@
   }
   new ResizeObserver(fit).observe(frame);
 
+  // A spot can say something different on certain days (dated: [{ dates: ["2026-11-06", ...], about }])
+  const aboutToday = (s) => {
+    const today = new Date().toLocaleDateString("en-CA");
+    const special = (s.dated || []).find((d) => (d.dates || []).includes(today));
+    return special ? special.about : s.about;
+  };
   let shown = null; // the spot in the speech box right now
   function show(i) {
     shown = i;
@@ -161,7 +173,7 @@
     name.textContent = s.name;
     body.innerHTML =
       (s.planted ? `<p class="gm-what">Growing now:</p><ul class="gm-plants">${s.planted.map(plant).join("")}</ul>` : "") +
-      (s.about ? `<p>${esc(s.about)}</p>` : "") +
+      (aboutToday(s) ? `<p>${esc(aboutToday(s))}</p>` : "") +
       (s.lesson && lessonNow ? `<p class="gm-what">Now learning:</p><p>📚 Unit ${esc(lessonNow.unit)} · Lesson ${esc(lessonNow.lesson)}: <b>${esc(lessonNow.title)}</b>
         (${esc(lessonNow.island)} in Gardenbound)</p>` : "") +
       (s.fix ? `<p class="gm-what gm-what-fix">Needs fixing:</p>${list(s.fix, "gm-fix")}` : "") +

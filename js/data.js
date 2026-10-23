@@ -1017,13 +1017,16 @@ window.YVY = {
    * Traced from Yvy's map on a grid 40 squares wide × 52 tall: x, y = top-left corner, w, h = size,
    * all in whole squares (so every edge lines up straight).
    * kind picks the look: bed, coop, run, tree, vine, hedge, compost, sink, drain, mushrooms,
-   * succulents, grass, building, shed, box, sign.
+   * succulents, grass, building, shed, box, sign, bucket, shelf, table, cart, balls.
    * A spot with a name can be hovered/tapped; it shows name, planted (list), about, fix and todo.
    * planted items are "emoji name" or { icon: "kale", name: "kale" } for a js/veg-icons.js icon.
    * fix: repairs it needs (puts a yellow "!" on the map). todo: garden jobs for this season,
    * written for San Diego weather and crop rotation. Update todo (and todoTitle) each season.
    * more: [[x, y, w, h], ...] adds extra pieces of the same spot (an L-shaped vine).
+   * clip: a CSS polygon for a spot that isn't a rectangle (the L-shaped YMCA Room); textAt: [x, y, w, h]
+   *       inside the spot puts its label there. runner: a pixel sprite (js/pixels.js) running laps in the spot.
    * lesson: true shows what garden class is learning right now (lessons → now).
+   * dated: [{ dates: ["YYYY-MM-DD", ...], about }] swaps in a different about on those days (the YMCA Room).
    * id: a short name the Garden Society API uses for the feeding log and crossed-off to-dos.
    *     Keep it the same once it's in use, or the spot loses its log.
    */
@@ -1048,8 +1051,17 @@ window.YVY = {
       { kind: "hedge", x: 23, y: 0, w: 15, h: 1 },
       { kind: "hedge", x: 37, y: 1, w: 1, h: 7 },
       { kind: "sign", text: "GATE", x: 19, y: 0, w: 4, h: 2 },
-      { kind: "building", tone: "pink", text: "YMCA", x: 23, y: 8, w: 17, h: 3, more: [[37, 11, 3, 15]] },
-      { kind: "building", tone: "lav", text: "LIBRARY", x: 24, y: 27, w: 16, h: 24 },
+      // The YMCA Room: Miss Regan's, except on the days Snra Sam teaches cooking there (dates as YYYY-MM-DD).
+      { kind: "building", tone: "pink", text: "YMCA", x: 23, y: 8, w: 17, h: 16, textAt: [0, 0, 14, 3],
+        clip: "polygon(0 0, 100% 0, 100% 100%, 82.35% 100%, 82.35% 18.75%, 0 18.75%)",
+        name: "YMCA Room", about: "Miss Regan is in charge of the YMCA here. She's so kind, and she's always helping us out in a crunch 💛",
+        dated: [{
+          about: "Snra Sam, my co-teacher, is here today teaching cooking! 🍳",
+          dates: ["2026-11-06", "2026-11-12", "2026-11-13", "2026-12-03", "2026-12-04", "2026-12-10", "2026-12-11", "2026-12-17",
+            "2027-01-29", "2027-02-04", "2027-02-05", "2027-02-11", "2027-02-18", "2027-02-19", "2027-02-25", "2027-02-26",
+            "2027-04-08", "2027-04-09", "2027-04-15", "2027-04-16", "2027-04-22", "2027-04-23", "2027-04-29", "2027-04-30"],
+        }] },
+      { kind: "building", tone: "lav", text: "LIBRARY", x: 24, y: 31, w: 16, h: 20 },
       { kind: "sign", text: "◀ IN", x: 19, y: 48, w: 4, h: 2 },
 
       // The places you can look at
@@ -1057,6 +1069,12 @@ window.YVY = {
         name: "Garden Classroom", lesson: true, about: "Where garden class meets. Seeds get sorted, worms get named and questions get asked (so many questions)." },
       { kind: "compost", x: 34, y: 1, w: 3, h: 3,
         name: "Main Compost", about: "Our main compost pile. Lunch scraps go in, garden gold comes out. Temps are on the 🌡️ Compost tab.", tab: "compost" },
+      { kind: "bucket", x: 33, y: 14, w: 2, h: 2,
+        name: "Compost Bucket", about: "Our green compost bucket! The Garden Society fills it at the cafeteria salad bar for SDUSD's Café to Compost Program. Lettuce, cucumbers and carrots go to the chickens in the Grub Tub; tomatoes, pickles and extras go in the Main Compost ♻️" },
+      { kind: "building", tone: "storage", text: "📦", x: 37, y: 24, w: 3, h: 3,
+        name: "YMCA's Storage Shed", about: "The YMCA's storage shed." },
+      { kind: "balls", x: 32, y: 25, w: 4, h: 2,
+        name: "YMCA Play Balls", about: "The YMCA's play balls." },
       { kind: "shed", text: "SHED", x: 32, y: 19, w: 4, h: 5,
         name: "Shed & Storage", about: "Shovels, gloves and watering cans live here." },
       { kind: "mushrooms", tone: "short", x: 2, y: 2, w: 3, h: 3,
@@ -1108,7 +1126,7 @@ window.YVY = {
       { kind: "coop", text: "🐔", x: 6, y: 4, w: 3, h: 2,
         name: "Chicken Coop", about: "Bedtime and egg-laying HQ. The chickens eat our weeds and bugs and pay us back in eggs and compost.", link: "#critters" },
       { kind: "run", x: 9, y: 4, w: 9, h: 2,
-        name: "Chicken Run", about: "Scratch, peck, dust bath, repeat. Garden class sometimes gets a special guest speaker from in here 🎤" },
+        name: "Chicken Run", runner: "beyonce", about: "Scratch, peck, dust bath, repeat. That's Beyonce doing her laps! Garden class sometimes gets a special guest speaker from in here 🎤" },
       { kind: "bed", text: "#7", x: 6, y: 6, w: 5, h: 2, id: "bed7", name: "Bed #7",
         planted: ["🌿 rosemary", "🌿 thyme"],
         todo: [
@@ -1132,9 +1150,17 @@ window.YVY = {
         ] },
       { kind: "vine", tone: "passion", x: 18, y: 1, w: 1, h: 8, more: [[1, 8, 17, 1]],
         name: "Passionfruit Vines", about: "Wild flowers that look like tiny space stations, then purple fruit full of tangy seeds." },
-      { kind: "sink", text: "SINK", x: 10, y: 10, w: 8, h: 3,
+      { kind: "shelf", x: 15, y: 10, w: 3, h: 3,
+        name: "Shelf", about: "The shelf next to the sink, handy for setting things down while you wash up." },
+      { kind: "sink", text: "SINK", x: 10, y: 10, w: 5, h: 3,
         id: "sink", name: "Sink", about: "Wash your hands, then wash your veggies. In that order, please 💧",
         fix: ["Leaky faucet.", "Broken plumbing underneath."] },
+      { kind: "cart", x: 20, y: 20, w: 3, h: 6,
+        id: "cart", name: "Farm Cart", about: "Our white and brown farm cart. It's getting a makeover!",
+        fix: ["The wheels need fixing, and it needs fresh paint on the wood and the white metal."],
+        todo: ["Paint and seal the wood.", "Repaint the white metal.", "Fix the wheels.", "Advertise it."] },
+      { kind: "table", x: 11, y: 14, w: 6, h: 3,
+        name: "Garden Table", about: "Our picnic table, right next to the grapevines. It's pretty much our garden bench: a spot to sit, rest and chat in the garden." },
       { kind: "compost", tone: "worm", x: 18, y: 9, w: 2, h: 2,
         id: "worm", name: "Worm Compost", about: "Our worm compost bin 🪱",
         fix: ["It's broken and needs repairing before it can be used again."] },
