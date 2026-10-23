@@ -765,6 +765,254 @@ a.game:hover { background: #34303b; }
 .critter-kind { margin: 8px 0 2px; font: 600 12px var(--f-round); color: #9a7a3a; text-transform: uppercase; letter-spacing: 1px; }
 .critter-fact { margin: 0; font: 400 18px/1.25 var(--f-hand); }
 
+/* Critter of the Month: a holo trading card (main.js → buildCritters).
+   The little one takes over the critter's usual spot; the big one pops out when clicked. */
+.tcard {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 8px 10px 10px;
+  border-radius: 14px;
+  border: 7px solid var(--yellow);
+  background: linear-gradient(160deg, #fff6d6, #ffe3a3);
+  box-shadow: 0 0 0 3px #c99a10, 0 8px 0 rgba(43, 26, 82, .25);
+  text-align: left;
+  color: var(--ink);
+  font: inherit;
+}
+.tcard.is-memorial {
+  border-color: transparent;
+  background:
+    linear-gradient(160deg, #fdf6ff, #e5e9ff) padding-box,
+    linear-gradient(135deg, #ff8c8c, #ffd23f, #7cc85a, #37c6e6, #a98fe6, #ff8cc6) border-box;
+  box-shadow: 0 0 0 3px #a98fe6, 0 8px 0 rgba(43, 26, 82, .25);
+}
+.tcard-banner {
+  display: block;
+  margin: -2px 0 6px;
+  text-align: center;
+  font: 8px/1.5 var(--f-pixel);
+  color: #b45309;
+}
+.is-memorial .tcard-banner { color: var(--purple); }
+.tcard-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.tcard-name { font: 700 22px var(--f-round); }
+.tcard-hp { font: 700 20px var(--f-round); color: #e0457b; white-space: nowrap; }
+.tcard-hp small { font: 9px var(--f-pixel); margin-right: 3px; }
+.tcard-photo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  border: 4px solid #c99a10;
+  background: #dff3ff;
+  overflow: hidden;
+  font: inherit;
+}
+.is-memorial .tcard-photo { border-color: #a98fe6; }
+.tcard-photo img { width: 100%; height: 100%; object-fit: cover; }
+/* Holo foil: a rainbow shine that slides across the photo */
+.tcard-photo::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255, 140, 198, .35) 40%, rgba(255, 255, 255, .55) 47%, rgba(55, 198, 230, .35) 54%, transparent 64%);
+  background-size: 250% 100%;
+  mix-blend-mode: screen;
+  animation: holo 4s linear infinite;
+  pointer-events: none;
+}
+@keyframes holo { from { background-position: 100% 0; } to { background-position: -150% 0; } }
+.tcard-ribbon {
+  position: absolute;
+  z-index: 2;
+  right: -34px;
+  top: 14px;
+  transform: rotate(35deg);
+  background: var(--purple);
+  color: #fff;
+  font: 7px var(--f-pixel);
+  padding: 4px 34px;
+}
+.tcard-type {
+  display: block;
+  margin: 6px auto 8px;
+  padding: 2px 8px;
+  width: fit-content;
+  background: #fff;
+  border: 2px solid #c99a10;
+  font: italic 11px var(--f-body);
+  text-align: center;
+}
+
+/* The little card in the critter's spot: the whole card is one button */
+.critter.critter-cotm { background: none; border: 0; box-shadow: none; padding: 0; }
+.critter.critter-cotm:hover { transform: none; }
+.tcard-mini { cursor: pointer; transform: rotate(-2deg); transition: transform .2s; }
+.tcard-mini:hover, .tcard-mini:focus-visible { transform: rotate(0) scale(1.04); }
+.tcard-mini:focus-visible { outline: 3px dashed var(--pink); outline-offset: 4px; }
+.tcard-mini .tcard-name { font-size: 18px; }
+.tcard-mini .tcard-hp { font-size: 16px; }
+.tcard-mini-moves { display: block; }
+.tcard-mini-moves span { display: block; padding: 3px 0; border-bottom: 2px dotted rgba(201, 154, 16, .5); font: 700 13px var(--f-round); }
+.tcard-tap { display: block; margin-top: 7px; text-align: center; font: 7px var(--f-pixel); color: #b45309; animation: tcard-blink 1.2s steps(2) infinite; }
+@keyframes tcard-blink { 50% { opacity: .35; } }
+.critter-cotm .critter-pets { margin-top: 10px; }
+
+/* The big card */
+.ccard-wrap { position: relative; width: min(380px, 100%); max-height: 100%; overflow: auto; padding: 14px 8px 12px; }
+.ccard-wrap .lightbox-close { top: 0; right: 0; z-index: 3; }
+.tcard-big { animation: tcard-pop .35s ease-out; }
+@keyframes tcard-pop { from { transform: scale(.6) rotate(-6deg); opacity: 0; } }
+.tcard-big .tcard-photo { cursor: pointer; }
+.tcard-moves { list-style: none; margin: 0 0 8px; padding: 0; }
+.tcard-move {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 8px;
+  width: 100%;
+  padding: 6px 6px;
+  border: 0;
+  border-bottom: 2px dotted rgba(201, 154, 16, .5);
+  background: none;
+  color: inherit;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+.tcard-move:hover, .tcard-move:focus-visible { background: rgba(255, 255, 255, .6); }
+.tcard-move b { font: 700 15px var(--f-round); }
+.tcard-move b::before { content: "▶ "; color: #e0457b; font-size: 11px; }
+.tcard-dmg { font: 700 17px var(--f-round); color: #e0457b; }
+.tcard-move-text { grid-column: 1 / -1; font-size: 11.5px; line-height: 1.35; }
+.tcard-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; margin: 0 0 8px; }
+.tcard-stats div { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+.tcard-stats dt { font: 600 12px var(--f-round); }
+.tcard-stats dd { margin: 0; display: flex; gap: 2px; }
+.tcard-stats i { width: 7px; height: 9px; background: #fff; border: 1px solid #c99a10; }
+.tcard-stats i.on { background: var(--orange); border-color: #c9630c; }
+.is-memorial .tcard-stats i.on { background: var(--lav-dark); border-color: var(--purple); }
+.tcard-foot { display: grid; grid-template-columns: 1fr auto; gap: 1px 8px; font-size: 10px; line-height: 1.4; }
+.tcard-rarity { color: #c99a10; letter-spacing: 1px; }
+.tcard-num { text-align: right; font: 7px var(--f-pixel); }
+.tcard-hint { margin: 8px 0 0; text-align: center; font: 400 15px/1.3 var(--f-hand); color: #6b4a1f; }
+
+/* "Riot used BLIND CHARGE!": a Pokémon-style text box across the top of the photo */
+.tcard-say {
+  position: absolute;
+  z-index: 3;
+  left: 6px;
+  right: 6px;
+  top: 6px;
+  padding: 5px 8px;
+  background: #fff;
+  border: 3px solid var(--ink);
+  border-radius: 4px;
+  font: 8px/1.5 var(--f-pixel);
+  color: var(--ink);
+  text-align: left;
+  opacity: 0;
+}
+.tcard-say.is-on { animation: tcard-say 2.4s steps(1) forwards; }
+@keyframes tcard-say { 0% { opacity: 1; } 99% { opacity: 1; } 100% { opacity: 0; } }
+
+/* Their pixel sprite stands in the corner of the photo and acts out the moves */
+.tcard-actor { display: block; width: 100%; height: 100%; }
+.tcard-sprite {
+  position: absolute;
+  z-index: 2;
+  right: 8%;
+  bottom: 6%;
+  line-height: 0;
+  transform-origin: 50% 100%;
+  filter: drop-shadow(2px 0 0 #fff) drop-shadow(-2px 0 0 #fff) drop-shadow(0 2px 0 #fff) drop-shadow(0 -2px 0 #fff) drop-shadow(0 3px 0 rgba(43, 26, 82, .35));
+  animation: sprite-idle 1s steps(2) infinite;
+}
+@keyframes sprite-idle { 50% { transform: translateY(-4px); } }
+.tcard-sprite.do-charge { animation: mv-charge 1.1s ease-in-out; }
+@keyframes mv-charge {
+  0% { transform: none; }
+  15% { transform: translateX(12%) scaleX(.9); }
+  50% { transform: translateX(-330%) translateY(-8%); }
+  58% { transform: translateX(-310%) rotate(12deg); }
+  66% { transform: translateX(-330%) rotate(-10deg); }
+  100% { transform: none; }
+}
+.tcard-sprite.do-flip { animation: mv-flip 1.1s ease-in-out; }
+@keyframes mv-flip {
+  0% { transform: none; }
+  30% { transform: translateY(-45%) rotate(-20deg); }
+  55% { transform: translateY(-55%) scaleX(-1) rotate(20deg); }
+  80% { transform: translateY(-10%) scaleX(-1); }
+  100% { transform: none; }
+}
+.tcard-sprite.do-stomp { animation: mv-stomp 1s steps(2); }
+@keyframes mv-stomp {
+  0%, 100% { transform: none; }
+  25%, 75% { transform: translateY(-35%) scale(1.1); }
+  50% { transform: scale(1.25, .8); }
+}
+.tcard-sprite.do-glare { animation: mv-glare 1.3s ease-in-out; }
+@keyframes mv-glare {
+  0% { transform: none; }
+  30%, 75% { transform: translate(-80%, -30%) scale(1.9); }
+  42% { transform: translate(-84%, -30%) scale(1.9); }
+  54% { transform: translate(-76%, -30%) scale(1.9); }
+  100% { transform: none; }
+}
+.tcard-sprite.do-hug { animation: mv-hug 1.2s ease-in-out; }
+@keyframes mv-hug {
+  0%, 100% { transform: none; }
+  25% { transform: scale(1.35, .8); }
+  50% { transform: scale(.85, 1.25); }
+  75% { transform: scale(1.3, .82); }
+}
+.tcard-sprite.do-hide { animation: mv-hide 1.6s ease-in-out; }
+@keyframes mv-hide {
+  0%, 100% { opacity: 1; transform: none; }
+  35%, 65% { opacity: 0; transform: scale(.3); }
+}
+.tcard-sprite.do-spin { animation: mv-spin 1.1s ease-in-out; }
+@keyframes mv-spin {
+  0% { transform: none; }
+  50% { transform: translateY(-30%) rotate(360deg); }
+  100% { transform: rotate(720deg); }
+}
+.tcard-sprite.do-chomp { animation: mv-chomp 1s steps(2); }
+@keyframes mv-chomp {
+  0%, 100% { transform: none; }
+  25%, 75% { transform: translateX(-90%) scale(1.3); }
+  50% { transform: translateX(-60%) scale(1.15); }
+}
+.tcard-sprite.do-loaf { animation: mv-loaf 1.6s ease-in-out; }
+@keyframes mv-loaf {
+  0%, 100% { transform: none; }
+  40%, 70% { transform: scale(1.3, .6); }
+}
+/* The little emoji that fly out during a move */
+.tcard-fx { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+.tcard-fx span { position: absolute; font-size: 24px; opacity: 0; animation: fx-pop 1.2s ease-out forwards; }
+.tcard-fx span img.px-emoji { width: 24px !important; height: 24px !important; }
+@keyframes fx-pop {
+  0% { opacity: 0; transform: translateY(10px) scale(.4); }
+  25% { opacity: 1; transform: translateY(0) scale(1.2); }
+  100% { opacity: 0; transform: translateY(-40px) scale(1); }
+}
+.fx-charge span { animation-name: fx-dash; }
+@keyframes fx-dash {
+  0% { opacity: 0; transform: translateX(30px); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(-70px); }
+}
+.fx-spin span { animation-name: fx-orbit; }
+@keyframes fx-orbit {
+  0% { opacity: 0; transform: rotate(0) translateX(10px) scale(.5); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: rotate(360deg) translateX(40px) scale(1.1); }
+}
+
 /* ---------- Garden Almanac (growing tips) ---------- */
 .growing {
   background:
@@ -972,6 +1220,26 @@ a.game:hover { background: #34303b; }
 .badge-c { background: #000; color: #7dff7d; }
 .badge-d { background: linear-gradient(#bdf0a0, #5cb83c); color: #fff; text-shadow: 1px 1px 0 #1f4d15; }
 .badge-e { background: linear-gradient(#d9c9ff, #8a3fd1); color: #fff; }
+a.badge { text-decoration: none; }
+a.badge:hover { border-style: inset; }
+/* Two-part badges: a little block on the left, words on the right */
+.badge-split { grid-template-columns: 26px 1fr; padding: 0; gap: 0; }
+.badge-split > b { align-self: stretch; display: grid; place-items: center; font-weight: normal; border-right: 2px solid rgba(0, 0, 0, .35); }
+.badge-split > span { padding: 0 3px; }
+.badge-split img.px-emoji { width: 16px !important; height: 16px !important; }
+.badge-f { background: #fff; color: #222; }
+.badge-f > b { background: #f7df1e; color: #222; font-size: 9px; }
+.badge-g { background: linear-gradient(#aee4ff, #37a0e6); color: #fff; text-shadow: 1px 1px 0 #135b8c; }
+.badge-h { background: #4a321c; color: #ffd08a; }
+.badge-h > b { background: #6b4a2b; }
+.badge-i { background: repeating-linear-gradient(45deg, #ffd6ec 0 6px, #ffb0d9 6px 12px); color: #c2185b; }
+.badge-j { background: #000080; color: #fff; font-size: 6.5px; text-shadow: 1px 1px 0 #ff00ff; }
+.badge-k { background: linear-gradient(#e7f7d4, #a6d987); color: #1f4d15; }
+.badge-k > b { background: #3f8f2e; }
+.badge-l { background: linear-gradient(#ffe7a3, #ffb84d); color: #6b3a00; }
+.badge-new { display: inline-block; background: #e0252f; color: #fff; padding: 1px 2px; animation: badge-blink 1s steps(2) infinite; }
+@keyframes badge-blink { 50% { opacity: 0; } }
+.badge-m { background: #1c1920; color: var(--ng-orange); border-color: #444; }
 
 /* ---------- Meadow footer ---------- */
 .meadow {

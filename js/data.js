@@ -830,25 +830,87 @@ window.YVY = {
   },
 
   // CHICKENS (Critter Corner cards). photo is optional.
+  // card: their "Critter of the Month" trading card (flock and pets both have one; see critterOfTheMonth).
+  // Their pixel sprite (js/pixels.js) is named after them (riot, peaches...); card.sprite picks another.
+  // stats are out of 5. Each move has an animation (anim) the sprite acts out when you click it on the big card:
+  // charge, flip, stomp, glare, hug, hide, spin, chomp, loaf. fx is the little emoji that flies around.
   flock: [
     { name: "Riot", breed: "Buff Laced Polish", photo: "images/chickens/riot.jpg",
-      fact: "Rocks a giant pom-pom hairdo and can't see where she's going. Goes anyway." },
+      fact: "Rocks a giant pom-pom hairdo and can't see where she's going. Goes anyway.",
+      card: { hp: 70, type: "Pom-Pom", rarity: 3,
+        moves: [
+          { name: "Blind Charge", dmg: 30, anim: "charge", fx: "💨", text: "Runs straight at you. Can't see you. Hits anyway." },
+          { name: "Hair Flip", dmg: 20, anim: "flip", fx: "✨", text: "The opponent is too dazzled to move this turn." },
+        ],
+        stats: { Fluff: 4, Sass: 3, Speed: 4, Vision: 1, Chaos: 5 },
+        weakness: "Wind (hair in eyes)", resist: "Bad hair days" } },
     { name: "Beyonce", breed: "Golden Laced Polish", photo: "images/chickens/beyonce.jpg",
-      fact: "The feisty one. Runs the coop, and the coop knows it." },
+      fact: "The feisty one. Runs the coop, and the coop knows it.",
+      card: { hp: 90, type: "Diva", rarity: 4,
+        moves: [
+          { name: "Coop Rules", dmg: 40, anim: "stomp", fx: "💥", text: "Every chicken on the bench does what she says." },
+          { name: "Signature Glare", dmg: 30, anim: "glare", fx: "⚡", text: "The opponent skips a turn to think about what they did." },
+        ],
+        stats: { Sass: 5, Bossiness: 5, "Kale Defense": 5, Fluff: 3, Speed: 3 },
+        weakness: "None (she says)", resist: "Rules made by others" } },
     { name: "Snow 🌈", breed: "Silkie", photo: "images/chickens/snow.jpg",
-      fact: "Our fluffy little cloud. She's the mystery chicken now, keeping watch from somewhere extra soft. Forever loved." },
+      fact: "Our fluffy little cloud. She's the mystery chicken now, keeping watch from somewhere extra soft. Forever loved.",
+      card: { hp: "∞", type: "Cloud", rarity: 5, memorial: true,
+        moves: [
+          { name: "Marshmallow Hug", dmg: 0, anim: "hug", fx: "💕", text: "Everyone on your side feels better. All of them." },
+          { name: "Puffball Camo", dmg: 0, anim: "hide", fx: "🌼", text: "Hides in the dandelions. Can't be found. Can't be hit." },
+        ],
+        stats: { Fluff: 5, Sweetness: 5, "Couch Duty": 5, Mystery: 5, Speed: 1 },
+        weakness: "None", resist: "Everything. Forever loved." } },
   ],
+  // CRITTER OF THE MONTH: one critter a month swaps its Critter Corner card for its trading card
+  // (click it to open the big card and watch their moves). They take turns in this order, starting
+  // with the month in start. pins picks a critter for a month instead, e.g. { "2026-12": "Bojjii" }.
+  // Preview any card with ?cotm=Lychee
+  critterOfTheMonth: {
+    start: "2026-10",
+    order: ["Riot", "Peaches", "Beyonce", "Bojjii", "Snow", "Lychee", "Penny"],
+    pins: {},
+  },
 
   // PETS (Critter Corner cards). photo is optional.
   pets: [
     { name: "Peaches", kind: "Fox-faced Pomeranian", photo: "images/pets/peaches-hehe-bite.jpg",
-      fact: "Owns more outfits than anyone in the house. Wears every one of them with pride." },
+      fact: "Owns more outfits than anyone in the house. Wears every one of them with pride.",
+      card: { hp: 40, type: "Fashion", rarity: 4,
+        moves: [
+          { name: "Outfit Change", dmg: 20, anim: "spin", fx: "🎀", text: "Spins once and comes back in a brand new outfit. The crowd goes wild." },
+          { name: "Hehe Bite", dmg: 10, anim: "chomp", fx: "💥", text: "A tiny, very dramatic nibble. Mostly for show." },
+        ],
+        stats: { Fluff: 5, Fashion: 5, Sass: 4, Bark: 4, Size: 1 },
+        weakness: "Not being the center of attention", resist: "Plain collars" } },
     { name: "Bojjii", kind: "Mutt (German Shepherd × Aussie Shepherd, we think)", photo: "images/pets/bojjii-card.jpg",
-      fact: "The big sweet boy. Will wear antlers, wigs and party hats for the team (and beg for pancakes)." },
+      fact: "The big sweet boy. Will wear antlers, wigs and party hats for the team (and beg for pancakes).",
+      card: { hp: 120, type: "Gentle Giant", rarity: 4,
+        moves: [
+          { name: "Costume Party", dmg: 20, anim: "spin", fx: "🎉", text: "Puts on antlers, a wig or a party hat. Takes one for the team, every time." },
+          { name: "Pancake Stare", dmg: 50, anim: "glare", fx: "🥞", text: "Stares until a pancake appears. It always works." },
+        ],
+        stats: { Sweetness: 5, Size: 5, Begging: 5, "Hat Tolerance": 5, Speed: 3 },
+        weakness: "Pancakes", resist: "Wigs, antlers and party hats" } },
     { name: "Lychee", kind: "Tabby cat", photo: "images/pets/lychee-cucumber.jpg", focus: "70% 50%",
-      fact: "Lounges on vegetables, tolerates costumes, and is deeply tired of Peaches' nonsense." },
+      fact: "Lounges on vegetables, tolerates costumes, and is deeply tired of Peaches' nonsense.",
+      card: { hp: 60, type: "Loaf", rarity: 3,
+        moves: [
+          { name: "Veggie Lounge", dmg: 10, anim: "loaf", fx: "🥒", text: "Lies down on the cucumber. The cucumber is hers now." },
+          { name: "Unimpressed Stare", dmg: 30, anim: "glare", fx: "💤", text: "Peaches leaves the room." },
+        ],
+        stats: { Chill: 5, Judging: 5, Napping: 5, "Costume Tolerance": 2, Speed: 2 },
+        weakness: "Peaches' nonsense", resist: "Costumes (mostly)" } },
     { name: "Penny 🌈", kind: "Chug (Chihuahua × Pug)", photo: "images/pets/penny-posing.jpg", focus: "50% 35%",
-      fact: "Stuck by my side through my hardest times. Spun in happy circles and hid chocolate under the blankets for her momma, and somehow always knew never to eat it herself. The sweetest, most loving doggo there ever was. Forever loved." },
+      fact: "Stuck by my side through my hardest times. Spun in happy circles and hid chocolate under the blankets for her momma, and somehow always knew never to eat it herself. The sweetest, most loving doggo there ever was. Forever loved.",
+      card: { hp: "∞", type: "Sweetheart", rarity: 5, memorial: true,
+        moves: [
+          { name: "Happy Circles", dmg: 0, anim: "spin", fx: "💖", text: "Spins in happy circles until everyone is smiling." },
+          { name: "Chocolate Stash", dmg: 0, anim: "hide", fx: "💝", text: "Hides chocolate under the blankets for her momma. Never eats it herself." },
+        ],
+        stats: { Loyalty: 5, Sweetness: 5, Snuggles: 5, Spins: 5, Size: 1 },
+        weakness: "None", resist: "Everything. Forever loved." } },
   ],
 
   // "This Day in Yvy History". One is picked per calendar day. (SAMPLE: add real ones!)
@@ -861,6 +923,175 @@ window.YVY = {
     "The Garden Society finds a worm described as 'basically a noodle'.",
     "A pet sits directly on the keyboard during an important build.",
   ],
+
+  /*
+   * GARDEN MAP: the Central Garden as a pixel map (🗺️ Map tab in the Garden Society, js/garden-map.js).
+   * Traced from Yvy's map on a grid 40 squares wide × 52 tall: x, y = top-left corner, w, h = size,
+   * all in whole squares (so every edge lines up straight).
+   * kind picks the look: bed, coop, run, tree, vine, hedge, compost, sink, drain, mushrooms,
+   * succulents, grass, building, shed, box, sign.
+   * A spot with a name can be hovered/tapped; it shows name, planted (list), about, fix and todo.
+   * planted items are "emoji name" or { icon: "kale", name: "kale" } for a js/veg-icons.js icon.
+   * fix: repairs it needs (puts a yellow "!" on the map). todo: garden jobs for this season,
+   * written for San Diego weather and crop rotation. Update todo (and todoTitle) each season.
+   * more: [[x, y, w, h], ...] adds extra pieces of the same spot (an L-shaped vine).
+   */
+  gardenMap: {
+    title: "The Central Garden",
+    season: "Fall 2026",
+    hint: "Hover or tap a bed, tree or vine to see what's growing! A yellow ! means it needs fixing.",
+    todoTitle: "To-do this fall",
+    spots: [
+      // Ground first (drawn underneath everything else)
+      { kind: "grass", x: 1, y: 1, w: 18, h: 8 },
+      { kind: "grass", x: 2, y: 18, w: 17, h: 33 },
+      { kind: "grass", x: 32, y: 11, w: 4, h: 7 },
+      { kind: "hedge", x: 1, y: 0, w: 18, h: 1 },
+      { kind: "hedge", x: 23, y: 0, w: 15, h: 1 },
+      { kind: "hedge", x: 37, y: 1, w: 1, h: 7 },
+      { kind: "sign", text: "GATE", x: 19, y: 0, w: 4, h: 2 },
+      { kind: "building", tone: "pink", text: "YMCA", x: 23, y: 8, w: 17, h: 3, more: [[37, 11, 3, 15]] },
+      { kind: "building", tone: "lav", text: "LIBRARY", x: 24, y: 27, w: 16, h: 24 },
+      { kind: "sign", text: "◀ IN", x: 19, y: 48, w: 4, h: 2 },
+
+      // The places you can look at
+      { kind: "building", tone: "green", text: "GARDEN CLASSROOM", x: 23, y: 1, w: 14, h: 7,
+        name: "Garden Classroom", about: "Where garden class meets. Seeds get sorted, worms get named and questions get asked (so many questions)." },
+      { kind: "compost", x: 34, y: 1, w: 3, h: 3,
+        name: "Main Compost", about: "Our main compost pile. Lunch scraps go in, garden gold comes out. Temps are on the 🌡️ Compost tab.", tab: "compost" },
+      { kind: "shed", text: "SHED", x: 32, y: 19, w: 4, h: 5,
+        name: "Shed & Storage", about: "Shovels, gloves and watering cans live here." },
+      { kind: "mushrooms", tone: "short", x: 2, y: 2, w: 3, h: 3,
+        name: "Short Mushroom Table", about: "The shorter of our two mushroom tables, also turquoise with yellow spots 🍄" },
+      { kind: "mushrooms", x: 2, y: 5, w: 3, h: 3,
+        name: "Tall Mushroom Table", about: "The taller of our two mushroom tables: turquoise with yellow spots 🍄" },
+      { kind: "bed", text: "#8", x: 6, y: 2, w: 5, h: 2, name: "Bed #8",
+        planted: ["🌿 rosemary", "🌿 basil", "🌾 lemongrass", "🥀 dead tomato plant"],
+        todo: [
+          "Pull out the dead tomato plant, roots and all. If its leaves had spots or it wilted, bag it for the trash instead of the compost.",
+          "Crop rotation: a tomato grew here, so fill the gap with peas, fava beans or leafy greens this winter (no tomatoes here next spring).",
+          "Harvest the basil before nights drop into the 40s. It doesn't like the cold.",
+          "Rosemary and lemongrass are perennials: they stay put. Cut the lemongrass back to about a foot tall in late winter.",
+        ] },
+      { kind: "bed", text: "#9", x: 12, y: 2, w: 6, h: 2, name: "Bed #9",
+        planted: ["🥒 luffa", "🌾 lemongrass"],
+        fix: ["Needs chicken fencing to keep the flock out."],
+        todo: [
+          "Let the luffa gourds dry on the vine until they turn brown and light and the seeds rattle, then peel them into sponges! Save the seeds for spring.",
+          "Crop rotation: luffa is in the squash family, so grow it in a different bed next summer.",
+          "October and November are garlic-planting time in San Diego. Once the luffa comes out, garlic could go here.",
+          "Cut the lemongrass back to about a foot tall in late winter.",
+        ] },
+      { kind: "coop", text: "🐔", x: 6, y: 4, w: 3, h: 2,
+        name: "Chicken Coop", about: "Bedtime and egg-laying HQ. The chickens eat our weeds and bugs and pay us back in eggs and compost.", link: "#critters" },
+      { kind: "run", x: 9, y: 4, w: 9, h: 2,
+        name: "Chicken Run", about: "Scratch, peck, dust bath, repeat. Garden class sometimes gets a special guest speaker from in here 🎤" },
+      { kind: "bed", text: "#7", x: 6, y: 6, w: 5, h: 2, name: "Bed #7",
+        planted: ["🌿 rosemary", "🌿 thyme"],
+        todo: [
+          "Rosemary and thyme are Mediterranean perennials, made for San Diego. Water them very little once the winter rains start; soggy soil is their only real enemy.",
+          "Trim lightly after they flower to keep them bushy, but never cut into the old bare wood.",
+          "Room to spare? Fall is the time for cilantro, parsley and dill. They bolt in the summer heat.",
+          "Crop rotation: this is a perennial herb bed, so it doesn't need to rotate.",
+        ] },
+      { kind: "bed", text: "#6", x: 12, y: 6, w: 6, h: 2, name: "Grub Tub (Bed #6)",
+        about: "Our Grub Tub! This is where the food scraps for the chickens go 🐔",
+        todo: [
+          "Chicken-safe scraps only: no avocado skins or pits, no raw or dried beans, nothing moldy or salty.",
+          "Hand the scraps out to the chickens every day so the tub doesn't attract flies and rats, and rinse it out once a week.",
+        ] },
+      { kind: "vine", tone: "passion", x: 18, y: 1, w: 1, h: 8, more: [[1, 8, 17, 1]],
+        name: "Passionfruit Vines", about: "Wild flowers that look like tiny space stations, then purple fruit full of tangy seeds." },
+      { kind: "sink", text: "SINK", x: 10, y: 10, w: 8, h: 3,
+        name: "Sink", about: "Wash your hands, then wash your veggies. In that order, please 💧",
+        fix: ["Leaky faucet.", "Broken plumbing underneath."] },
+      { kind: "compost", tone: "worm", x: 18, y: 9, w: 2, h: 2,
+        name: "Worm Compost", about: "Our worm compost bin 🪱",
+        fix: ["It's broken and needs repairing before it can be used again."] },
+      { kind: "compost", x: 18, y: 11, w: 2, h: 2,
+        name: "Rotating Compost", about: "Our rotating compost. Give it a spin to mix everything up! Temps are on the 🌡️ Compost tab.", tab: "compost" },
+      { kind: "tree", tone: "fig", x: 7, y: 9, w: 3, h: 3,
+        name: "Fig Tree", about: "Fig tree number one, by the sink. Big leaves, sweet sticky figs in late summer.",
+        fix: ["Vines (passionfruit or grape) are climbing on it. Untangle them and cut them back so the tree gets its light back."],
+        todo: ["Fig trees drop their leaves in winter. Do any big pruning while they're bare (December to February)."] },
+      { kind: "succulents", x: 1, y: 10, w: 5, h: 4,
+        name: "Succulent Garden", about: "Plants that don't mind if we forget to water them. Look for the little rosettes." },
+      { kind: "tree", tone: "avocado", x: 0, y: 14, w: 3, h: 3,
+        name: "Avocado Tree", about: "Takes forever to grow avocados. Worth it 🥑" },
+      { kind: "tree", tone: "fig", x: 1, y: 11, w: 3, h: 3,
+        name: "Fig Tree", about: "Fig tree number two, in the bottom-left corner of the succulent garden. The birds know about this one.",
+        todo: ["Fig trees drop their leaves in winter. Do any big pruning while they're bare (December to February)."] },
+      { kind: "tree", tone: "apple", x: 0, y: 17, w: 3, h: 3,
+        name: "Apple Tree", about: "A low-chill apple, made for San Diego winters." },
+      { kind: "vine", tone: "grape", x: 3, y: 17, w: 16, h: 1, more: [[18, 18, 1, 28]],
+        name: "Grape Vines", about: "Shade in summer, grapes in fall, bare twisty branches in winter." },
+      { kind: "drain", x: 3, y: 19, w: 4, h: 31,
+        name: "Rock Drainage", about: "A river of rocks that keeps the garden from turning into a pond when it rains." },
+      { kind: "bed", text: "#5", x: 10, y: 19, w: 6, h: 5, name: "Bed #5",
+        planted: [{ icon: "scallions", name: "leeks" }, "🌸 dahlias", "🥬 collard greens", "🌼 yarrow", { icon: "kale", name: "kale" }, "🌺 nasturtiums"],
+        todo: [
+          "Kale and collards love San Diego's cool season. Pick the bottom leaves first, and check under the leaves for aphids and cabbage worms.",
+          "Pile mulch or soil up around the leeks to grow longer white stems. They'll be ready from winter into spring.",
+          "Dahlias go dormant in late fall. When the leaves yellow, cut the stalks to about 4 inches. Our mild winters mean the tubers can stay in the ground, as long as it drains well.",
+          "Cut the yarrow's dried flower stems back to the leaves.",
+          "Crop rotation: kale and collards are brassicas (cabbage family). Next spring, follow them with beans or root crops here, not more brassicas.",
+        ] },
+      { kind: "vine", tone: "trellis", x: 10, y: 24, w: 6, h: 1,
+        name: "Grapevine Trellis", about: "A trellis for the grapevines to climb, right between beds #4 and #5 🍇",
+        fix: ["Needs more support."],
+        todo: ["Grapes go dormant in winter, and January is the time to prune them, so add the extra support before then."] },
+      { kind: "bed", text: "#4", x: 10, y: 25, w: 6, h: 3, name: "Bed #4",
+        planted: ["🌺 nasturtiums"],
+        todo: [
+          "Nasturtiums love our cool season and reseed themselves. Thin them out so they don't smother everything.",
+          "There's room for fall crops: sow carrots, radishes, beets or peas now through February.",
+          "Nasturtiums are a trap crop: aphids go for them first. Check under the leaves, and leave a few aphids for the ladybugs.",
+          "Crop rotation: peas or beans here would add nitrogen for next spring's heavy feeders (like tomatoes).",
+        ] },
+      { kind: "tree", tone: "citrus", x: 12, y: 28, w: 3, h: 3,
+        name: "Citrus Tree", about: "A little citrus tree, tucked between beds #4 and #3 🍊" },
+      { kind: "tree", tone: "fig", x: 4, y: 23, w: 3, h: 3,
+        name: "Fig Tree", about: "Fig tree number three, on the rock drainage right across from the grapevine trellis. We may have a fig problem (it's a good problem).",
+        fix: ["Vines (passionfruit or grape) are climbing on it. Untangle them and cut them back so the tree gets its light back."],
+        todo: ["Fig trees drop their leaves in winter. Do any big pruning while they're bare (December to February)."] },
+      { kind: "bed", text: "#3", x: 10, y: 31, w: 6, h: 6, name: "Bed #3",
+        planted: ["🦋 narrowleaf milkweed", "🌿 oregano", "🌿 black sage", "🌿 basil", "🌾 lemongrass"],
+        todo: [
+          "Narrowleaf milkweed is a California native and food for monarch caterpillars 🦋 Leave it standing, then cut it back to about 6 inches in January or February so fresh leaves grow in.",
+          "Black sage is a native, too. Once the winter rains start it needs almost no extra water.",
+          "Harvest the basil before nights drop into the 40s.",
+          "Trim the oregano back by about a third. Cut the lemongrass to about a foot tall in late winter.",
+          "Crop rotation: this is a perennial pollinator bed, so it stays put. Add compost on top instead of digging it in.",
+        ] },
+      { kind: "box", text: "⚡", x: 11, y: 42, w: 5, h: 2,
+        name: "Electric Box", about: "There's a mason bee treehouse hanging from it 🐝 Mason bees are gentle, hardly ever sting, and are amazing pollinators.",
+        todo: [
+          "Mason bees come out in spring (about Feb to May), so keep the bee house facing the morning sun and out of the rain.",
+          "Fall is the time to check the nesting tubes: clean or swap out any that are moldy or full of mites.",
+        ] },
+      { kind: "bed", text: "#2", x: 11, y: 38, w: 5, h: 3, name: "Bed #2",
+        planted: ["🍓 strawberries", "🥬 lettuce", { icon: "scallions", name: "chives" }],
+        todo: [
+          "Fall is lettuce season in San Diego! Sow a little more every 2 to 3 weeks through February.",
+          "Strawberries: snip off the runners and old brown leaves, and add straw mulch before the rains so the berries stay off the dirt.",
+          "Once the rain starts, look for snails and slugs under the strawberry leaves.",
+          "Chives are perennial. Cut them down to 2 inches to refresh them.",
+          "Crop rotation: strawberry plants slow down after about 3 years, so plan to start new ones in a different spot.",
+        ] },
+      { kind: "bed", text: "#1", x: 11, y: 45, w: 5, h: 5, name: "Bed #1",
+        planted: ["🌿 oregano", "🌿 basil", "🍆 eggplants", "🍅 tomatoes"],
+        todo: [
+          "Pull the tomatoes and eggplants once they stop making fruit (usually by mid-November). Compost the healthy ones and bag any with spotted leaves.",
+          "Harvest the basil before nights drop into the 40s: pesto time! Or let one plant flower to save seeds.",
+          "Crop rotation: tomatoes and eggplants are nightshades. Plant fava beans or peas here this winter to put nitrogen back, and keep nightshades out of this bed next spring.",
+          "Oregano is a perennial. Trim it back by about a third.",
+        ] },
+      { kind: "tree", tone: "lemon", x: 6, y: 48, w: 3, h: 3,
+        name: "Lemon Tree", about: "Lemons pretty much all year. Lemonade days are the best days 🍋" },
+      { kind: "vine", tone: "berry", x: 2, y: 51, w: 17, h: 1,
+        name: "Blackberry Vines", about: "Sweet berries, sharp thorns. Pick carefully!" },
+    ],
+  },
 
   /*
    * GARDEN SOCIETY: journal, project updates and the compost log.

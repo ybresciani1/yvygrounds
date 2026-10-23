@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-22a">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-22a">
-  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-22a">
-  <link rel="stylesheet" href="css/extras.css?v=2026-10-22a">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-22y">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-22y">
+  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-22y">
+  <link rel="stylesheet" href="css/extras.css?v=2026-10-22y">
 </head>
 <body>
 
@@ -202,6 +202,7 @@
           <button type="button" role="tab" data-tab="projects" aria-selected="false">🛠️ Projects</button>
           <button type="button" role="tab" data-tab="compost" aria-selected="false">🌡️ Compost</button>
           <button type="button" role="tab" data-tab="almanac" aria-selected="false">🌱 Almanac</button>
+          <button type="button" role="tab" data-tab="map" aria-selected="false">🗺️ Map</button>
         </div>
         <div class="society-panel" id="societyPanel" role="tabpanel" aria-live="polite">
           <p class="society-empty">Opening the notebook… 📓</p>
@@ -222,6 +223,8 @@
           </details>
           <p class="growing-source" id="growingSource"></p>
         </div>
+        <!-- Map tab: pixel map of the Central Garden (data in js/data.js → gardenMap, built by js/garden-map.js) -->
+        <div id="gardenMap" class="growing society-almanac garden-map" role="tabpanel" aria-label="Garden map" hidden></div>
         <p class="society-cta"><button type="button" class="society-submit" id="societySubmitBtn">✏️ Submit an entry</button></p>
       </section>
 
@@ -332,6 +335,14 @@
       <span class="badge badge-c">BEST VIEWED 800×600</span>
       <span class="badge badge-d">🌱 GROWN NOT BOUGHT</span>
       <span class="badge badge-e">NO WEEDS ALLOWED</span>
+      <span class="badge badge-split badge-f"><b>JS</b><span>100% VANILLA</span></span>
+      <span class="badge badge-g">ALSO FITS A 375PX PHONE</span>
+      <span class="badge badge-split badge-h"><b>🪱</b><span>POWERED BY COMPOST</span></span>
+      <a class="badge badge-i" href="#guestbook">♥ SIGN MY GUESTBOOK ♥</a>
+      <span class="badge badge-j">WEB 1.0 FOREVER</span>
+      <span class="badge badge-split badge-k"><b>🥬</b><span>GET OFF MY KALE</span></span>
+      <a class="badge badge-l" href="#map">GARDEN MAP <span class="badge-new">NEW!</span></a>
+      <span class="badge badge-m">BAWK BAWK ONLINE</span>
     </div>
     <p class="copyright">© <span id="year"></span> YvyGrounds · made with ♥, dirt &amp; pixels by <b>ybresciani</b></p>
   </footer>
@@ -398,6 +409,15 @@
       <button class="lightbox-close" id="gbCardClose" type="button" aria-label="Close card">✕</button>
       <h2 class="sr-only" id="gbCardTitle">Kind words card</h2>
       <div class="gbc-shadow"><article class="pcard" id="gbCard"></article></div>
+    </div>
+  </div>
+
+  <!-- Critter of the Month: the big trading card (js/main.js → buildCritters) -->
+  <div class="lightbox ccard-box" id="critterCardBox" hidden>
+    <div class="ccard-wrap" role="dialog" aria-modal="true" aria-labelledby="critterCardTitle">
+      <button class="lightbox-close" id="critterCardClose" type="button" aria-label="Close card">✕</button>
+      <h2 class="sr-only" id="critterCardTitle">Critter of the Month trading card</h2>
+      <div id="critterCard"></div>
     </div>
   </div>
 
@@ -508,14 +528,15 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=2026-10-22a"></script>
-  <script src="js/pixels.js?v=2026-10-22a"></script>
-  <script src="js/veg-icons.js?v=2026-10-22a"></script>
-  <script src="js/main.js?v=2026-10-22a"></script>
-  <script src="js/society.js?v=2026-10-22a"></script>
-  <script src="js/portfolio.js?v=2026-10-22a"></script>
-  <script src="js/extras.js?v=2026-10-22a"></script>
-  <script src="js/emoji-sprites.js?v=2026-10-22a"></script>
-  <script src="js/pixel-emoji.js?v=2026-10-22a"></script>
+  <script src="js/data.js?v=2026-10-22y"></script>
+  <script src="js/pixels.js?v=2026-10-22y"></script>
+  <script src="js/veg-icons.js?v=2026-10-22y"></script>
+  <script src="js/main.js?v=2026-10-22y"></script>
+  <script src="js/society.js?v=2026-10-22y"></script>
+  <script src="js/garden-map.js?v=2026-10-22y"></script>
+  <script src="js/portfolio.js?v=2026-10-22y"></script>
+  <script src="js/extras.js?v=2026-10-22y"></script>
+  <script src="js/emoji-sprites.js?v=2026-10-22y"></script>
+  <script src="js/pixel-emoji.js?v=2026-10-22y"></script>
 </body>
 </html>

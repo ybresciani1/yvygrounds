@@ -298,16 +298,17 @@
   }
 
   const TABS = { journal: showJournal, projects: showProjects, compost: showCompost };
+  const STATIC = { almanac: "#growing", map: "#gardenMap" };
   async function openTab(name) {
     root.querySelectorAll(".society-tabs [data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === name)));
-    // The Almanac tab is the planting calendar built by main.js (#growing); the others load from the API
-    const almanac = $("#growing");
+    // The Almanac (#growing, built by main.js) and the Map (#gardenMap, js/garden-map.js) are already
+    // on the page; the others load from the API
     const panel = $("#societyPanel");
-    const isAlmanac = name === "almanac";
-    if (almanac) almanac.hidden = !isAlmanac;
-    panel.hidden = isAlmanac;
-    $(".society-cta", root).hidden = isAlmanac;
-    if (isAlmanac) return;
+    const isStatic = name in STATIC;
+    Object.entries(STATIC).forEach(([tab, sel]) => { const el = $(sel); if (el) el.hidden = tab !== name; });
+    panel.hidden = isStatic;
+    $(".society-cta", root).hidden = isStatic;
+    if (isStatic) return;
     // Each load draws into its own fresh box. If another tab is opened before this one finishes,
     // this box is no longer on the page, so a slow load can't overwrite the tab you picked.
     const view = document.createElement("div");
@@ -406,21 +407,23 @@
     openTab(b.dataset.tab);
   });
   buildForm();
-  // Links to #growing / #almanac (e.g. the "Garden Almanac" link up top) open the Almanac tab
-  const wantsAlmanac = () => ["#growing", "#almanac"].includes(location.hash);
-  const showAlmanacFromLink = () => {
-    if (!wantsAlmanac()) return false;
+  // Links to #growing / #almanac (e.g. the "Garden Almanac" link up top) open the Almanac tab,
+  // and #map / #garden-map open the Map
+  const LINKED = { "#growing": "almanac", "#almanac": "almanac", "#map": "map", "#garden-map": "map" };
+  const showTabFromLink = () => {
+    const tab = LINKED[location.hash];
+    if (!tab) return false;
     started = true;
-    openTab("almanac");
+    openTab(tab);
     root.scrollIntoView({ behavior: "smooth" });
     return true;
   };
-  window.addEventListener("hashchange", showAlmanacFromLink);
+  window.addEventListener("hashchange", showTabFromLink);
 
   // Load the journal when the section scrolls into view, or a few seconds after the page loads
   let started = false;
   const start = () => { if (!started) { started = true; io.disconnect(); openTab("journal"); } };
   const io = new IntersectionObserver((entries) => { if (entries.some((x) => x.isIntersecting)) start(); }, { rootMargin: "300px" });
   io.observe(root);
-  if (!showAlmanacFromLink()) setTimeout(start, location.hash === "#society" ? 0 : 4000);
+  if (!showTabFromLink()) setTimeout(start, location.hash === "#society" ? 0 : 4000);
 })();

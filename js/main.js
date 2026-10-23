@@ -561,20 +561,155 @@
   }
 
   /* ---------- Critters ---------- */
+  const soundOf = (c, kindField) => (kindField === "breed" ? "chicken" : /cat/i.test(c.kind) ? "cat" : "dog");
+  const critterPhoto = (c, emoji, size) => (c.photo ? imgTag(c.photo, c.name, emoji, c.focus)
+    : (emoji === "🐔" ? px("chicken", size) : `<span>${emoji}</span>`));
   function critterCard(c, kindField, emoji) {
-    const photo = c.photo ? imgTag(c.photo, c.name, emoji, c.focus) : (emoji === "🐔" ? px("chicken", 6) : `<span>${emoji}</span>`);
     // The photo is a button: click to pet (hearts + a little sound, js/extras.js)
     return `<article class="critter">
-      <button type="button" class="critter-photo" data-pet="${esc(c.name)}" data-sound="${esc(kindField === "breed" ? "chicken" : /cat/i.test(c.kind) ? "cat" : "dog")}" aria-label="Pet ${esc(c.name)}">${photo}</button>
+      <button type="button" class="critter-photo" data-pet="${esc(c.name)}" data-sound="${soundOf(c, kindField)}" aria-label="Pet ${esc(c.name)}">${critterPhoto(c, emoji, 6)}</button>
       <span class="critter-name">${esc(c.name)}</span>
       <p class="critter-pets" data-pets-for="${esc(c.name)}" aria-live="polite"></p>
       <p class="critter-kind">${esc(c[kindField])}</p>
       <p class="critter-fact">${esc(c.fact)}</p>
     </article>`;
   }
+
+  /* ---------- Critter of the Month (data.js → critterOfTheMonth, cards in flock[].card / pets[].card) ---------- */
+  // This month's critter swaps its usual card for a little trading card. Click it and the big card
+  // pops out; click a move to watch them do it. Next month they get their usual card back.
+  const allCritters = () => [
+    ...D.flock.map((c) => ({ c, kindField: "breed", emoji: "🐔" })),
+    ...D.pets.map((c) => ({ c, kindField: "kind", emoji: "🐾" })),
+  ].filter((x) => x.c.card);
+  function critterOfTheMonth() {
+    const all = allCritters();
+    const C = D.critterOfTheMonth || {};
+    const byName = (n) => n && all.find((x) => x.c.name.toLowerCase().startsWith(String(n).toLowerCase()));
+    const order = (C.order || []).map(byName).filter(Boolean);
+    const list = order.length ? order : all;
+    if (!list.length) return null;
+    const [sy, sm] = String(C.start || "2026-10").split("-").map(Number);
+    const pickFor = (y, m) => byName((C.pins || {})[`${y}-${String(m + 1).padStart(2, "0")}`])
+      || list[(((y * 12 + m) - (sy * 12 + sm - 1)) % list.length + list.length) % list.length];
+    const now = new Date();
+    const preview = new URLSearchParams(location.search).get("cotm");
+    const pick = (preview && byName(preview)) || pickFor(now.getFullYear(), now.getMonth());
+    const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    return { ...pick, list, next: pickFor(next.getFullYear(), next.getMonth()), month: now };
+  }
+
+  const pips = (n) => Array.from({ length: 5 }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("");
+  // The little card that sits in the critter's usual spot
+  function cotmMini(m) {
+    const { c, kindField, emoji } = m;
+    const k = c.card;
+    return `<article class="critter critter-cotm">
+      <button type="button" class="tcard tcard-mini${k.memorial ? " is-memorial" : ""}" data-cotm-open aria-haspopup="dialog" aria-label="${esc(c.name)} is Critter of the Month! Open the trading card">
+        <span class="tcard-banner">★ Critter of the Month ★</span>
+        <span class="tcard-top"><span class="tcard-name">${esc(c.name)}</span><span class="tcard-hp"><small>HP</small>${esc(k.hp)}</span></span>
+        <span class="tcard-photo">${critterPhoto(c, emoji, 6)}</span>
+        <span class="tcard-type">${esc(k.type)} type · ${esc(c[kindField])}</span>
+        <span class="tcard-mini-moves">${k.moves.map((mv) => `<span>${esc(mv.name)}</span>`).join("")}</span>
+        <span class="tcard-tap">✨ Click to open ✨</span>
+      </button>
+      <p class="critter-pets" data-pets-for="${esc(c.name)}" aria-live="polite"></p>
+    </article>`;
+  }
+  // The big card in the pop-up
+  function cotmBig(m) {
+    const { c, kindField, emoji, list, next, month } = m;
+    const k = c.card;
+    const stars = "★".repeat(k.rarity || 1) + "☆".repeat(5 - (k.rarity || 1));
+    const num = String(list.findIndex((x) => x.c === c) + 1).padStart(3, "0") + "/" + String(list.length).padStart(3, "0");
+    return `<article class="tcard tcard-big${k.memorial ? " is-memorial" : ""}">
+      <p class="tcard-banner">★ Critter of the Month ★ ${esc(month.toLocaleDateString("en-US", { month: "long", year: "numeric" }))}</p>
+      <header class="tcard-top">
+        <span class="tcard-name">${esc(c.name)}</span>
+        <span class="tcard-hp"><small>HP</small>${esc(k.hp)}</span>
+      </header>
+      <button type="button" class="tcard-photo" data-pet="${esc(c.name)}" data-sound="${soundOf(c, kindField)}" aria-label="Pet ${esc(c.name)}">
+        <span class="tcard-actor">${critterPhoto(c, emoji, 10)}</span>
+        <span class="tcard-sprite" aria-hidden="true">${px(k.sprite || c.name.toLowerCase().replace(/[^a-z].*$/, ""), 5)}</span>
+        <span class="tcard-fx" aria-hidden="true"></span>
+        <span class="tcard-say" aria-live="polite"></span>
+        ${k.memorial ? '<span class="tcard-ribbon">Forever loved</span>' : ""}
+      </button>
+      <p class="tcard-type">${esc(k.type)} type · ${esc(c[kindField])}</p>
+      <ul class="tcard-moves">${k.moves.map((mv, i) => `
+        <li><button type="button" class="tcard-move" data-move="${i}">
+          <b>${esc(mv.name)}</b><span class="tcard-dmg">${mv.dmg ? esc(mv.dmg) : "♥"}</span>
+          <span class="tcard-move-text">${esc(mv.text)}</span>
+        </button></li>`).join("")}
+      </ul>
+      <dl class="tcard-stats">${Object.entries(k.stats).map(([stat, n]) => `
+        <div><dt>${esc(stat)}</dt><dd aria-label="${n} out of 5">${pips(n)}</dd></div>`).join("")}
+      </dl>
+      <footer class="tcard-foot">
+        <span><b>Weakness:</b> ${esc(k.weakness)}</span>
+        <span class="tcard-rarity" aria-label="Rarity ${k.rarity || 1} out of 5">${stars}</span>
+        <span><b>Resists:</b> ${esc(k.resist)}</span>
+        <span class="tcard-num">No. ${num}</span>
+      </footer>
+      <p class="tcard-hint">Click a move to see it! Click the photo to give ${esc(c.name)} a pet.${next.c !== c ? ` Next month: ${esc(next.c.name)}` : ""}</p>
+    </article>`;
+  }
+
+  // Play a move: their little pixel sprite acts it out over the photo, emoji fly out,
+  // and a Pokémon-style line pops up
+  const calm = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function playMove(card, c, mv) {
+    const actor = $(".tcard-sprite", card);
+    const fx = $(".tcard-fx", card);
+    const say = $(".tcard-say", card);
+    say.textContent = `${c.name} used ${mv.name.toUpperCase()}!`;
+    say.classList.remove("is-on");
+    void say.offsetWidth;
+    say.classList.add("is-on");
+    if (calm()) return;
+    actor.className = "tcard-sprite";
+    void actor.offsetWidth; // restart the animation if the same move is clicked twice
+    actor.classList.add(`do-${mv.anim || "flip"}`);
+    fx.className = `tcard-fx fx-${mv.anim || "flip"}`;
+    fx.innerHTML = Array.from({ length: 6 }, (_, i) =>
+      `<span style="left:${10 + ((i * 37) % 80)}%;top:${20 + ((i * 23) % 60)}%;animation-delay:${i * 0.08}s">${esc(mv.fx || "✨")}</span>`).join("");
+    clearTimeout(playMove.t);
+    playMove.t = setTimeout(() => { fx.innerHTML = ""; }, 1800);
+  }
+
   function buildCritters() {
-    $("#flockCards").innerHTML = D.flock.map((c) => critterCard(c, "breed", "🐔")).join("");
-    $("#petCards").innerHTML = D.pets.map((c) => critterCard(c, "kind", "🐾")).join("");
+    const m = critterOfTheMonth();
+    const render = (list, kindField, emoji) => list.map((c) =>
+      (m && m.c === c ? cotmMini(m) : critterCard(c, kindField, emoji))).join("");
+    $("#flockCards").innerHTML = render(D.flock, "breed", "🐔");
+    $("#petCards").innerHTML = render(D.pets, "kind", "🐾");
+    const box = $("#critterCardBox");
+    if (!m || !box) return;
+
+    const slot = $("#critterCard");
+    let back = null;
+    const open = () => {
+      slot.innerHTML = cotmBig(m);
+      back = document.activeElement;
+      box.hidden = false;
+      $("#critterCardClose").focus();
+      // Show off the first move as the card opens
+      setTimeout(() => { if (!box.hidden) playMove(slot, m.c, m.c.card.moves[0]); }, 450);
+    };
+    const close = () => {
+      if (box.hidden) return;
+      box.hidden = true;
+      slot.innerHTML = "";
+      if (back) back.focus();
+    };
+    $("#critters").addEventListener("click", (e) => { if (e.target.closest("[data-cotm-open]")) open(); });
+    slot.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-move]");
+      if (b) playMove(slot, m.c, m.c.card.moves[+b.dataset.move]);
+    });
+    $("#critterCardClose").addEventListener("click", close);
+    box.addEventListener("click", (e) => { if (e.target === box) close(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
   }
 
   /* ---------- Garden Almanac: San Diego planting calendar (data.js → growing) ---------- */

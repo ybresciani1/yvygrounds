@@ -34,6 +34,8 @@ Live now at **http://yvygrounds.com/** (HTTPS certificate provisioning is pendin
 - [ ] Other links in the letter (itch.io, GitHub, etc.)
 - [x] Photos of Yvy (17 in the album; 48 feelings stickers saved in images/yvy-feelings, not shown)
 - [ ] Photos for the Garden Society, garden students and pets (get a parent/guardian OK for photos of kids)
+- [ ] Garden Map (`gardenMap`): each season, update `season`, `todoTitle` and each bed's `planted` / `todo`; clear a spot's `fix` once it's repaired
+- [ ] Critter of the Month cards (`flock[].card`, `pets[].card`): check the stats and moves; pin a critter to a month in `critterOfTheMonth.pins` if you like
 
 ## 2b. Portfolio (résumé, shop, guestbook)
 
