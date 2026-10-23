@@ -1252,6 +1252,7 @@ body.arcade-open { overflow: hidden; }
 .mail-yahoo { background: #6001d2; }
 .mail-app { background: var(--green-dark); }
 .mail-copy { grid-column: 1 / -1; background: var(--yellow); color: var(--ink); text-shadow: none; }
+.mail-copy-letter { background: var(--pink); }
 .mail-status { min-height: 1.4em; margin: 12px 0 0; font: 400 20px var(--f-hand); color: var(--purple); }
 
 /* ---------- Cursor sparkles ---------- */

@@ -742,19 +742,57 @@
   function buildMailPicker() {
     if (!D.email) return; // no email set: "Write to me" links just jump to the letter
     const to = encodeURIComponent(D.email);
-    const subject = encodeURIComponent("Hi Yvy! (from YvyGrounds)");
-    const options = [
-      { label: "Gmail",       cls: "gmail",   url: `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${subject}` },
-      { label: "Outlook",     cls: "outlook", url: `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${subject}` },
-      { label: "Yahoo Mail",  cls: "yahoo",   url: `https://compose.mail.yahoo.com/?to=${to}&subject=${subject}` },
-      { label: "My mail app", cls: "app",     url: `mailto:${D.email}?subject=${subject}` },
-    ];
-    $("#mailOptions").innerHTML = options.map((o) =>
-      `<a class="mail-option mail-${o.cls}" href="${esc(o.url)}"${o.url.startsWith("mailto:") ? "" : ' target="_blank" rel="noopener"'}>${o.label}</a>`
-    ).join("") + `<button class="mail-option mail-copy" id="mailCopy" type="button">Copy my address</button>`;
+    const plainSub = $("#mailSub").textContent;
+    let letter = "";
+
+    // A shop "Ask me!" tag (data-ask = item number, or "counter") starts a fill-in letter
+    // about that item. See data.js → shop.letter.
+    function shopLetter(which) {
+      const S = D.shop || {};
+      const L = S.letter;
+      const item = which === "counter" ? S.counter : (S.items || [])[+which];
+      if (!L || !item || !item.ask) return null;
+      const fill = (s) => String(s || "").replace(/\{item\}/g, item.name);
+      const blanks = (title, lines) => [title.toUpperCase(), ...lines.map((l) => `- ${l} `)].join("\n");
+      return {
+        item,
+        subject: (item.subject || fill(L.subject)) + " (from YvyGrounds)",
+        body: [
+          L.hello,
+          `${fill(L.intro)} ${item.emoji || ""}`.trim(),
+          blanks("About us", L.aboutUs || []),
+          blanks(item.ask.title, [...item.ask.lines, ...(L.always || [])]),
+          `${L.end} \n`,
+          L.thanks,
+        ].join("\n\n"),
+      };
+    }
+
+    function fillOptions(subject, body) {
+      const su = encodeURIComponent(subject);
+      const b = body ? encodeURIComponent(body) : "";
+      const mb = body ? encodeURIComponent(body.replace(/\n/g, "\r\n")) : ""; // mailto wants CRLF
+      const options = [
+        { label: "Gmail",       cls: "gmail",   url: `https://mail.google.com/mail/?view=cm&fs=1&to=${to}&su=${su}${b && `&body=${b}`}` },
+        { label: "Outlook",     cls: "outlook", url: `https://outlook.live.com/mail/0/deeplink/compose?to=${to}&subject=${su}${b && `&body=${b}`}` },
+        { label: "Yahoo Mail",  cls: "yahoo",   url: `https://compose.mail.yahoo.com/?to=${to}&subject=${su}${b && `&body=${b}`}` },
+        { label: "My mail app", cls: "app",     url: `mailto:${D.email}?subject=${su}${mb && `&body=${mb}`}` },
+      ];
+      $("#mailOptions").innerHTML = options.map((o) =>
+        `<a class="mail-option mail-${o.cls}" href="${esc(o.url)}"${o.url.startsWith("mailto:") ? "" : ' target="_blank" rel="noopener"'}>${o.label}</a>`
+      ).join("") +
+        (body ? `<button class="mail-option mail-copy mail-copy-letter" id="mailCopyLetter" type="button">Copy the letter</button>` : "") +
+        `<button class="mail-option mail-copy" id="mailCopy" type="button">Copy my address</button>`;
+    }
 
     let lastFocus = null;
-    const open = () => {
+    const open = (which) => {
+      const ask = which != null ? shopLetter(which) : null;
+      letter = ask ? ask.body : "";
+      fillOptions(ask ? ask.subject : "Hi Yvy! (from YvyGrounds)", letter);
+      $("#mailSub").textContent = ask
+        ? `Asking about ${ask.item.emoji || ""} ${which === "counter" ? "something special" : ask.item.name}. I started your letter for you, just fill in the blanks!`
+        : plainSub;
       lastFocus = document.activeElement;
       $("#mailStatus").textContent = "";
       $("#mailPicker").hidden = false;
@@ -769,7 +807,7 @@
       const link = e.target.closest("[data-write]");
       if (!link) return;
       e.preventDefault();
-      open();
+      open(link.dataset.ask);
     });
     $("#mailClose").addEventListener("click", close);
     $("#mailPicker").addEventListener("click", (e) => { if (e.target === e.currentTarget) close(); });
@@ -779,14 +817,20 @@
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && !$("#mailPicker").hidden) close();
     });
-    $("#mailCopy").addEventListener("click", () => {
+    // The copy buttons get redrawn on every open, so listen on their box
+    $("#mailOptions").addEventListener("click", (e) => {
+      const b = e.target.closest("button.mail-copy");
+      if (!b) return;
       const done = (msg) => { $("#mailStatus").textContent = msg; };
+      const isLetter = b.id === "mailCopyLetter";
+      const text = isLetter ? letter : D.email;
+      const fallback = () => done(isLetter ? "Couldn't copy it, sorry! Try a mail button instead." : D.email);
       if (navigator.clipboard) {
-        navigator.clipboard.writeText(D.email)
-          .then(() => done("Copied! Paste it into any email. ♥"))
-          .catch(() => done(D.email));
+        navigator.clipboard.writeText(text)
+          .then(() => done(isLetter ? "Copied! Paste it into an email (Copy my address gets the To: line) ♥" : "Copied! Paste it into any email. ♥"))
+          .catch(fallback);
       } else {
-        done(D.email);
+        fallback();
       }
     });
   }

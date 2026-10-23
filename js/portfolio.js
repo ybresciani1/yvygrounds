@@ -143,13 +143,14 @@
     $("#shopKeeper").innerHTML = px("chicken", 7);
     $("#shopKeeperName").textContent = S.keeper || "Yvy";
     $("#shopGreeting").textContent = S.greeting;
-    $("#shopItems").innerHTML = S.items.map((it) => `
+    // "Ask me!" opens the letter picker (main.js) with a letter about this item already started
+    $("#shopItems").innerHTML = S.items.map((it, i) => `
       <li class="shop-item">
         <span class="shop-item-icon" aria-hidden="true">${esc(it.emoji)}</span>
         <h3>${esc(it.name)}</h3>
         ${it.tag ? `<p class="shop-item-tag">${esc(it.tag)}</p>` : ""}
         <p class="shop-item-blurb">${esc(it.blurb)}</p>
-        <span class="shop-price">${esc(it.price || S.price || "Ask me!")}</span>
+        <button type="button" class="shop-price" data-write data-ask="${i}" aria-label="${esc(`${it.price || S.price || "Ask me!"} about ${it.name}`)}">${esc(it.price || S.price || "Ask me!")}</button>
       </li>`).join("");
     $("#shopClosing").textContent = S.closing || "";
 

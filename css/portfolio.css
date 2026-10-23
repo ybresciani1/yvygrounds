@@ -283,8 +283,14 @@
   border-radius: 4px 12px 12px 4px;
   padding: 2px 10px 2px 16px;
   font: 700 13px var(--f-round);
+  color: var(--ink);
   transform: rotate(-4deg);
+  cursor: pointer;
+  box-shadow: 0 2px 0 var(--ink);
+  transition: transform .15s, background .15s;
 }
+.shop-price:hover, .shop-price:focus-visible { background: var(--pink); transform: rotate(-4deg) translateY(-2px); }
+.shop-price:active { transform: rotate(-4deg) translateY(1px); box-shadow: 0 1px 0 var(--ink); }
 .shop-price::before {
   content: "";
   position: absolute;

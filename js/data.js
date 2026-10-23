@@ -255,24 +255,90 @@ window.YVY = {
   /*
    * HIRE ME / COMMISSION ME: the shop counter (section #shop).
    * "Ask at the counter" opens the same "Write to me" email picker.
+   * Each item's "Ask me!" tag opens it too, with a fill-in letter already started:
+   * letter.hello + letter.intro, the aboutUs blanks, the item's ask blanks + letter.always,
+   * then letter.end and letter.thanks. "Ask at the counter" uses counter the same way.
    */
   shop: {
     keeper: "Yvy",
     greeting: "Welcome to Yvy's Garden & Game Shop! Everything here is made to order. Have a look around, then come chat with me at the counter!",
     items: [
       { emoji: "🌱", name: "Garden Workshops", tag: "schools · camps · clubs",
-        blurb: "Hands-on garden lessons on seeds, soil, compost and pollinators, for any age from UTK up. In English or Español." },
+        blurb: "Hands-on garden lessons on seeds, soil, compost and pollinators, for any age from UTK up. In English or Español.",
+        ask: { title: "The workshop", lines: [
+          "Ages or grades:",
+          "About how many kids:",
+          "Topics we're curious about (seeds, soil, compost, pollinators, something else?):",
+          "English, Español, or both:",
+          "One visit or a series?",
+          "Dates or times that work:",
+          "Do you have a garden space yet? (yes / no / sort of):",
+        ] } },
       { emoji: "🏡", name: "Outdoor Classroom Design", tag: "schools · preschools",
-        blurb: "Turn a yard, courtyard or school garden into a living classroom: mud kitchens, loose parts, pollinator gardens and habitat spaces." },
+        blurb: "Turn a yard, courtyard or school garden into a living classroom: mud kitchens, loose parts, pollinator gardens and habitat spaces.",
+        ask: { title: "The space", lines: [
+          "What space do you have (yard, courtyard, rooftop, school garden...)?",
+          "About how big is it:",
+          "What you'd love to see there (mud kitchen, loose parts, pollinator garden, habitat...):",
+          "Ages who'll use it:",
+          "When you'd like it ready:",
+        ] } },
       { emoji: "📚", name: "Curriculum Design", tag: "UTK–8th grade",
-        blurb: "Inquiry-based garden and environmental curriculum inspired by Reggio Emilia, Montessori and Forest School." },
+        blurb: "Inquiry-based garden and environmental curriculum inspired by Reggio Emilia, Montessori and Forest School.",
+        ask: { title: "The curriculum", lines: [
+          "Grades:",
+          "Topics or standards you need to cover:",
+          "How often you'll teach it (weekly, a unit, all year?):",
+          "Indoors, outdoors, or both:",
+          "English, Español, or both:",
+          "When you'd need it by:",
+        ] } },
       { emoji: "🤝", name: "Teacher Mentoring", tag: "teaching teams",
-        blurb: "Coaching on outdoor learning, documentation and child-led projects, so your team feels at home teaching outside." },
+        blurb: "Coaching on outdoor learning, documentation and child-led projects, so your team feels at home teaching outside.",
+        ask: { title: "The mentoring", lines: [
+          "How many teachers on your team:",
+          "Ages they teach:",
+          "What you'd like help with (outdoor learning, documentation, child-led projects...):",
+          "In person, online, or both:",
+          "How often (one session, monthly, all year?):",
+        ] } },
       { emoji: "🎮", name: "Custom Mini-Games", tag: "classrooms · events",
-        blurb: "A little browser game for your class, garden program or event, bilingual if you like. Just like the ones in my portal!" },
+        blurb: "A little browser game for your class, garden program or event, bilingual if you like. Just like the ones in my portal!",
+        ask: { title: "The game", lines: [
+          "What the game is for (a class, a garden program, an event?):",
+          "Who's playing, and what ages:",
+          "What it should be about or teach:",
+          "English, Español, or both:",
+          "When you need it by:",
+          "Any favorite games it should feel like:",
+        ] } },
       { emoji: "🧸", name: "Kid-Centered Design Help", tag: "apps · games · VR",
-        blurb: "Child development know-how for your product: age-appropriate UX, playtesting with kids, safety and healthy screen time." },
+        blurb: "Child development know-how for your product: age-appropriate UX, playtesting with kids, safety and healthy screen time.",
+        ask: { title: "The project", lines: [
+          "What you're building (app, game, VR, something else?):",
+          "Ages it's for:",
+          "What you'd like help with (age-appropriate UX, playtesting with kids, safety, screen time...):",
+          "Where you are in the project (idea, prototype, launched?):",
+          "Timeline:",
+        ] } },
     ],
+    // "Ask at the counter": for anything that isn't on the shelf
+    counter: { emoji: "✉", name: "something that isn't on the shelf", subject: "A request for Yvy",
+      ask: { title: "The idea", lines: [
+        "What you have in mind (weird requests welcome!):",
+        "Who it's for, and what ages:",
+        "When you'd need it:",
+      ] } },
+    // The started letter. {item} is the item's name. No phone line: people can add one if they like.
+    letter: {
+      subject: "{item} question",
+      hello: "Hi Yvy!",
+      intro: "I found your Garden & Game Shop on YvyGrounds and I'd love to ask about {item}.",
+      aboutUs: ["My name:", "School / camp / club / company:", "City or area:"],
+      always: ["Rough budget:"],   // asked in every letter, after the item's own blanks
+      end: "Anything else you should know:",
+      thanks: "Thank you!",
+    },
     price: "Ask me!",   // price tag on every item
     closing: "Don't see what you need? Ask anyway! I love a weird request.",
     // Pay / tip jar. venmo: your Venmo username without the @ ("" hides the button).
