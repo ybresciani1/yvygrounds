@@ -779,6 +779,30 @@ a.game:hover { background: #34303b; }
   text-align: left;
   color: var(--ink);
   font: inherit;
+  /* Tilts toward the pointer (main.js → holo() sets the variables) */
+  transform: perspective(800px) rotateY(var(--rx, 0deg)) rotateX(var(--ry, 0deg));
+}
+/* Holo foil over the whole card: a rainbow sheen with pixel sparkles, and a glare that follows
+   the pointer. Hidden (--holo: 0) until the card is touched. Look borrowed from simeydotme's pokemon-cards-css. */
+.tcard-shine, .tcard-glare {
+  position: absolute;
+  inset: -7px;
+  z-index: 4;
+  border-radius: 14px;
+  pointer-events: none;
+  opacity: var(--holo, 0);
+}
+.tcard-shine {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44' shape-rendering='crispEdges' fill='white'%3E%3Cpath d='M8 4h2v2h2v2h-2v2H8V8H6V6h2z'/%3E%3Cpath d='M31 25h2v3h3v2h-3v3h-2v-3h-3v-2h3z'/%3E%3Cpath d='M22 12h1v1h-1zM39 7h1v1h-1zM14 35h1v1h-1z'/%3E%3C/svg%3E"),
+    repeating-linear-gradient(110deg, #ff8cb0 0%, #ffd23f 5%, #9af07f 10%, #6fe3ff 15%, #b99cff 20%, #ff9ce0 25%, #ff8cb0 30%);
+  background-size: 44px 44px, 400% 400%;
+  background-position: calc(var(--bx, 50%) * -1.5) calc(var(--by, 50%) * -1.5), var(--bx, 50%) var(--by, 50%);
+  mix-blend-mode: soft-light;
+}
+.tcard-glare {
+  background: radial-gradient(farthest-corner circle at var(--mx, 50%) var(--my, 50%), rgba(255, 255, 255, .85) 6%, rgba(255, 255, 255, .35) 30%, rgba(43, 26, 82, .3) 95%);
+  mix-blend-mode: overlay;
 }
 .tcard.is-memorial {
   border-color: transparent;
@@ -826,6 +850,19 @@ a.game:hover { background: #34303b; }
   pointer-events: none;
 }
 @keyframes holo { from { background-position: 100% 0; } to { background-position: -150% 0; } }
+/* While the card is being tilted the photo turns full holo-rare: rainbow foil bars that follow the pointer */
+.is-holo .tcard-photo::after {
+  animation: none;
+  background:
+    repeating-linear-gradient(0deg, #ff8cb0 0%, #ffd23f 6%, #9af07f 12%, #6fe3ff 18%, #b99cff 24%, #ff8cb0 30%),
+    repeating-linear-gradient(130deg, #1b1340 0%, #8fa6c0 3.5%, #c8e4ec 4.5%, #8fa6c0 5.5%, #1b1340 10%, #1b1340 12%);
+  background-size: 400% 400%, 300% 300%;
+  background-position: 0 var(--by, 50%), var(--bx, 50%) var(--by, 50%);
+  background-blend-mode: hard-light;
+  mix-blend-mode: color-dodge;
+  filter: brightness(calc(.3 + var(--hyp, 0) * .2)) contrast(1.6) saturate(1.2);
+  opacity: var(--holo, 0);
+}
 .tcard-ribbon {
   position: absolute;
   z-index: 2;
@@ -851,8 +888,8 @@ a.game:hover { background: #34303b; }
 /* The little card in the critter's spot: the whole card is one button */
 .critter.critter-cotm { background: none; border: 0; box-shadow: none; padding: 0; }
 .critter.critter-cotm:hover { transform: none; }
-.tcard-mini { cursor: pointer; transform: rotate(-2deg); transition: transform .2s; }
-.tcard-mini:hover, .tcard-mini:focus-visible { transform: rotate(0) scale(1.04); }
+.tcard-mini { cursor: pointer; rotate: -2deg; transition: rotate .2s, scale .2s; }
+.tcard-mini:hover, .tcard-mini:focus-visible { rotate: 0deg; scale: 1.04; }
 .tcard-mini:focus-visible { outline: 3px dashed var(--pink); outline-offset: 4px; }
 .tcard-mini .tcard-name { font-size: 18px; }
 .tcard-mini .tcard-hp { font-size: 16px; }
@@ -865,8 +902,12 @@ a.game:hover { background: #34303b; }
 /* The big card */
 .ccard-wrap { position: relative; width: min(380px, 100%); max-height: 100%; overflow: auto; padding: 14px 8px 12px; }
 .ccard-wrap .lightbox-close { top: 0; right: 0; z-index: 3; }
-.tcard-big { animation: tcard-pop .35s ease-out; }
-@keyframes tcard-pop { from { transform: scale(.6) rotate(-6deg); opacity: 0; } }
+/* Shrinks a hair as it tilts so the near corner doesn't poke past the pop-up and flash a scrollbar */
+.tcard-big {
+  animation: tcard-pop .35s ease-out;
+  transform: perspective(1000px) rotateY(var(--rx, 0deg)) rotateX(var(--ry, 0deg)) scale(calc(1 - var(--hyp, 0) * .06));
+}
+@keyframes tcard-pop { from { scale: .6; rotate: -6deg; opacity: 0; } }
 .tcard-big .tcard-photo { cursor: pointer; }
 .tcard-moves { list-style: none; margin: 0 0 8px; padding: 0; }
 .tcard-move {
@@ -928,8 +969,10 @@ a.game:hover { background: #34303b; }
   body.print-card .tcard-hint,
   body.print-card .tcard-say,
   body.print-card .tcard-fx,
+  body.print-card .tcard-shine,
+  body.print-card .tcard-glare,
   body.print-card .tcard-photo::after { display: none; }
-  body.print-card .tcard { box-shadow: 0 0 0 3px #c99a10; break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body.print-card .tcard { transform: none; box-shadow: 0 0 0 3px #c99a10; break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   body.print-card .tcard.is-memorial { box-shadow: 0 0 0 3px #a98fe6; }
   body.print-card .tcard *, body.print-card .tcard { animation: none !important; transition: none !important; }
 }

@@ -618,6 +618,8 @@
     return p ? imgTag(p.src, c.name, emoji, p.focus) : critterPhoto(c, emoji, size);
   }
 
+  // Holo foil layers on top of a card (style.css → .tcard-shine / .tcard-glare, moved by holo())
+  const HOLO = '<span class="tcard-shine" aria-hidden="true"></span><span class="tcard-glare" aria-hidden="true"></span>';
   const pips = (n) => Array.from({ length: 5 }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("");
   // The little card that sits in the critter's usual spot
   function cotmMini(m) {
@@ -631,6 +633,7 @@
         <span class="tcard-type">${esc(k.type)} type · ${esc(c[kindField])}</span>
         <span class="tcard-mini-moves">${k.moves.map((mv) => `<span>${esc(mv.name)}</span>`).join("")}</span>
         <span class="tcard-tap">✨ Click to open ✨</span>
+        ${HOLO}
       </button>
       <p class="critter-pets" data-pets-for="${esc(c.name)}" aria-live="polite"></p>
     </article>`;
@@ -672,6 +675,7 @@
         <span class="tcard-num">No. ${num}</span>
       </footer>
       <p class="tcard-hint">Click a move to see it! Click the photo to give ${esc(c.name)} a pet.${next.c !== c ? ` Next month: ${esc(next.c.name)}` : ""}</p>
+      ${HOLO}
     </article>${m.live ? `
     <p class="tcard-save">
       <button type="button" class="tcard-save-btn" data-cotm-pdf>📥 Save this card (PDF)</button>
@@ -701,6 +705,62 @@
     playMove.t = setTimeout(() => { fx.innerHTML = ""; }, 1800);
   }
 
+  // Holo trading card feel (like simeydotme's pokemon-cards-css): the card tilts toward the pointer,
+  // the rainbow foil slides and a glare follows it. Springs keep it smooth and it settles back flat.
+  // Sets --mx/--my (pointer %), --rx/--ry (tilt), --bx/--by (foil position), --hyp, --holo on the card.
+  // Returns showcase(), a little swirl that shows the foil off without a pointer (when the big card opens).
+  function holo(card, tilt) {
+    if (!card || calm()) return () => {};
+    const cur = { x: 50, y: 50, o: 0 };
+    const vel = { x: 0, y: 0, o: 0 };
+    let to = { x: 50, y: 50, o: 0 };
+    let raf = 0, swirl = 0, soft = false;
+    const draw = () => {
+      const k = soft ? 0.03 : 0.07, damp = soft ? 0.82 : 0.72;
+      let busy = false;
+      for (const p of ["x", "y", "o"]) {
+        vel[p] = (vel[p] + (to[p] - cur[p]) * k) * damp;
+        cur[p] += vel[p];
+        if (Math.abs(vel[p]) > 0.01 || Math.abs(to[p] - cur[p]) > 0.05) busy = true;
+      }
+      const dx = cur.x - 50, dy = cur.y - 50;
+      const s = card.style;
+      s.setProperty("--mx", `${cur.x}%`);
+      s.setProperty("--my", `${cur.y}%`);
+      s.setProperty("--rx", `${(dx / 50) * tilt}deg`);
+      s.setProperty("--ry", `${(-dy / 50) * tilt}deg`);
+      s.setProperty("--bx", `${50 + dx * 0.3}%`);
+      s.setProperty("--by", `${50 + dy * 0.3}%`);
+      s.setProperty("--hyp", Math.min(1, Math.hypot(dx, dy) / 50).toFixed(3));
+      s.setProperty("--holo", Math.max(0, cur.o).toFixed(3));
+      raf = busy ? requestAnimationFrame(draw) : 0;
+    };
+    const aim = (t, isSoft) => { to = t; soft = isSoft; if (!raf) raf = requestAnimationFrame(draw); };
+    card.addEventListener("pointermove", (e) => {
+      cancelAnimationFrame(swirl);
+      const r = card.getBoundingClientRect();
+      const x = Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100));
+      const y = Math.min(100, Math.max(0, ((e.clientY - r.top) / r.height) * 100));
+      card.classList.add("is-holo");
+      aim({ x, y, o: 1 }, false);
+    });
+    const rest = () => { card.classList.remove("is-holo"); aim({ x: 50, y: 50, o: 0 }, true); };
+    card.addEventListener("pointerleave", rest);
+    card.addEventListener("pointercancel", rest);
+    return () => {
+      const t0 = performance.now();
+      card.classList.add("is-holo");
+      const step = (t) => {
+        const a = (t - t0) / 1800;
+        if (a >= 1) return rest();
+        const r = 38 * Math.sin(a * Math.PI); // swings out, round once, and back to the middle
+        aim({ x: 50 + r * Math.cos(a * Math.PI * 2), y: 50 + r * Math.sin(a * Math.PI * 2), o: 1 }, false);
+        swirl = requestAnimationFrame(step);
+      };
+      swirl = requestAnimationFrame(step);
+    };
+  }
+
   // "Save this card (PDF)": print just the card (style.css → body.print-card) so the
   // print dialog's "Save as PDF" makes a one-page card. Only for the real critter of the month.
   // Print mode stays on until the card closes (afterprint fires too early on some phones).
@@ -720,6 +780,7 @@
     $("#petCards").innerHTML = render(D.pets, "kind", "🐾");
     const box = $("#critterCardBox");
     if (!m || !box) return;
+    holo($(".tcard-mini", $("#critters")), 16);
 
     const slot = $("#critterCard");
     let back = null;
@@ -728,8 +789,9 @@
       back = document.activeElement;
       box.hidden = false;
       $("#critterCardClose").focus();
-      // Show off the first move as the card opens
-      setTimeout(() => { if (!box.hidden) playMove(slot, m.c, m.c.card.moves[0]); }, 450);
+      const showcase = holo($(".tcard-big", slot), 8);
+      // Show off the foil and the first move as the card opens
+      setTimeout(() => { if (!box.hidden) { showcase(); playMove(slot, m.c, m.c.card.moves[0]); } }, 450);
     };
     const close = () => {
       if (box.hidden) return;
