@@ -45,6 +45,28 @@ window.YVY = {
     ],
   },
 
+  // MUSIC PLAYER in Yvy's Extras (js/extras.js → buildMusic). The tracks stream from each game's own
+  // site, so nothing here adds to this site's size. Plays in this order and loops back to the top.
+  music: [
+    { game: "Rabbit & Frog: Gardenbound", title: "Seed Quest Theme", src: "https://seed-game-pi.vercel.app/music/theme.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Seed Quest Activities", src: "https://seed-game-pi.vercel.app/music/activities.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Sailing", src: "https://seed-game-pi.vercel.app/music/sailing.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Rot & Roll Theme", src: "https://seed-game-pi.vercel.app/music/rot-theme.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Rot & Roll Activities", src: "https://seed-game-pi.vercel.app/music/rot-activities.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Blossom Theme", src: "https://seed-game-pi.vercel.app/music/blossom-theme.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Blossom Activities", src: "https://seed-game-pi.vercel.app/music/blossom-activities.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Rotation Nation Theme", src: "https://seed-game-pi.vercel.app/music/rotation-theme.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Rotation Nation Activities", src: "https://seed-game-pi.vercel.app/music/rotation-activities.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Spooky Theme", src: "https://seed-game-pi.vercel.app/music/spooky-theme.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Spooky Activities", src: "https://seed-game-pi.vercel.app/music/spooky-activities.mp3" },
+    { game: "Master Composter Quest", title: "Intro Anxiety", src: "https://master-composter.vercel.app/assets/Intro%20anxiety.mp3" },
+    { game: "Master Composter Quest", title: "Background Music", src: "https://master-composter.vercel.app/assets/nastelbom-background-music-486996.mp3" },
+    { game: "Master Composter Quest", title: "Spooky Theme 1", src: "https://master-composter.vercel.app/assets/Spooky%20Theme%201.mp3" },
+    { game: "Tijuana Estuary Explorer", title: "Theme Music", src: "https://tijuana-estuary-game.vercel.app/Sound/Theme%20Music.mp3" },
+    { game: "Tijuana Estuary Explorer", title: "Battle Music 1", src: "https://tijuana-estuary-game.vercel.app/Sound/Battle/Battle%20Music/Battle%20Music%201.mp3" },
+    { game: "Tijuana Estuary Explorer", title: "Battle Music 2", src: "https://tijuana-estuary-game.vercel.app/Sound/Battle/Battle%20Music/Battle%20Music%202.mp3" },
+  ],
+
   // Arcade leaderboards shown in the portal's "High Scores" box (scores live in the API).
   // game = the arcade folder name; low: true means the fastest time wins (scores are in ms).
   arcadeScores: [

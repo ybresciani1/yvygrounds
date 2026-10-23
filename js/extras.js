@@ -1,6 +1,6 @@
 /*
  * Little extras: the "Currently…" away message, pet-able critters, the Konami code
- * Easter egg, seasonal decorations and the "You are visitor #…" hit counter.
+ * Easter egg, seasonal decorations, the "You are visitor #…" hit counter and the little music player.
  * Content lives in data.js → currently and seasons; the counter talks to society-api/.
  */
 (function () {
@@ -401,7 +401,109 @@
   }
 
   // Turned on one at a time as each feature is finished and checked
-  const ON = { away: true, pets: true, konami: true, season: true, visitor: true, hiscores: true, hall: true };
+  /* ---------- Music player: the music from Yvy's games (data.js → music) ---------- */
+  // A tiny retro MP3 player in Yvy's Extras. Tracks stream from each game's own site and only start
+  // loading when you press play. One track after another, then back to the top.
+  function buildMusic() {
+    const tracks = D.music || [];
+    const box = $("#musicPlayer");
+    if (!box || !tracks.length) return;
+    // Pixel icons as tiny SVGs (5×5 grids), so they stay crisp and the emoji swapper leaves them alone
+    const icon = (rows) => `<svg viewBox="0 0 5 5" width="10" height="10" shape-rendering="crispEdges" aria-hidden="true">${
+      rows.map((r, y) => [...r].map((c, x) => (c === "#" ? `<rect x="${x}" y="${y}" width="1" height="1"/>` : "")).join("")).join("")}</svg>`;
+    const ICONS = {
+      prev: icon(["#..#.", "#.##.", "####.", "#.##.", "#..#."]),
+      play: icon(["#....", "###..", "#####", "###..", "#...."]),
+      pause: icon(["##.##", "##.##", "##.##", "##.##", "##.##"]),
+      next: icon([".#..#", ".##.#", ".####", ".##.#", ".#..#"]),
+      sound: icon(["...#.", "..##.", "####.", "..##.", "...#."]).replace("</svg>", '<rect x="4" y="1" width="1" height="3"/></svg>'),
+      mute: icon(["...#.", "..##.", "####.", "..##.", "...#."]),
+    };
+    box.innerHTML = `
+      <p class="mp-head">🎵 Music from my games</p>
+      <div class="mp-screen" aria-live="polite"><span class="mp-scroll"><span class="mp-text"></span></span></div>
+      <div class="mp-bar"><input type="range" class="mp-seek" min="0" max="1000" value="0" step="1" aria-label="Song position"><span class="mp-time">0:00</span></div>
+      <div class="mp-buttons">
+        <button type="button" class="mp-btn" data-mp="prev" aria-label="Previous song">${ICONS.prev}</button>
+        <button type="button" class="mp-btn mp-play" data-mp="play" aria-label="Play">${ICONS.play}</button>
+        <button type="button" class="mp-btn" data-mp="next" aria-label="Next song">${ICONS.next}</button>
+        <button type="button" class="mp-btn mp-mute" data-mp="mute" aria-label="Mute">${ICONS.sound}</button>
+        <input type="range" class="mp-vol" min="0" max="100" step="5" aria-label="Volume">
+        <span class="mp-count"></span>
+      </div>`;
+    box.hidden = false;
+
+    const audio = new Audio();
+    audio.preload = "none";
+    const text = $(".mp-text", box);
+    const seek = $(".mp-seek", box);
+    const time = $(".mp-time", box);
+    const playBtn = $(".mp-play", box);
+    const vol = $(".mp-vol", box);
+    const muteBtn = $(".mp-mute", box);
+    // Volume (and mute) are remembered in this browser. Some phones only use their own volume buttons.
+    const saved = Number(store.get("yvy-music-volume"));
+    audio.volume = Number.isFinite(saved) && store.get("yvy-music-volume") !== null ? saved / 100 : 0.6;
+    vol.value = Math.round(audio.volume * 100);
+    const showVolume = () => {
+      const quiet = audio.muted || audio.volume === 0;
+      muteBtn.innerHTML = quiet ? ICONS.mute : ICONS.sound;
+      muteBtn.setAttribute("aria-label", audio.muted ? "Unmute" : "Mute");
+      muteBtn.classList.toggle("is-muted", quiet);
+    };
+    vol.addEventListener("input", () => {
+      audio.volume = vol.value / 100;
+      audio.muted = false;
+      store.set("yvy-music-volume", vol.value);
+      showVolume();
+    });
+    showVolume();
+    let i = 0;
+    const fmt = (s) => (isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}` : "0:00");
+
+    const show = () => {
+      const t = tracks[i];
+      text.textContent = `${t.title} · ${t.game}`;
+      $(".mp-count", box).textContent = `${i + 1}/${tracks.length}`;
+      box.classList.toggle("is-playing", !audio.paused);
+      playBtn.innerHTML = audio.paused ? ICONS.play : ICONS.pause;
+      playBtn.setAttribute("aria-label", audio.paused ? "Play" : "Pause");
+    };
+    const load = (n, autoplay) => {
+      i = (n + tracks.length) % tracks.length;
+      audio.src = tracks[i].src;
+      seek.value = 0;
+      time.textContent = "0:00";
+      if (autoplay) audio.play().catch(() => show());
+      show();
+    };
+    const toggle = () => {
+      if (!audio.src) { load(i, true); return; }
+      if (audio.paused) audio.play().catch(() => show()); else audio.pause();
+    };
+
+    box.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-mp]");
+      if (!b) return;
+      if (b.dataset.mp === "play") toggle();
+      else if (b.dataset.mp === "mute") { audio.muted = !audio.muted; showVolume(); }
+      else load(i + (b.dataset.mp === "next" ? 1 : -1), !!audio.src && !audio.paused);
+    });
+    audio.addEventListener("play", show);
+    audio.addEventListener("pause", show);
+    audio.addEventListener("ended", () => load(i + 1, true));
+    audio.addEventListener("error", () => { if (audio.src) { text.textContent = `Couldn't load ${tracks[i].title}`; box.classList.remove("is-playing"); } });
+    audio.addEventListener("timeupdate", () => {
+      if (audio.duration) seek.value = Math.round((audio.currentTime / audio.duration) * 1000);
+      time.textContent = fmt(audio.currentTime);
+    });
+    seek.addEventListener("input", () => { if (audio.duration) audio.currentTime = (seek.value / 1000) * audio.duration; });
+    // Hush when a game opens in the arcade pop-up, so two songs don't play at once
+    document.addEventListener("click", (e) => { if (e.target.closest("a[data-play]") && !audio.paused) audio.pause(); });
+    show();
+  }
+
+  const ON = { away: true, pets: true, konami: true, season: true, visitor: true, hiscores: true, hall: true, music: true };
   if (ON.away) buildAway();
   if (ON.pets) buildPets();
   if (ON.konami) buildKonami();
@@ -409,4 +511,5 @@
   if (ON.visitor) buildVisitor();
   if (ON.hiscores) buildHiscores();
   if (ON.hall) buildHall();
+  if (ON.music) buildMusic();
 })();

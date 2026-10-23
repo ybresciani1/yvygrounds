@@ -312,3 +312,52 @@ img.px-emoji {
   image-rendering: pixelated;
   pointer-events: none;
 }
+
+/* ---------- Music player in Yvy's Extras (extras.js → buildMusic): a tiny retro MP3 player ---------- */
+/* The Extras column can't grow to fit the scrolling song name (it would push past a phone screen) */
+.extras { min-width: 0; }
+.extra-music { padding: 8px 10px 9px; background: linear-gradient(#b9a4f0, #8a6fdc); }
+.extra-music[hidden] { display: none; }
+.mp-head { margin: 0 0 5px; font: 700 12px var(--f-round); }
+.mp-screen {
+  overflow: hidden;
+  background: #c7e8a1;
+  border: 3px solid #2b1a52;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 2px #a5cf78;
+  padding: 4px 6px;
+  color: #23401a;
+  font: 8px/1.4 var(--f-pixel);
+  white-space: nowrap;
+}
+.mp-scroll { display: inline-block; }
+.is-playing .mp-scroll { animation: mp-marquee 9s linear infinite; padding-left: 100%; }
+@keyframes mp-marquee { to { transform: translateX(-100%); } }
+.mp-bar { display: flex; align-items: center; gap: 6px; margin: 5px 0 4px; }
+.mp-seek { flex: 1; min-width: 0; height: 6px; accent-color: #ffd23f; cursor: pointer; }
+.mp-time { font: 7px var(--f-pixel); min-width: 30px; text-align: right; }
+.mp-buttons { display: flex; align-items: center; gap: 5px; }
+.mp-btn {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 20px;
+  padding: 0;
+  background: #fff;
+  color: #2b1a52;
+  fill: currentColor;
+  border: 2px solid #2b1a52;
+  border-radius: 5px;
+  box-shadow: 0 2px 0 #2b1a52;
+  cursor: pointer;
+}
+.mp-btn:active { transform: translateY(2px); box-shadow: none; }
+.mp-play { width: 32px; background: #ffd23f; }
+.mp-btn svg { fill: currentColor; }
+.mp-mute { width: 22px; margin-left: 4px; }
+.mp-mute.is-muted { background: #e2dbef; opacity: .8; }
+.mp-vol { width: 56px; min-width: 0; height: 6px; accent-color: #ffd23f; cursor: pointer; }
+.mp-count { margin-left: auto; font: 7px var(--f-pixel); opacity: .85; }
+@media (prefers-reduced-motion: reduce) {
+  .is-playing .mp-scroll { animation: none; padding-left: 0; }
+}
