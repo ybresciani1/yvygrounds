@@ -4,9 +4,10 @@
  * Public:
  *   GET  /api/feed?kind=journal|project|compost[&project=ID][&limit=N]   approved posts only
  *   GET  /api/projects                                                     active + done projects
- *   GET  /api/compost                                                      compost temperature log
+ *   GET  /api/compost                                                      compost temperature log (approved)
  *   GET  /api/photo/<key>                                                  photo of an approved post
- *   POST /api/submit   (multipart, needs SOCIETY_PASSCODE)                 new post, waits for approval
+ *   POST /api/submit   (multipart, needs SOCIETY_PASSCODE)                 new post, compost temp or feeding, waits for approval
+ *   GET  /api/garden                                                       garden map: feedings and crossed-off to-dos
  *   GET  /api/guestbook                                                    approved guestbook entries
  *   POST /api/guestbook  { name, role?, avatar?, message, website, ms }    sign it (no passcode), waits for approval
  *   POST /api/visit                                                         count a visitor, returns { visitor: N }
@@ -26,7 +27,13 @@
  *   POST   /api/admin/projects          { name, emoji?, description? }
  *   PATCH  /api/admin/projects/<id>     { name?, emoji?, description?, status? }
  *   POST   /api/admin/compost           { logged_on, temp_f, pile?, turned?, moisture?, notes? }
+ *   PATCH  /api/admin/compost/<id>      { status }                     approve/reject a member's reading
  *   DELETE /api/admin/compost/<id>
+ *   GET    /api/admin/garden-pending   member temps and feedings waiting for review
+ *   POST   /api/admin/feed             { bed, plan_ids[], fed_on, notes? }  log a feeding
+ *   PATCH  /api/admin/feed/<id>        { status }                     approve/reject a member's feeding
+ *   DELETE /api/admin/feed/<id>
+ *   POST   /api/admin/todo             { bed, item, done }            cross a to-do off (or back on)
  *   GET    /api/admin/guestbook?status=pending|approved|rejected
  *   PATCH  /api/admin/guestbook/<id>    { status?, name?, role?, avatar?, message? }
  *   DELETE /api/admin/guestbook/<id>
@@ -39,6 +46,11 @@
 const MAX_PHOTOS = 3;
 const MAX_PHOTO_BYTES = 6 * 1024 * 1024;
 const KINDS = ["journal", "project", "compost"];
+// "Submit an entry" can also send a compost temperature or a feeding (garden map); they wait for review too
+const LOG_KINDS = ["temp", "feed"];
+// Spot, feedPlan and to-do ids from data.js → gardenMap (bed5, greens, a to-do's text hash...)
+const SLUG = /^[a-z0-9-]{1,30}$/;
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
 const LIMITS = { author: 40, title: 120, body: 4000, name: 80, emoji: 8, description: 400, pile: 40, moisture: 40, notes: 600 };
 const AUTH_WINDOW_MS = 15 * 60 * 1000;
 const AUTH_MAX_FAILURES = 8;
@@ -114,6 +126,7 @@ async function route(request, env) {
   if (m === "GET" && path === "/api/feed") return getFeed(url, env);
   if (m === "GET" && path === "/api/projects") return getProjects(env, false);
   if (m === "GET" && path === "/api/compost") return getCompost(env);
+  if (m === "GET" && path === "/api/garden") return getGarden(env);
   if (m === "GET" && path.startsWith("/api/photo/")) return getPhoto(env, path.slice("/api/photo/".length), false);
   if (m === "POST" && path === "/api/submit") return submit(request, env);
   if (m === "GET" && path === "/api/guestbook") return getGuestbook(env);
@@ -139,7 +152,13 @@ async function route(request, env) {
     if (what === "projects" && m === "POST" && !id) return adminCreateProject(request, env);
     if (what === "projects" && m === "PATCH" && id) return adminUpdateProject(request, env, id);
     if (what === "compost" && m === "POST" && !id) return adminAddCompost(request, env);
+    if (what === "compost" && m === "PATCH" && id) return adminReviewLog(request, env, "compost_logs", id);
     if (what === "compost" && m === "DELETE" && id) return adminDeleteCompost(env, id);
+    if (what === "garden-pending" && m === "GET") return adminGardenPending(env);
+    if (what === "feed" && m === "POST" && !id) return adminAddFeed(request, env);
+    if (what === "feed" && m === "PATCH" && id) return adminReviewLog(request, env, "feed_logs", id);
+    if (what === "feed" && m === "DELETE" && id) return adminDeleteFeed(env, id);
+    if (what === "todo" && m === "POST" && !id) return adminSetTodo(request, env);
     if (what === "guestbook" && m === "GET" && !id) return adminListGuestbook(url, env);
     if (what === "guestbook" && m === "PATCH" && id) return adminUpdateGuestbook(request, env, id);
     if (what === "guestbook" && m === "DELETE" && id) return adminDeleteGuestbook(env, id);
@@ -244,7 +263,7 @@ async function getProjects(env, includeArchived) {
 
 async function getCompost(env) {
   const { results } = await env.DB.prepare(
-    "SELECT id, logged_on, pile, temp_f, turned, moisture, notes FROM compost_logs ORDER BY logged_on, created_at"
+    "SELECT id, logged_on, pile, temp_f, turned, moisture, notes FROM compost_logs WHERE status = 'approved' ORDER BY logged_on, created_at"
   ).all();
   return json({ logs: results });
 }
@@ -274,6 +293,7 @@ async function submit(request, env) {
     throw new HttpError(403, "That passcode isn't right. Ask Yvy for the Garden Society passcode.");
   }
   const kind = clean(form.get("kind"), 20);
+  if (LOG_KINDS.includes(kind)) return submitLog(form, kind, env);
   if (!KINDS.includes(kind)) throw new HttpError(400, "Pick journal, project or compost.");
   const author = clean(form.get("author"), LIMITS.author);
   const title = clean(form.get("title"), LIMITS.title);
@@ -640,6 +660,109 @@ async function adminAddCompost(request, env) {
 
 async function adminDeleteCompost(env, id) {
   await env.DB.prepare("DELETE FROM compost_logs WHERE id = ?").bind(id).run();
+  return json({ ok: true });
+}
+
+/* ---------- Garden map: feedings, crossed-off to-dos, compost temps from members ---------- */
+
+function checkDate(value) {
+  const d = clean(value, 10);
+  if (!DATE.test(d)) throw new HttpError(400, "Pick a date.");
+  return d;
+}
+function checkTemp(value) {
+  const temp = Number(value);
+  if (!Number.isFinite(temp) || temp < 0 || temp > 200) throw new HttpError(400, "Temperature should be between 0 and 200 °F.");
+  return Math.round(temp * 10) / 10;
+}
+function checkPlanIds(list) {
+  const ids = [].concat(list || []).map((x) => clean(x, 30)).filter(Boolean);
+  if (!ids.length || ids.length > 6 || !ids.every((x) => SLUG.test(x))) throw new HttpError(400, "Pick what you fed.");
+  return ids;
+}
+function checkBed(value) {
+  const bed = clean(value, 30);
+  if (!SLUG.test(bed)) throw new HttpError(400, "Pick a bed.");
+  return bed;
+}
+
+async function getGarden(env) {
+  const [feeds, done] = await Promise.all([
+    env.DB.prepare("SELECT id, bed, plan_ids, fed_on, notes FROM feed_logs WHERE status = 'approved' ORDER BY fed_on, created_at").all(),
+    env.DB.prepare("SELECT bed, item, done_on FROM todo_done").all(),
+  ]);
+  return json({
+    feeds: feeds.results.map((f) => ({ ...f, plan_ids: JSON.parse(f.plan_ids || "[]") })),
+    done: done.results,
+  });
+}
+
+// A compost temperature or a feeding sent through "Submit an entry" (passcode already checked)
+async function submitLog(form, kind, env) {
+  const author = clean(form.get("author"), LIMITS.author);
+  if (!author) throw new HttpError(400, "Add your first name or initials.");
+  const id = newId();
+  if (kind === "temp") {
+    await env.DB.prepare(
+      "INSERT INTO compost_logs (id, logged_on, pile, temp_f, turned, moisture, notes, created_at, status, author) VALUES (?, ?, ?, ?, ?, '', ?, ?, 'pending', ?)"
+    ).bind(
+      id, checkDate(form.get("logged_on")), clean(form.get("pile"), LIMITS.pile) || "Main pile", checkTemp(form.get("temp_f")),
+      form.get("turned") ? 1 : 0, clean(form.get("body"), LIMITS.notes), now(), author
+    ).run();
+  } else {
+    await env.DB.prepare(
+      "INSERT INTO feed_logs (id, bed, plan_ids, fed_on, notes, author, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)"
+    ).bind(
+      id, checkBed(form.get("bed")), JSON.stringify(checkPlanIds(form.getAll("plan_ids"))), checkDate(form.get("fed_on")),
+      clean(form.get("body"), LIMITS.notes), author, now()
+    ).run();
+  }
+  return json({ ok: true, message: "Thanks! Yvy will check it before it goes in the log." }, 201);
+}
+
+async function adminGardenPending(env) {
+  const [temps, feeds] = await Promise.all([
+    env.DB.prepare("SELECT id, logged_on, pile, temp_f, turned, notes, author, created_at FROM compost_logs WHERE status = 'pending' ORDER BY created_at").all(),
+    env.DB.prepare("SELECT id, bed, plan_ids, fed_on, notes, author, created_at FROM feed_logs WHERE status = 'pending' ORDER BY created_at").all(),
+  ]);
+  return json({
+    temps: temps.results,
+    feeds: feeds.results.map((f) => ({ ...f, plan_ids: JSON.parse(f.plan_ids || "[]") })),
+  });
+}
+
+// Approve or reject a member's temperature or feeding (table is fixed by the route, never from the request)
+async function adminReviewLog(request, env, table, id) {
+  const { status } = await readJson(request);
+  if (!["approved", "rejected"].includes(status)) throw new HttpError(400, "Approve or reject it.");
+  await env.DB.prepare(`UPDATE ${table} SET status = ? WHERE id = ?`).bind(status, id).run();
+  return json({ ok: true });
+}
+
+async function adminAddFeed(request, env) {
+  const data = await readJson(request);
+  const id = newId();
+  await env.DB.prepare(
+    "INSERT INTO feed_logs (id, bed, plan_ids, fed_on, notes, author, status, created_at) VALUES (?, ?, ?, ?, ?, '', 'approved', ?)"
+  ).bind(id, checkBed(data.bed), JSON.stringify(checkPlanIds(data.plan_ids)), checkDate(data.fed_on), clean(data.notes, LIMITS.notes), now()).run();
+  return json({ ok: true, id }, 201);
+}
+
+async function adminDeleteFeed(env, id) {
+  await env.DB.prepare("DELETE FROM feed_logs WHERE id = ?").bind(id).run();
+  return json({ ok: true });
+}
+
+async function adminSetTodo(request, env) {
+  const data = await readJson(request);
+  const bed = checkBed(data.bed);
+  const item = clean(data.item, 30);
+  if (!SLUG.test(item)) throw new HttpError(400, "Which to-do?");
+  if (data.done) {
+    await env.DB.prepare("INSERT OR REPLACE INTO todo_done (bed, item, done_on) VALUES (?, ?, ?)").bind(bed, item, now().slice(0, 10)).run();
+  } else {
+    await env.DB.prepare("DELETE FROM todo_done WHERE bed = ? AND item = ?").bind(bed, item).run();
+  }
   return json({ ok: true });
 }
 

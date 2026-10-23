@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-22y">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-22y">
-  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-22y">
-  <link rel="stylesheet" href="css/extras.css?v=2026-10-22y">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-23j">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-23j">
+  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-23j">
+  <link rel="stylesheet" href="css/extras.css?v=2026-10-23j">
 </head>
 <body>
 
@@ -193,6 +193,9 @@
         <div class="hall-photos" id="hallPhotos"></div>
       </section>
 
+      <!-- ===== Lesson Board: what garden class is learning and where it lives in Gardenbound (data.js → lessons) ===== -->
+      <section id="lessons" class="lesson-board" aria-labelledby="lessonBoardTitle" hidden></section>
+
       <!-- ===== Garden Society: journal, projects, compost (js/society.js + society-api/) ===== -->
       <section id="society" class="society">
         <h2 class="leaf-title"><span>The Garden Society</span></h2>
@@ -359,6 +362,8 @@
           <label><input type="radio" name="kind" value="journal" checked> 📓 Journal entry</label>
           <label><input type="radio" name="kind" value="project"> 🛠️ Project update</label>
           <label><input type="radio" name="kind" value="compost"> 🪱 Compost photo</label>
+          <label><input type="radio" name="kind" value="temp"> 🌡️ Compost temp</label>
+          <label><input type="radio" name="kind" value="feed"> 🌱 Fertilized a bed</label>
         </fieldset>
         <label class="sf-row" id="sfProjectRow" hidden>Which project?
           <select name="project_id"><option value="">Pick a project…</option></select>
@@ -366,13 +371,26 @@
         <label class="sf-row">Your first name or initials
           <input name="author" maxlength="40" autocomplete="given-name" required placeholder="e.g. Mia or M.R.">
         </label>
-        <label class="sf-row">Title
+        <!-- Compost temp (kind "temp") -->
+        <div class="sf-group" id="sfTempRow" hidden>
+          <label class="sf-row">Date <input name="logged_on" type="date"></label>
+          <label class="sf-row">Which pile? <select name="pile" id="sfPiles"></select></label>
+          <label class="sf-row">Temperature (°F) <input name="temp_f" type="number" min="0" max="200" step="0.1" inputmode="decimal"></label>
+          <label class="sf-check"><input name="turned" type="checkbox"> We turned it today ↻</label>
+        </div>
+        <!-- Fertilized a bed (kind "feed"); beds and what to feed come from data.js → gardenMap -->
+        <div class="sf-group" id="sfFeedRow" hidden>
+          <label class="sf-row">Date <input name="fed_on" type="date"></label>
+          <label class="sf-row">Which bed? <select name="bed" id="sfBeds"></select></label>
+          <fieldset class="sf-plan"><legend>What did you feed?</legend><div id="sfPlan"></div></fieldset>
+        </div>
+        <label class="sf-row" id="sfTitleRow">Title
           <input name="title" maxlength="120" placeholder="e.g. The peas are up!">
         </label>
         <label class="sf-row">Notes
           <textarea name="body" maxlength="4000" rows="4" placeholder="What happened in the garden?"></textarea>
         </label>
-        <label class="sf-row">Photos (up to 3)
+        <label class="sf-row" id="sfPhotoRow">Photos (up to 3)
           <input name="photos" type="file" accept="image/jpeg,image/png,image/webp,image/*" multiple>
         </label>
         <p class="sf-privacy">🛡️ Please use first names or initials only, and don't send photos showing kids' faces unless a parent says it's OK.</p>
@@ -528,15 +546,15 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=2026-10-22y"></script>
-  <script src="js/pixels.js?v=2026-10-22y"></script>
-  <script src="js/veg-icons.js?v=2026-10-22y"></script>
-  <script src="js/main.js?v=2026-10-22y"></script>
-  <script src="js/society.js?v=2026-10-22y"></script>
-  <script src="js/garden-map.js?v=2026-10-22y"></script>
-  <script src="js/portfolio.js?v=2026-10-22y"></script>
-  <script src="js/extras.js?v=2026-10-22y"></script>
-  <script src="js/emoji-sprites.js?v=2026-10-22y"></script>
-  <script src="js/pixel-emoji.js?v=2026-10-22y"></script>
+  <script src="js/data.js?v=2026-10-23j"></script>
+  <script src="js/pixels.js?v=2026-10-23j"></script>
+  <script src="js/veg-icons.js?v=2026-10-23j"></script>
+  <script src="js/main.js?v=2026-10-23j"></script>
+  <script src="js/society.js?v=2026-10-23j"></script>
+  <script src="js/garden-map.js?v=2026-10-23j"></script>
+  <script src="js/portfolio.js?v=2026-10-23j"></script>
+  <script src="js/extras.js?v=2026-10-23j"></script>
+  <script src="js/emoji-sprites.js?v=2026-10-23j"></script>
+  <script src="js/pixel-emoji.js?v=2026-10-23j"></script>
 </body>
 </html>

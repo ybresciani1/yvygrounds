@@ -712,6 +712,39 @@
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
   }
 
+  /* ---------- Lesson Board: the chalkboard of what garden class is learning (data.js → lessons) ---------- */
+  function buildLessonBoard() {
+    const L = D.lessons;
+    const board = $("#lessons");
+    if (!L || !board || !(L.now || (L.done || []).length)) return;
+    const where = (l) => `${l.island} (island ${l.islandNo || "?"} of the ${l.world})`;
+    // Each activity is a chalk box: ✓ finished, ▶ the one we're on
+    const steps = (l) => `<ol class="lb-steps">${l.activities.map((a, i) => {
+      const n = i + 1;
+      const done = (l.did || []).includes(n);
+      const now = l.now === n;
+      return `<li class="${done ? "is-done" : now ? "is-now" : ""}"><span class="lb-mark" aria-hidden="true">${done ? "✓" : now ? "▶" : n}</span>
+        ${esc(a)}${done ? ' <span class="sr-only">(done)</span>' : now ? " <span class=\"lb-tag\">we're here!</span>" : ""}</li>`;
+    }).join("")}</ol>`;
+    const head = (l) => `<p class="lb-unit">Unit ${esc(l.unit)} · Lesson ${esc(l.lesson)}</p><h3 class="lb-title">${esc(l.title)}</h3>`;
+    const game = L.game ? `<a class="lb-play" href="${esc(L.game.url)}" target="_blank" rel="noopener">🎮 Play it in ${esc(L.game.name)} ▶</a>` : "";
+    board.innerHTML = `
+      <h2 class="lb-heading" id="lessonBoardTitle">📚 Garden Class${L.quarter ? ` · ${esc(L.quarter)}` : ""}</h2>
+      ${L.now ? `<section class="lb-now">
+        <p class="lb-label">✏️ Now learning</p>
+        ${head(L.now)}
+        <p class="lb-where">In Gardenbound: <b>${esc(where(L.now))}</b></p>
+        ${steps(L.now)}
+        ${game}
+      </section>` : ""}
+      ${(L.done || []).length ? `<section class="lb-done">
+        <p class="lb-label">⭐ Done this quarter</p>
+        ${L.done.map((l) => `<div class="lb-lesson">${head(l)}
+          <p class="lb-where">In Gardenbound: <b>${esc(where(l))}</b></p>${steps(l)}</div>`).join("")}
+      </section>` : ""}`;
+    board.hidden = false;
+  }
+
   /* ---------- Garden Almanac: San Diego planting calendar (data.js → growing) ---------- */
   const MONTHS = ["January", "February", "March", "April", "May", "June",
     "July", "August", "September", "October", "November", "December"];
@@ -1110,6 +1143,7 @@
   buildCountdown();
   buildScrapbook();
   buildCritters();
+  buildLessonBoard();
   buildGrowing();
   buildAbout();
   buildMailPicker();

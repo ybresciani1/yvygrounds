@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-22y">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-22y">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-23j">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-23j">
 </head>
 <body class="adm-body">
   <main class="adm">
@@ -32,6 +32,7 @@
         <button type="button" role="tab" data-view="review" aria-selected="true">📬 Review <span id="admPendingCount"></span></button>
         <button type="button" role="tab" data-view="projects" aria-selected="false">🛠️ Projects</button>
         <button type="button" role="tab" data-view="compost" aria-selected="false">🌡️ Compost log</button>
+        <button type="button" role="tab" data-view="garden" aria-selected="false">🌱 Garden <span id="admGardenCount"></span></button>
         <button type="button" role="tab" data-view="guestbook" aria-selected="false">📖 Guestbook <span id="admGbCount"></span></button>
         <button type="button" role="tab" data-view="hall" aria-selected="false">🏅 Hall of Fame</button>
         <button type="button" role="tab" data-view="scores" aria-selected="false">🏆 Scores</button>
@@ -81,6 +82,21 @@
         <div id="admReadings"></div>
       </section>
 
+      <!-- Garden map beds: cross off to-dos, log feedings, review temps/feedings members sent in -->
+      <section class="adm-view" data-view="garden" hidden>
+        <div id="admGardenPending"></div>
+        <form class="adm-card adm-inline" id="admNewFeed">
+          <h2>Log a feeding</h2>
+          <label class="sf-row">Date <input name="fed_on" type="date" required></label>
+          <label class="sf-row">Bed <select name="bed" id="admFeedBed"></select></label>
+          <fieldset class="sf-plan adm-wide"><legend>What did you feed?</legend><div id="admFeedPlan"></div></fieldset>
+          <label class="sf-row adm-wide">Notes <input name="notes" maxlength="600"></label>
+          <button type="submit" class="society-submit">Log it</button>
+          <p class="sf-status adm-wide" id="admFeedStatus" role="status"></p>
+        </form>
+        <div id="admBeds"></div>
+      </section>
+
       <section class="adm-view" data-view="guestbook" hidden>
         <div class="adm-filter" id="admGbFilter" role="group" aria-label="Show">
           <button type="button" data-status="pending" aria-pressed="true">Waiting</button>
@@ -121,7 +137,8 @@
     </div>
   </main>
 
-  <script src="js/data.js?v=2026-10-22y"></script>
-  <script src="js/society-admin.js?v=2026-10-22y"></script>
+  <script src="js/data.js?v=2026-10-23j"></script>
+  <script src="js/garden-map.js?v=2026-10-23j"></script>
+  <script src="js/society-admin.js?v=2026-10-23j"></script>
 </body>
 </html>

@@ -924,6 +924,27 @@ window.YVY = {
     "A pet sits directly on the keyboard during an important build.",
   ],
 
+  // LESSON BOARD: the chalkboard section under the Gardenbound Hall of Fame. What garden class is learning now,
+  // and where each lesson lives in Rabbit & Frog: Gardenbound (world = island group, island = island).
+  // activities: the island's activities in game order. now: the one in progress. did: the ones finished.
+  // When a lesson is done, move it from now into done (newest first) and set its did.
+  lessons: {
+    quarter: "Fall 2026",
+    game: { name: "Rabbit & Frog: Gardenbound", url: "https://seed-game-pi.vercel.app/" },
+    now: {
+      unit: 2, lesson: 3, title: "How Do We Grow Crops?",
+      world: "Blossom Islands: the Plant Part-tay", island: "Sprout Springs", islandNo: 3,
+      activities: ["Mix Lab", "Seed Start", "Move-In Day", "Plant Talk", "Grow Guide"],
+      now: 2,
+    },
+    done: [
+      { unit: 6, lesson: 3, title: "How Do We Harvest & Save Seeds?",
+        world: "Harvest Haven Islands", island: "Seed Island", islandNo: 3,
+        activities: ["Seed Library", "Seed Suitcases", "Pod Popping", "Gone to Seed"],
+        did: [1, 2, 4] },
+    ],
+  },
+
   /*
    * GARDEN MAP: the Central Garden as a pixel map (🗺️ Map tab in the Garden Society, js/garden-map.js).
    * Traced from Yvy's map on a grid 40 squares wide × 52 tall: x, y = top-left corner, w, h = size,
@@ -935,12 +956,22 @@ window.YVY = {
    * fix: repairs it needs (puts a yellow "!" on the map). todo: garden jobs for this season,
    * written for San Diego weather and crop rotation. Update todo (and todoTitle) each season.
    * more: [[x, y, w, h], ...] adds extra pieces of the same spot (an L-shaped vine).
+   * lesson: true shows what garden class is learning right now (lessons → now).
+   * id: a short name the Garden Society API uses for the feeding log and crossed-off to-dos.
+   *     Keep it the same once it's in use, or the spot loses its log.
    */
   gardenMap: {
     title: "The Central Garden",
     season: "Fall 2026",
     hint: "Hover or tap a bed, tree or vine to see what's growing! A yellow ! means it needs fixing.",
     todoTitle: "To-do this fall",
+    // feed: each bed's fertilizer calendar (organic, kid-safe), shown under its to-do list
+    feedTitle: "Feeding calendar",
+    // feedPlan: when each bed gets fed. months: [from, to] (can wrap past December); every: days between
+    // feedings, or leave it out for once during those months. Feedings are logged on the admin page
+    // (🌱 Garden tab) or sent by members through "Submit an entry"; fed here can hold extra ones,
+    // as { date: "YYYY-MM-DD", id: "greens" } (id can also be a list). Last fed and next feeding come from these.
+    feedNote: "Organic and kid-safe: compost, fish emulsion, blood meal, bone meal. Water before and after feeding, and never feed dry soil.",
     spots: [
       // Ground first (drawn underneath everything else)
       { kind: "grass", x: 1, y: 1, w: 18, h: 8 },
@@ -956,7 +987,7 @@ window.YVY = {
 
       // The places you can look at
       { kind: "building", tone: "green", text: "GARDEN CLASSROOM", x: 23, y: 1, w: 14, h: 7,
-        name: "Garden Classroom", about: "Where garden class meets. Seeds get sorted, worms get named and questions get asked (so many questions)." },
+        name: "Garden Classroom", lesson: true, about: "Where garden class meets. Seeds get sorted, worms get named and questions get asked (so many questions)." },
       { kind: "compost", x: 34, y: 1, w: 3, h: 3,
         name: "Main Compost", about: "Our main compost pile. Lunch scraps go in, garden gold comes out. Temps are on the 🌡️ Compost tab.", tab: "compost" },
       { kind: "shed", text: "SHED", x: 32, y: 19, w: 4, h: 5,
@@ -965,15 +996,28 @@ window.YVY = {
         name: "Short Mushroom Table", about: "The shorter of our two mushroom tables, also turquoise with yellow spots 🍄" },
       { kind: "mushrooms", x: 2, y: 5, w: 3, h: 3,
         name: "Tall Mushroom Table", about: "The taller of our two mushroom tables: turquoise with yellow spots 🍄" },
-      { kind: "bed", text: "#8", x: 6, y: 2, w: 5, h: 2, name: "Bed #8",
+      { kind: "bed", text: "#8", x: 6, y: 2, w: 5, h: 2, id: "bed8", name: "Bed #8",
         planted: ["🌿 rosemary", "🌿 basil", "🌾 lemongrass", "🥀 dead tomato plant"],
         todo: [
           "Pull out the dead tomato plant, roots and all. If its leaves had spots or it wilted, bag it for the trash instead of the compost.",
           "Crop rotation: a tomato grew here, so fill the gap with peas, fava beans or leafy greens this winter (no tomatoes here next spring).",
           "Harvest the basil before nights drop into the 40s. It doesn't like the cold.",
           "Rosemary and lemongrass are perennials: they stay put. Cut the lemongrass back to about a foot tall in late winter.",
-        ] },
-      { kind: "bed", text: "#9", x: 12, y: 2, w: 6, h: 2, name: "Bed #9",
+        ],
+        feed: [
+          "When the tomato's gap is replanted (Nov): compost only for peas or fava beans. If it's leafy greens instead, fish emulsion every 3 to 4 weeks.",
+          "Lemongrass: fish emulsion or blood meal once a month from Apr to Sep.",
+          "Basil: a light fish emulsion feed every 4 weeks (Apr to Oct).",
+          "Rosemary: none needed.",
+        ],
+        feedPlan: [
+          { id: "replant", what: "compost when the tomato gap is replanted", months: [11, 11] },
+          { id: "lemongrass", what: "fish emulsion or blood meal for the lemongrass", months: [4, 9], every: 30 },
+          { id: "basil", what: "fish emulsion for the basil", months: [4, 9], every: 28 },
+        ],
+        fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
+      },
+      { kind: "bed", text: "#9", x: 12, y: 2, w: 6, h: 2, id: "bed9", name: "Bed #9",
         planted: ["🥒 luffa", "🌾 lemongrass"],
         fix: ["Needs chicken fencing to keep the flock out."],
         todo: [
@@ -981,20 +1025,39 @@ window.YVY = {
           "Crop rotation: luffa is in the squash family, so grow it in a different bed next summer.",
           "October and November are garlic-planting time in San Diego. Once the luffa comes out, garlic could go here.",
           "Cut the lemongrass back to about a foot tall in late winter.",
-        ] },
+        ],
+        feed: [
+          "Luffa: no more feeding. Let the gourds dry.",
+          "Garlic (planting Oct to Nov): mix bone meal or a balanced organic fertilizer into the bed at planting, then fish emulsion in Jan and Feb. Stop feeding by Apr so the bulbs can fill out.",
+          "Lemongrass: fish emulsion or blood meal once a month from Apr to Sep.",
+        ],
+        feedPlan: [
+          { id: "garlic", what: "bone meal or balanced organic fertilizer when planting garlic", months: [10, 11] },
+          { id: "garlic2", what: "fish emulsion for the garlic", months: [1, 2], every: 30 },
+          { id: "lemongrass", what: "fish emulsion or blood meal for the lemongrass", months: [4, 9], every: 30 },
+        ],
+        fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
+      },
       { kind: "coop", text: "🐔", x: 6, y: 4, w: 3, h: 2,
         name: "Chicken Coop", about: "Bedtime and egg-laying HQ. The chickens eat our weeds and bugs and pay us back in eggs and compost.", link: "#critters" },
       { kind: "run", x: 9, y: 4, w: 9, h: 2,
         name: "Chicken Run", about: "Scratch, peck, dust bath, repeat. Garden class sometimes gets a special guest speaker from in here 🎤" },
-      { kind: "bed", text: "#7", x: 6, y: 6, w: 5, h: 2, name: "Bed #7",
+      { kind: "bed", text: "#7", x: 6, y: 6, w: 5, h: 2, id: "bed7", name: "Bed #7",
         planted: ["🌿 rosemary", "🌿 thyme"],
         todo: [
           "Rosemary and thyme are Mediterranean perennials, made for San Diego. Water them very little once the winter rains start; soggy soil is their only real enemy.",
           "Trim lightly after they flower to keep them bushy, but never cut into the old bare wood.",
           "Room to spare? Fall is the time for cilantro, parsley and dill. They bolt in the summer heat.",
           "Crop rotation: this is a perennial herb bed, so it doesn't need to rotate.",
-        ] },
-      { kind: "bed", text: "#6", x: 12, y: 6, w: 6, h: 2, name: "Grub Tub (Bed #6)",
+        ],
+        feed: [
+          "Rosemary and thyme: no fertilizer. Lean soil keeps them tough and full of flavor.",
+          "If cilantro, parsley or dill go in this fall: a little compost at planting, then fish emulsion once a month.",
+        ],
+        feedPlan: [], // nothing needs feeding
+        fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
+      },
+      { kind: "bed", text: "#6", x: 12, y: 6, w: 6, h: 2, id: "bed6", name: "Grub Tub (Bed #6)",
         about: "Our Grub Tub! This is where the food scraps for the chickens go 🐔",
         todo: [
           "Chicken-safe scraps only: no avocado skins or pits, no raw or dried beans, nothing moldy or salty.",
@@ -1003,15 +1066,15 @@ window.YVY = {
       { kind: "vine", tone: "passion", x: 18, y: 1, w: 1, h: 8, more: [[1, 8, 17, 1]],
         name: "Passionfruit Vines", about: "Wild flowers that look like tiny space stations, then purple fruit full of tangy seeds." },
       { kind: "sink", text: "SINK", x: 10, y: 10, w: 8, h: 3,
-        name: "Sink", about: "Wash your hands, then wash your veggies. In that order, please 💧",
+        id: "sink", name: "Sink", about: "Wash your hands, then wash your veggies. In that order, please 💧",
         fix: ["Leaky faucet.", "Broken plumbing underneath."] },
       { kind: "compost", tone: "worm", x: 18, y: 9, w: 2, h: 2,
-        name: "Worm Compost", about: "Our worm compost bin 🪱",
+        id: "worm", name: "Worm Compost", about: "Our worm compost bin 🪱",
         fix: ["It's broken and needs repairing before it can be used again."] },
       { kind: "compost", x: 18, y: 11, w: 2, h: 2,
         name: "Rotating Compost", about: "Our rotating compost. Give it a spin to mix everything up! Temps are on the 🌡️ Compost tab.", tab: "compost" },
       { kind: "tree", tone: "fig", x: 7, y: 9, w: 3, h: 3,
-        name: "Fig Tree", about: "Fig tree number one, by the sink. Big leaves, sweet sticky figs in late summer.",
+        id: "fig1", name: "Fig Tree", about: "Fig tree number one, by the sink. Big leaves, sweet sticky figs in late summer.",
         fix: ["Vines (passionfruit or grape) are climbing on it. Untangle them and cut them back so the tree gets its light back."],
         todo: ["Fig trees drop their leaves in winter. Do any big pruning while they're bare (December to February)."] },
       { kind: "succulents", x: 1, y: 10, w: 5, h: 4,
@@ -1019,7 +1082,7 @@ window.YVY = {
       { kind: "tree", tone: "avocado", x: 0, y: 14, w: 3, h: 3,
         name: "Avocado Tree", about: "Takes forever to grow avocados. Worth it 🥑" },
       { kind: "tree", tone: "fig", x: 1, y: 11, w: 3, h: 3,
-        name: "Fig Tree", about: "Fig tree number two, in the bottom-left corner of the succulent garden. The birds know about this one.",
+        id: "fig2", name: "Fig Tree", about: "Fig tree number two, in the bottom-left corner of the succulent garden. The birds know about this one.",
         todo: ["Fig trees drop their leaves in winter. Do any big pruning while they're bare (December to February)."] },
       { kind: "tree", tone: "apple", x: 0, y: 17, w: 3, h: 3,
         name: "Apple Tree", about: "A low-chill apple, made for San Diego winters." },
@@ -1027,7 +1090,7 @@ window.YVY = {
         name: "Grape Vines", about: "Shade in summer, grapes in fall, bare twisty branches in winter." },
       { kind: "drain", x: 3, y: 19, w: 4, h: 31,
         name: "Rock Drainage", about: "A river of rocks that keeps the garden from turning into a pond when it rains." },
-      { kind: "bed", text: "#5", x: 10, y: 19, w: 6, h: 5, name: "Bed #5",
+      { kind: "bed", text: "#5", x: 10, y: 19, w: 6, h: 5, id: "bed5", name: "Bed #5",
         planted: [{ icon: "scallions", name: "leeks" }, "🌸 dahlias", "🥬 collard greens", "🌼 yarrow", { icon: "kale", name: "kale" }, "🌺 nasturtiums"],
         todo: [
           "Kale and collards love San Diego's cool season. Pick the bottom leaves first, and check under the leaves for aphids and cabbage worms.",
@@ -1035,26 +1098,49 @@ window.YVY = {
           "Dahlias go dormant in late fall. When the leaves yellow, cut the stalks to about 4 inches. Our mild winters mean the tubers can stay in the ground, as long as it drains well.",
           "Cut the yarrow's dried flower stems back to the leaves.",
           "Crop rotation: kale and collards are brassicas (cabbage family). Next spring, follow them with beans or root crops here, not more brassicas.",
-        ] },
+        ],
+        feed: [
+          "Kale, collards and leeks (Oct to Mar): fish emulsion every 3 to 4 weeks. Leafy crops love nitrogen.",
+          "Dahlias: nothing while they're dormant (Nov to Mar). A low-nitrogen bloom fertilizer when shoots come up in spring, and again in early summer.",
+          "Yarrow and nasturtiums: no fertilizer.",
+        ],
+        feedPlan: [
+          { id: "greens", what: "fish emulsion for the kale, collards and leeks", months: [10, 3], every: 21 },
+          { id: "dahlias", what: "bloom fertilizer for the dahlias as shoots come up", months: [3, 4] },
+          { id: "dahlias2", what: "bloom fertilizer for the dahlias", months: [6, 6] },
+        ],
+        fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
+      },
       { kind: "vine", tone: "trellis", x: 10, y: 24, w: 6, h: 1,
-        name: "Grapevine Trellis", about: "A trellis for the grapevines to climb, right between beds #4 and #5 🍇",
+        id: "trellis", name: "Grapevine Trellis", about: "A trellis for the grapevines to climb, right between beds #4 and #5 🍇",
         fix: ["Needs more support."],
         todo: ["Grapes go dormant in winter, and January is the time to prune them, so add the extra support before then."] },
-      { kind: "bed", text: "#4", x: 10, y: 25, w: 6, h: 3, name: "Bed #4",
+      { kind: "bed", text: "#4", x: 10, y: 25, w: 6, h: 3, id: "bed4", name: "Bed #4",
         planted: ["🌺 nasturtiums"],
         todo: [
           "Nasturtiums love our cool season and reseed themselves. Thin them out so they don't smother everything.",
           "There's room for fall crops: sow carrots, radishes, beets or peas now through February.",
           "Nasturtiums are a trap crop: aphids go for them first. Check under the leaves, and leave a few aphids for the ladybugs.",
           "Crop rotation: peas or beans here would add nitrogen for next spring's heavy feeders (like tomatoes).",
-        ] },
+        ],
+        feed: [
+          "Nasturtiums: no fertilizer. Rich soil gives you all leaves and no flowers.",
+          "Sowing fall crops (now to Feb): 1 inch of compost. Carrots, radishes and beets want low nitrogen, so skip the fish emulsion. Peas need none.",
+          "Mar: compost before spring planting.",
+        ],
+        feedPlan: [
+          { id: "sowing", what: "1 inch of compost when sowing fall crops", months: [10, 2] },
+          { id: "spring", what: "compost before spring planting", months: [3, 3] },
+        ],
+        fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
+      },
       { kind: "tree", tone: "citrus", x: 12, y: 28, w: 3, h: 3,
         name: "Citrus Tree", about: "A little citrus tree, tucked between beds #4 and #3 🍊" },
       { kind: "tree", tone: "fig", x: 4, y: 23, w: 3, h: 3,
-        name: "Fig Tree", about: "Fig tree number three, on the rock drainage right across from the grapevine trellis. We may have a fig problem (it's a good problem).",
+        id: "fig3", name: "Fig Tree", about: "Fig tree number three, on the rock drainage right across from the grapevine trellis. We may have a fig problem (it's a good problem).",
         fix: ["Vines (passionfruit or grape) are climbing on it. Untangle them and cut them back so the tree gets its light back."],
         todo: ["Fig trees drop their leaves in winter. Do any big pruning while they're bare (December to February)."] },
-      { kind: "bed", text: "#3", x: 10, y: 31, w: 6, h: 6, name: "Bed #3",
+      { kind: "bed", text: "#3", x: 10, y: 31, w: 6, h: 6, id: "bed3", name: "Bed #3",
         planted: ["🦋 narrowleaf milkweed", "🌿 oregano", "🌿 black sage", "🌿 basil", "🌾 lemongrass"],
         todo: [
           "Narrowleaf milkweed is a California native and food for monarch caterpillars 🦋 Leave it standing, then cut it back to about 6 inches in January or February so fresh leaves grow in.",
@@ -1062,14 +1148,28 @@ window.YVY = {
           "Harvest the basil before nights drop into the 40s.",
           "Trim the oregano back by about a third. Cut the lemongrass to about a foot tall in late winter.",
           "Crop rotation: this is a perennial pollinator bed, so it stays put. Add compost on top instead of digging it in.",
-        ] },
+        ],
+        feed: [
+          "Milkweed and black sage are natives: no fertilizer. It makes them floppy and short-lived.",
+          "Lemongrass: fish emulsion or blood meal once a month from Apr to Sep while it's growing. None in winter.",
+          "Basil: a light fish emulsion feed every 4 weeks (Apr to Oct).",
+          "Oregano: none needed.",
+          "Jan or Feb: a thin layer of compost on top of the whole bed.",
+        ],
+        feedPlan: [
+          { id: "compost", what: "a thin layer of compost on the whole bed", months: [1, 2] },
+          { id: "lemongrass", what: "fish emulsion or blood meal for the lemongrass", months: [4, 9], every: 30 },
+          { id: "basil", what: "fish emulsion for the basil", months: [4, 9], every: 28 },
+        ],
+        fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
+      },
       { kind: "box", text: "⚡", x: 11, y: 42, w: 5, h: 2,
-        name: "Electric Box", about: "There's a mason bee treehouse hanging from it 🐝 Mason bees are gentle, hardly ever sting, and are amazing pollinators.",
+        id: "ebox", name: "Electric Box", about: "There's a mason bee treehouse hanging from it 🐝 Mason bees are gentle, hardly ever sting, and are amazing pollinators.",
         todo: [
           "Mason bees come out in spring (about Feb to May), so keep the bee house facing the morning sun and out of the rain.",
           "Fall is the time to check the nesting tubes: clean or swap out any that are moldy or full of mites.",
         ] },
-      { kind: "bed", text: "#2", x: 11, y: 38, w: 5, h: 3, name: "Bed #2",
+      { kind: "bed", text: "#2", x: 11, y: 38, w: 5, h: 3, id: "bed2", name: "Bed #2",
         planted: ["🍓 strawberries", "🥬 lettuce", { icon: "scallions", name: "chives" }],
         todo: [
           "Fall is lettuce season in San Diego! Sow a little more every 2 to 3 weeks through February.",
@@ -1077,15 +1177,42 @@ window.YVY = {
           "Once the rain starts, look for snails and slugs under the strawberry leaves.",
           "Chives are perennial. Cut them down to 2 inches to refresh them.",
           "Crop rotation: strawberry plants slow down after about 3 years, so plan to start new ones in a different spot.",
-        ] },
-      { kind: "bed", text: "#1", x: 11, y: 45, w: 5, h: 5, name: "Bed #1",
+        ],
+        feed: [
+          "Lettuce (Oct to Mar): fish emulsion every 3 to 4 weeks.",
+          "Strawberries: feed in Feb as new leaves come in, and again after the first big harvest (Apr to May). Skip them in late fall.",
+          "Chives: a little compost in early spring is plenty.",
+        ],
+        feedPlan: [
+          { id: "lettuce", what: "fish emulsion for the lettuce", months: [10, 3], every: 21 },
+          { id: "berries", what: "feed the strawberries as new leaves come in", months: [2, 2] },
+          { id: "berries2", what: "feed the strawberries after the first big harvest", months: [4, 5] },
+          { id: "chives", what: "a little compost for the chives", months: [3, 3] },
+        ],
+        fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
+      },
+      { kind: "bed", text: "#1", x: 11, y: 45, w: 5, h: 5, id: "bed1", name: "Bed #1",
         planted: ["🌿 oregano", "🌿 basil", "🍆 eggplants", "🍅 tomatoes"],
         todo: [
           "Pull the tomatoes and eggplants once they stop making fruit (usually by mid-November). Compost the healthy ones and bag any with spotted leaves.",
           "Harvest the basil before nights drop into the 40s: pesto time! Or let one plant flower to save seeds.",
           "Crop rotation: tomatoes and eggplants are nightshades. Plant fava beans or peas here this winter to put nitrogen back, and keep nightshades out of this bed next spring.",
           "Oregano is a perennial. Trim it back by about a third.",
-        ] },
+        ],
+        feed: [
+          "Now to Nov: no more feeding the tomatoes and eggplants. They're finishing up.",
+          "Nov (planting fava beans or peas): mix in 1 to 2 inches of compost. No nitrogen fertilizer, since beans and peas make their own.",
+          "Basil: a light fish emulsion feed every 4 weeks while it's growing (Apr to Oct).",
+          "Mar to Apr (spring planting): compost plus a balanced organic fertilizer before anything goes in.",
+          "Oregano: no fertilizer needed, ever.",
+        ],
+        feedPlan: [
+          { id: "winter", what: "compost before planting fava beans or peas", months: [11, 11] },
+          { id: "spring", what: "compost and balanced organic fertilizer before spring planting", months: [3, 4] },
+          { id: "basil", what: "fish emulsion for the basil", months: [4, 9], every: 28 },
+        ],
+        fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
+      },
       { kind: "tree", tone: "lemon", x: 6, y: 48, w: 3, h: 3,
         name: "Lemon Tree", about: "Lemons pretty much all year. Lemonade days are the best days 🍋" },
       { kind: "vine", tone: "berry", x: 2, y: 51, w: 17, h: 1,
@@ -1103,6 +1230,8 @@ window.YVY = {
     intro: "Our little gang of gardeners. Members can share journal entries, project progress and compost photos. Yvy reviews every post before it goes up.",
     // Compost temperature guide (UC Master Gardeners, linked under the chart)
     compost: {
+      // Piles to pick from when logging a temperature ("Submit an entry" and the admin page)
+      piles: ["Main pile", "Rotating pile"],
       hotLow: 131,   // above this kills most pathogens and weed seeds
       turnAt: 150,   // turn the pile when it gets this hot
       tooHot: 160,   // above this the helpful microbes start dying

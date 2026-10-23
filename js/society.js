@@ -344,9 +344,35 @@
     let lastFocus = null;
 
     const close = () => { box.hidden = true; if (lastFocus) lastFocus.focus(); };
+
+    // Compost temps and feedings: piles from data.js → society.compost.piles, beds from gardenMap
+    const today = () => new Date().toLocaleDateString("en-CA");
+    const beds = ((window.YVY.gardenMap || {}).spots || []).filter((sp) => sp.id && sp.feedPlan && sp.feedPlan.length);
+    $("#sfPiles").innerHTML = (C.piles || ["Main pile"]).map((p) => `<option>${esc(p)}</option>`).join("");
+    $("#sfBeds").innerHTML = '<option value="">Pick a bed…</option>' +
+      beds.map((b) => `<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("");
+    const showPlan = () => {
+      const bed = beds.find((b) => b.id === form.elements.bed.value);
+      $("#sfPlan").innerHTML = bed ? bed.feedPlan.map((p) =>
+        `<label class="sf-check"><input type="checkbox" name="plan_ids" value="${esc(p.id)}"> ${esc(p.what)}</label>`).join("")
+        : '<p class="sf-privacy">Pick a bed first.</p>';
+    };
+    form.elements.bed.addEventListener("change", showPlan);
+    showPlan();
+    // Temps and feedings need the garden log in the API; keep those two choices hidden until it answers
+    const logKinds = [...form.querySelectorAll("[name=kind][value=temp], [name=kind][value=feed]")].map((r) => r.closest("label"));
+    logKinds.forEach((l) => { l.hidden = true; });
+    api("/api/garden").then(() => logKinds.forEach((l) => { l.hidden = false; })).catch(() => { /* not deployed yet */ });
+
     const syncKind = async () => {
       const kind = form.elements.kind.value;
+      const isLog = kind === "temp" || kind === "feed";
       projectRow.hidden = kind !== "project";
+      $("#sfTempRow").hidden = kind !== "temp";
+      $("#sfFeedRow").hidden = kind !== "feed";
+      $("#sfTitleRow").hidden = $("#sfPhotoRow").hidden = isLog;
+      if (kind === "temp" && !form.elements.logged_on.value) form.elements.logged_on.value = today();
+      if (kind === "feed" && !form.elements.fed_on.value) form.elements.fed_on.value = today();
       if (kind === "project") {
         const sel = form.elements.project_id;
         try {
@@ -373,7 +399,9 @@
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = $("button[type=submit]", form);
-      const files = [...form.elements.photos.files];
+      const kind = form.elements.kind.value;
+      const isLog = kind === "temp" || kind === "feed";
+      const files = isLog ? [] : [...form.elements.photos.files];
       if (files.length > 3) { status.textContent = "Up to 3 photos, please."; status.className = "sf-status is-error"; return; }
       btn.disabled = true;
       status.className = "sf-status";
@@ -381,13 +409,23 @@
       try {
         const fd = new FormData();
         ["kind", "project_id", "author", "title", "body", "passcode"].forEach((k) => fd.append(k, form.elements[k].value));
+        if (kind === "temp") {
+          ["logged_on", "pile", "temp_f"].forEach((k) => fd.append(k, form.elements[k].value));
+          if (form.elements.turned.checked) fd.append("turned", "1");
+        }
+        if (kind === "feed") {
+          ["fed_on", "bed"].forEach((k) => fd.append(k, form.elements[k].value));
+          form.querySelectorAll("[name=plan_ids]:checked").forEach((c) => fd.append("plan_ids", c.value));
+        }
         for (const f of files) fd.append("photos", await shrinkPhoto(f), f.name.replace(/\.\w+$/, "") + ".jpg");
         status.textContent = "Sending…";
         const res = await api("/api/submit", { method: "POST", body: fd });
         status.textContent = res.message;
         status.className = "sf-status is-ok";
-        ["title", "body"].forEach((k) => { form.elements[k].value = ""; });
+        ["title", "body", "temp_f"].forEach((k) => { form.elements[k].value = ""; });
         form.elements.photos.value = "";
+        form.elements.turned.checked = false;
+        form.querySelectorAll("[name=plan_ids]:checked").forEach((c) => { c.checked = false; });
       } catch (err) {
         status.textContent = err.message;
         status.className = "sf-status is-error";

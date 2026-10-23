@@ -1,6 +1,6 @@
 /*
  * YvyGrounds admin (society-admin.html): review Garden Society submissions, manage projects,
- * log compost temps, and approve guestbook signatures.
+ * log compost temps, cross off garden to-dos and log feedings, and approve guestbook signatures.
  * The admin password is kept only for this browser tab (sessionStorage) and sent to the API.
  */
 (function () {
@@ -51,6 +51,7 @@
     projects = (await api("/api/admin/projects")).projects;
     showView("review");
     countGuestbook();
+    countGarden();
   }
   $("#admLogin").addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -68,7 +69,7 @@
   function showView(name) {
     document.querySelectorAll(".adm-tabs [data-view]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.view === name)));
     document.querySelectorAll(".adm-view").forEach((v) => { v.hidden = v.dataset.view !== name; });
-    ({ review: loadPosts, projects: loadProjects, compost: loadReadings, guestbook: loadGuestbook, hall: loadHall, scores: loadScores })[name]();
+    ({ review: loadPosts, projects: loadProjects, compost: loadReadings, garden: loadGarden, guestbook: loadGuestbook, hall: loadHall, scores: loadScores })[name]();
   }
   $(".adm-tabs").addEventListener("click", (e) => {
     const b = e.target.closest("[data-view]");
@@ -205,7 +206,7 @@
     try {
       const res = await fetch(`${API}/api/compost`);
       const { logs } = await res.json();
-      $("#admPiles").innerHTML = [...new Set(logs.map((l) => l.pile))].map((p) => `<option value="${esc(p)}">`).join("");
+      $("#admPiles").innerHTML = [...new Set((S.compost.piles || []).concat(logs.map((l) => l.pile)))].map((p) => `<option value="${esc(p)}">`).join("");
       box.innerHTML = logs.length ? `<div class="ct-scroll adm-card"><table class="adm-table"><thead><tr><th>Date</th><th>Pile</th><th>Temp</th><th>Turned</th><th>Moisture</th><th>Notes</th><th></th></tr></thead><tbody>
         ${logs.slice().reverse().map((l) => `<tr><td>${esc(fmt(l.logged_on))}</td><td>${esc(l.pile)}</td><td>${esc(l.temp_f)}°F</td><td>${l.turned ? "↻" : ""}</td><td>${esc(l.moisture)}</td><td>${esc(l.notes)}</td>
           <td><button type="button" class="adm-del adm-small" data-del="${esc(l.id)}" aria-label="Delete this reading">🗑️</button></td></tr>`).join("")}
@@ -231,6 +232,126 @@
     const btn = e.target.closest("[data-del]");
     if (!btn || !confirm("Delete this reading?")) return;
     try { await api(`/api/admin/compost/${btn.dataset.del}`, { method: "DELETE" }); loadReadings(); } catch (err) { alert(err.message); }
+  });
+
+  /* ---------- Garden: cross off to-dos, log feedings, review temps/feedings from members ---------- */
+  // Spots come from data.js → gardenMap; to-do ids and next-feeding dates use js/garden-map.js (window.YvyGarden)
+  const G = window.YvyGarden;
+  const gardenSpots = ((window.YVY.gardenMap || {}).spots || []).filter((sp) => sp.id && (sp.todo || sp.feedPlan));
+  const feedBeds = gardenSpots.filter((sp) => sp.feedPlan && sp.feedPlan.length);
+  const spotById = (id) => gardenSpots.find((sp) => sp.id === id);
+  const planName = (spot, id) => ((spot && spot.feedPlan || []).find((p) => p.id === id) || { what: id }).what;
+  const planNames = (bed, ids) => ids.map((id) => planName(spotById(bed), id)).join(", ");
+
+  $("#admFeedBed").innerHTML = '<option value="">Pick a bed…</option>' +
+    feedBeds.map((b) => `<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("");
+  const showFeedPlan = () => {
+    const bed = spotById($("#admFeedBed").value);
+    $("#admFeedPlan").innerHTML = bed ? bed.feedPlan.map((p) =>
+      `<label class="sf-check"><input type="checkbox" name="plan_ids" value="${esc(p.id)}"> ${esc(p.what)}</label>`).join("")
+      : '<p class="sf-privacy">Pick a bed first.</p>';
+  };
+  $("#admFeedBed").addEventListener("change", showFeedPlan);
+  showFeedPlan();
+
+  // The Garden tab needs the garden log in the API; it stays hidden until the API has it
+  const gardenTab = $('.adm-tabs [data-view="garden"]');
+  gardenTab.hidden = true;
+  async function countGarden() {
+    try {
+      const { temps, feeds } = await api("/api/admin/garden-pending");
+      const n = temps.length + feeds.length;
+      $("#admGardenCount").textContent = n ? `(${n})` : "";
+      gardenTab.hidden = false;
+      return { temps, feeds };
+    } catch (e) { return { temps: [], feeds: [] }; }
+  }
+
+  async function loadGarden() {
+    const form = $("#admNewFeed");
+    if (!form.elements.fed_on.value) form.elements.fed_on.value = new Date().toLocaleDateString("en-CA");
+    const box = $("#admBeds");
+    box.innerHTML = '<p class="society-empty">Loading…</p>';
+    try {
+      const [garden, pending] = await Promise.all([fetch(`${API}/api/garden`).then((r) => r.json()), countGarden()]);
+      renderPending(pending);
+      const done = new Set(garden.done.map((d) => `${d.bed}:${d.item}`));
+      const feeds = {};
+      garden.feeds.forEach((f) => { (feeds[f.bed] = feeds[f.bed] || []).push(f); });
+      const today = G.midnight(new Date());
+      box.innerHTML = gardenSpots.map((sp) => {
+        const log = (feeds[sp.id] || []).slice().reverse();
+        const fed = (sp.fed || []).concat(log.map((f) => ({ date: f.fed_on, id: f.plan_ids })));
+        const next = sp.feedPlan && G.nextFeeding(sp, today, fed);
+        const nextText = !sp.feedPlan ? "" : next
+          ? `${+next.date === +today ? "Today" : fmt(next.date.toLocaleDateString("en-CA"))}: ${next.what.join(", plus ")}`
+          : "None needed";
+        return `<article class="adm-card adm-bed">
+          <h2>${esc(sp.name)}</h2>
+          ${sp.fix ? `<p class="adm-bed-fix">⚠️ Needs fixing: ${esc(sp.fix.join(" "))}</p>` : ""}
+          ${sp.todo ? `<ul class="adm-todo">${sp.todo.map((t) => {
+            const key = G.todoKey(t);
+            return `<li><label class="sf-check"><input type="checkbox" data-bed="${esc(sp.id)}" data-item="${esc(key)}"${done.has(`${sp.id}:${key}`) ? " checked" : ""}> <span>${esc(t)}</span></label></li>`;
+          }).join("")}</ul>` : ""}
+          ${sp.feedPlan ? `<p class="adm-bed-next"><b>Last fed:</b> ${log.length ? `${esc(fmt(log[0].fed_on))}: ${esc(planNames(sp.id, log[0].plan_ids))}` : "Not yet"}<br>
+            <b>Next feeding:</b> ${esc(nextText)}</p>` : ""}
+          ${log.length ? `<table class="adm-table adm-feeds"><tbody>${log.map((f) => `<tr><td>${esc(fmt(f.fed_on))}</td><td>${esc(planNames(sp.id, f.plan_ids))}${f.notes ? ` <em>(${esc(f.notes)})</em>` : ""}</td>
+            <td><button type="button" class="adm-del adm-small" data-del-feed="${esc(f.id)}" aria-label="Delete this feeding">🗑️</button></td></tr>`).join("")}</tbody></table>` : ""}
+        </article>`;
+      }).join("");
+    } catch (err) { box.innerHTML = `<p class="sf-status is-error">${esc(err.message)}</p>`; }
+  }
+
+  // Temps and feedings members sent through "Submit an entry"
+  function renderPending({ temps, feeds }) {
+    const box = $("#admGardenPending");
+    if (!temps.length && !feeds.length) { box.innerHTML = ""; return; }
+    const row = (type, id, text) => `<li><span>${text}</span>
+      <span class="adm-review-btns"><button type="button" class="adm-small" data-review="${type}" data-id="${esc(id)}" data-status="approved">✅ Approve</button>
+      <button type="button" class="adm-small adm-del" data-review="${type}" data-id="${esc(id)}" data-status="rejected">✖ Reject</button></span></li>`;
+    box.innerHTML = `<div class="adm-card"><h2>Waiting for you</h2><ul class="adm-pending">
+      ${temps.map((t) => row("compost", t.id, `🌡️ <b>${esc(t.temp_f)}°F</b> in the ${esc(t.pile)} on ${esc(fmt(t.logged_on))}${t.turned ? " (turned ↻)" : ""}, from ${esc(t.author)}${t.notes ? `: <em>${esc(t.notes)}</em>` : ""}`)).join("")}
+      ${feeds.map((f) => row("feed", f.id, `🌱 <b>${esc((spotById(f.bed) || { name: f.bed }).name)}</b>: ${esc(planNames(f.bed, f.plan_ids))} on ${esc(fmt(f.fed_on))}, from ${esc(f.author)}${f.notes ? `: <em>${esc(f.notes)}</em>` : ""}`)).join("")}
+    </ul></div>`;
+  }
+
+  $("#admNewFeed").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const f = e.target.elements;
+    const status = $("#admFeedStatus");
+    const planIds = [...e.target.querySelectorAll("[name=plan_ids]:checked")].map((c) => c.value);
+    try {
+      await api("/api/admin/feed", { method: "POST", body: JSON.stringify({ bed: f.bed.value, plan_ids: planIds, fed_on: f.fed_on.value, notes: f.notes.value }) });
+      status.textContent = "Logged ✅";
+      status.className = "sf-status adm-wide is-ok";
+      f.notes.value = "";
+      e.target.querySelectorAll("[name=plan_ids]:checked").forEach((c) => { c.checked = false; });
+      loadGarden();
+    } catch (err) { status.textContent = err.message; status.className = "sf-status adm-wide is-error"; }
+  });
+
+  $("#admBeds").addEventListener("change", async (e) => {
+    const cb = e.target.closest("input[data-item]");
+    if (!cb) return;
+    cb.disabled = true;
+    try {
+      await api("/api/admin/todo", { method: "POST", body: JSON.stringify({ bed: cb.dataset.bed, item: cb.dataset.item, done: cb.checked }) });
+    } catch (err) { cb.checked = !cb.checked; alert(err.message); }
+    cb.disabled = false;
+  });
+  $("#admBeds").addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-del-feed]");
+    if (!btn || !confirm("Delete this feeding from the log?")) return;
+    try { await api(`/api/admin/feed/${btn.dataset.delFeed}`, { method: "DELETE" }); loadGarden(); } catch (err) { alert(err.message); }
+  });
+  $("#admGardenPending").addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-review]");
+    if (!btn) return;
+    btn.disabled = true;
+    try {
+      await api(`/api/admin/${btn.dataset.review}/${btn.dataset.id}`, { method: "PATCH", body: JSON.stringify({ status: btn.dataset.status }) });
+      loadGarden();
+    } catch (err) { btn.disabled = false; alert(err.message); }
   });
 
   /* ---------- Guestbook ---------- */

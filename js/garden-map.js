@@ -9,7 +9,7 @@
 
   const M = window.YVY && window.YVY.gardenMap;
   const box = document.getElementById("gardenMap");
-  if (!M || !box) return;
+  if (!M) return;
 
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => (
     { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
@@ -24,12 +24,86 @@
   const alert = (s) => `<span class="gm-alert" style="left:calc(var(--c) * ${s.x + s.w});top:calc(var(--c) * ${s.y})" aria-hidden="true">!</span>`;
   const list = (items, cls) => `<ul class="${cls}">${items.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>`;
 
+  /* Live garden log from the Garden Society API: feedings and to-dos Yvy crossed off on the admin page */
+  const S = window.YVY.society || {};
+  const API = ["localhost", "127.0.0.1"].includes(location.hostname) ? "http://localhost:8787" : S.api;
+  const live = { feeds: {}, done: new Set() };
+  const lessonNow = (window.YVY.lessons || {}).now; // what garden class is learning (shown on the Garden Classroom)
+  // A to-do's id is a short hash of its text (the admin page makes the same one), so a rewritten
+  // to-do starts out unchecked
+  const todoKey = (text) => { let h = 5381; for (const ch of text) h = ((h * 33) ^ ch.codePointAt(0)) >>> 0; return h.toString(36); };
+  const fedOf = (s) => (s.fed || []).concat(live.feeds[s.id] || []);
+  const todoList = (s) => `<ul class="gm-todo">${s.todo.map((t) => {
+    const done = s.id && live.done.has(`${s.id}:${todoKey(t)}`);
+    return `<li${done ? ' class="is-done"' : ""}>${esc(t)}${done ? ' <span class="sr-only">(done)</span>' : ""}</li>`;
+  }).join("")}</ul>`;
+
   // A planted item is "🥕 carrots" or { icon: "kale", name: "kale" } (js/veg-icons.js)
   function plant(p) {
     if (typeof p === "string") return `<li>${esc(p)}</li>`;
     const icon = p.icon && window.VegIcons ? window.VegIcons.svg(p.icon) + " " : "";
     return `<li>${icon}${esc(p.name)}</li>`;
   }
+
+  /* Feeding log: last time a bed was fed (from its fed log) and when it's due next (from its feedPlan) */
+  const midnight = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  const parse = (iso) => new Date(iso + "T12:00:00");
+  const inMonths = (d, [a, b]) => { const m = d.getMonth() + 1; return a <= b ? m >= a && m <= b : m >= a || m <= b; };
+  // First day of the months window that contains d (windows can wrap past December, like Oct to Mar)
+  const windowStart = (d, [a, b]) => {
+    const y = d.getFullYear();
+    return new Date(a <= b || d.getMonth() + 1 >= a ? y : y - 1, a - 1, 1);
+  };
+  // The next time the window opens after d
+  const nextOpening = (d, [a]) => {
+    const t = new Date(d.getFullYear(), a - 1, 1);
+    return t > d ? t : new Date(d.getFullYear() + 1, a - 1, 1);
+  };
+  const ids = (entry) => [].concat(entry.id || []);
+  function nextFeeding(s, today, fed = fedOf(s)) {
+    let best = null;
+    (s.feedPlan || []).forEach((item) => {
+      const done = fed.filter((e) => ids(e).includes(item.id)).map((e) => parse(e.date));
+      const last = done.length ? new Date(Math.max(...done)) : null;
+      let due;
+      if (item.every) {
+        // Every so many days while it's in season; no feeding yet means it's due now (or when the season opens)
+        // (calendar days, so the clocks changing in spring and fall can't shift the date)
+        due = last ? new Date(last.getFullYear(), last.getMonth(), last.getDate() + item.every) : today;
+        if (!inMonths(due, item.months)) due = nextOpening(due, item.months);
+      } else if (inMonths(today, item.months)) {
+        // Once per season: due now unless it was already done this season
+        due = last && last >= windowStart(today, item.months) ? nextOpening(today, item.months) : today;
+      } else {
+        // Not in season yet. Done a little early (within ~6 weeks of it opening) still counts for this season.
+        const open = nextOpening(today, item.months);
+        due = last && open - last < 45 * 864e5 ? nextOpening(open, item.months) : open;
+      }
+      if (due < today) due = today;
+      if (!best || due < best.date) best = { date: due, what: [item.what] };
+      else if (+due === +best.date) best.what.push(item.what);
+    });
+    return best;
+  }
+  const fmt = (d) => d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  function feedLog(s) {
+    const today = midnight(new Date());
+    const log = fedOf(s).slice().sort((x, y) => (x.date < y.date ? -1 : 1));
+    const last = log[log.length - 1];
+    const lastText = last
+      ? `${fmt(parse(last.date))}: ${ids(last).map((id) => ((s.feedPlan || []).find((p) => p.id === id) || { what: id }).what).join(", ")}`
+      : "Not yet";
+    const next = nextFeeding(s, today);
+    const when = next && (+next.date === +today ? "Today" : fmt(next.date));
+    return `<div class="gm-log">
+      <p><b>Last fed:</b> ${esc(lastText)}</p>
+      <p><b>Next feeding:</b> ${next ? `${esc(when)}: ${esc(next.what.join(", plus "))}` : "None needed"}</p>
+    </div>`;
+  }
+
+  // The admin page (society-admin.js) uses these too, so to-do ids and feeding dates always match the map
+  window.YvyGarden = { todoKey, nextFeeding, parse, midnight };
+  if (!box) return;
 
   const spots = M.spots;
   box.innerHTML = `
@@ -73,7 +147,9 @@
   }
   new ResizeObserver(fit).observe(frame);
 
+  let shown = null; // the spot in the speech box right now
   function show(i) {
+    shown = i;
     const s = spots[i];
     map.querySelectorAll(".is-on").forEach((el) => el.classList.remove("is-on"));
     if (!s) {
@@ -86,8 +162,12 @@
     body.innerHTML =
       (s.planted ? `<p class="gm-what">Growing now:</p><ul class="gm-plants">${s.planted.map(plant).join("")}</ul>` : "") +
       (s.about ? `<p>${esc(s.about)}</p>` : "") +
+      (s.lesson && lessonNow ? `<p class="gm-what">Now learning:</p><p>📚 Unit ${esc(lessonNow.unit)} · Lesson ${esc(lessonNow.lesson)}: <b>${esc(lessonNow.title)}</b>
+        (${esc(lessonNow.island)} in Gardenbound)</p>` : "") +
       (s.fix ? `<p class="gm-what gm-what-fix">Needs fixing:</p>${list(s.fix, "gm-fix")}` : "") +
-      (s.todo ? `<p class="gm-what">${esc(M.todoTitle || "To-do")}:</p>${list(s.todo, "gm-todo")}` : "") +
+      (s.todo ? `<p class="gm-what">${esc(M.todoTitle || "To-do")}:</p>${todoList(s)}` : "") +
+      (s.feed ? `<p class="gm-what gm-what-feed">${esc(M.feedTitle || "Feeding")}:</p>${s.feedPlan ? feedLog(s) : ""}${list(s.feed, "gm-feed")}`
+        + (M.feedNote ? `<p class="gm-feed-note">${esc(M.feedNote)}</p>` : "") : "") +
       (s.tab ? `<button type="button" class="gm-go" data-tab-go="${esc(s.tab)}">See the compost log ▶</button>` : "") +
       (s.link ? `<a class="gm-go" href="${esc(s.link)}">Meet the flock ▶</a>` : "");
   }
@@ -113,4 +193,12 @@
     if (tab) { tab.click(); tab.focus(); }
   });
   show(null);
+
+  // Load the live log, then redraw whatever is showing
+  fetch(`${API}/api/garden`).then((r) => (r.ok ? r.json() : null)).then((data) => {
+    if (!data) return;
+    (data.feeds || []).forEach((f) => { (live.feeds[f.bed] = live.feeds[f.bed] || []).push({ date: f.fed_on, id: f.plan_ids }); });
+    (data.done || []).forEach((d) => live.done.add(`${d.bed}:${d.item}`));
+    show(shown);
+  }).catch(() => { /* no log yet: the map still works */ });
 })();
