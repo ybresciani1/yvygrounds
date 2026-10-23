@@ -854,12 +854,21 @@ window.YVY = {
   // CHICKENS (Critter Corner cards). photo is optional.
   // card: their "Critter of the Month" trading card (flock and pets both have one; see critterOfTheMonth).
   // Their pixel sprite (js/pixels.js) is named after them (riot, peaches...); card.sprite picks another.
+  // photos: the card's photo for each of their turns as Critter of the Month, in order (turn 1 first), so every
+  // turn's card is a new one to collect. Add more to the end; when they run out it starts over.
+  // Preview a turn with ?cotm=Riot&turn=2
   // stats are out of 5. Each move has an animation (anim) the sprite acts out when you click it on the big card:
   // charge, flip, stomp, glare, hug, hide, spin, chomp, loaf. fx is the little emoji that flies around.
   flock: [
     { name: "Riot", breed: "Buff Laced Polish", photo: "images/chickens/riot.jpg",
       fact: "Rocks a giant pom-pom hairdo and can't see where she's going. Goes anyway.",
       card: { hp: 70, type: "Pom-Pom", rarity: 3,
+        photos: [
+          { src: "images/chickens/riot.jpg", focus: "50% 0%" },
+          { src: "images/chickens/riot-baby-1.jpg", focus: "25% 45%" },
+          { src: "images/chickens/riot-coop.jpg", focus: "50% 12%" },
+          { src: "images/chickens/riot-beyonce-table.jpg", focus: "55% 45%" },
+        ],
         moves: [
           { name: "Blind Charge", dmg: 30, anim: "charge", fx: "💨", text: "Runs straight at you. Can't see you. Hits anyway." },
           { name: "Hair Flip", dmg: 20, anim: "flip", fx: "✨", text: "The opponent is too dazzled to move this turn." },
@@ -869,6 +878,12 @@ window.YVY = {
     { name: "Beyonce", breed: "Golden Laced Polish", photo: "images/chickens/beyonce.jpg",
       fact: "The feisty one. Runs the coop, and the coop knows it.",
       card: { hp: 90, type: "Diva", rarity: 4,
+        photos: [
+          { src: "images/chickens/beyonce.jpg" },
+          { src: "images/chickens/beyonce-patrol.jpg", focus: "50% 50%" },
+          { src: "images/chickens/beyonce-cage.jpg", focus: "30% 30%" },
+          { src: "images/chickens/baby-beyonce-riot.jpg", focus: "25% 50%" },
+        ],
         moves: [
           { name: "Coop Rules", dmg: 40, anim: "stomp", fx: "💥", text: "Every chicken on the bench does what she says." },
           { name: "Signature Glare", dmg: 30, anim: "glare", fx: "⚡", text: "The opponent skips a turn to think about what they did." },
@@ -878,6 +893,12 @@ window.YVY = {
     { name: "Snow 🌈", breed: "Silkie", photo: "images/chickens/snow.jpg",
       fact: "Our fluffy little cloud. She's the mystery chicken now, keeping watch from somewhere extra soft. Forever loved.",
       card: { hp: "∞", type: "Cloud", rarity: 5, memorial: true,
+        photos: [
+          { src: "images/chickens/snow.jpg" },
+          { src: "images/chickens/snow-held.jpg", focus: "38% 40%" },
+          { src: "images/chickens/snow-inside.jpg", focus: "52% 50%" },
+          { src: "images/chickens/snow-closeup.jpg", focus: "55% 40%" },
+        ],
         moves: [
           { name: "Marshmallow Hug", dmg: 0, anim: "hug", fx: "💕", text: "Everyone on your side feels better. All of them." },
           { name: "Puffball Camo", dmg: 0, anim: "hide", fx: "🌼", text: "Hides in the dandelions. Can't be found. Can't be hit." },
@@ -900,6 +921,12 @@ window.YVY = {
     { name: "Peaches", kind: "Fox-faced Pomeranian", photo: "images/pets/peaches-hehe-bite.jpg",
       fact: "Owns more outfits than anyone in the house. Wears every one of them with pride.",
       card: { hp: 40, type: "Fashion", rarity: 4,
+        photos: [
+          { src: "images/pets/peaches-hehe-bite.jpg" },
+          { src: "images/pets/peaches-bunny-outfit.jpg", focus: "10% 50%" },
+          { src: "images/pets/peaches-queen-bee.jpg", focus: "50% 38%" },
+          { src: "images/pets/peaches-jean-outfit.jpg", focus: "65% 30%" },
+        ],
         moves: [
           { name: "Outfit Change", dmg: 20, anim: "spin", fx: "🎀", text: "Spins once and comes back in a brand new outfit. The crowd goes wild." },
           { name: "Hehe Bite", dmg: 10, anim: "chomp", fx: "💥", text: "A tiny, very dramatic nibble. Mostly for show." },
@@ -909,6 +936,12 @@ window.YVY = {
     { name: "Bojjii", kind: "Mutt (German Shepherd × Aussie Shepherd, we think)", photo: "images/pets/bojjii-card.jpg",
       fact: "The big sweet boy. Will wear antlers, wigs and party hats for the team (and beg for pancakes).",
       card: { hp: 120, type: "Gentle Giant", rarity: 4,
+        photos: [
+          { src: "images/pets/bojjii-card.jpg" },
+          { src: "images/pets/bojjii-birthday.jpg", focus: "50% 15%" },
+          { src: "images/pets/bojjii-reindeer.jpg", focus: "50% 20%" },
+          { src: "images/pets/bojjii-backpack.jpg" },
+        ],
         moves: [
           { name: "Costume Party", dmg: 20, anim: "spin", fx: "🎉", text: "Puts on antlers, a wig or a party hat. Takes one for the team, every time." },
           { name: "Pancake Stare", dmg: 50, anim: "glare", fx: "🥞", text: "Stares until a pancake appears. It always works." },
@@ -918,6 +951,12 @@ window.YVY = {
     { name: "Lychee", kind: "Tabby cat", photo: "images/pets/lychee-cucumber.jpg", focus: "70% 50%",
       fact: "Lounges on vegetables, tolerates costumes, and is deeply tired of Peaches' nonsense.",
       card: { hp: 60, type: "Loaf", rarity: 3,
+        photos: [
+          { src: "images/pets/lychee-cucumber.jpg", focus: "70% 50%" },
+          { src: "images/pets/lychee-basket.jpg" },
+          { src: "images/pets/lychee-mafia.jpg" },
+          { src: "images/pets/lychee-bee.jpg" },
+        ],
         moves: [
           { name: "Veggie Lounge", dmg: 10, anim: "loaf", fx: "🥒", text: "Lies down on the cucumber. The cucumber is hers now." },
           { name: "Unimpressed Stare", dmg: 30, anim: "glare", fx: "💤", text: "Peaches leaves the room." },
@@ -927,6 +966,12 @@ window.YVY = {
     { name: "Penny 🌈", kind: "Chug (Chihuahua × Pug)", photo: "images/pets/penny-posing.jpg", focus: "50% 35%",
       fact: "Stuck by my side through my hardest times. Spun in happy circles and hid chocolate under the blankets for her momma, and somehow always knew never to eat it herself. The sweetest, most loving doggo there ever was. Forever loved.",
       card: { hp: "∞", type: "Sweetheart", rarity: 5, memorial: true,
+        photos: [
+          { src: "images/pets/penny-posing.jpg", focus: "50% 35%" },
+          { src: "images/pets/penny-silly.jpg", focus: "50% 12%" },
+          { src: "images/pets/penny-life-jacket.jpg", focus: "55% 40%" },
+          { src: "images/pets/penny-pink-collar.jpg", focus: "40% 5%" },
+        ],
         moves: [
           { name: "Happy Circles", dmg: 0, anim: "spin", fx: "💖", text: "Spins in happy circles until everyone is smiling." },
           { name: "Chocolate Stash", dmg: 0, anim: "hide", fx: "💝", text: "Hides chocolate under the blankets for her momma. Never eats it herself." },

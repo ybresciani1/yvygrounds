@@ -593,12 +593,29 @@
     const pickFor = (y, m) => byName((C.pins || {})[`${y}-${String(m + 1).padStart(2, "0")}`])
       || list[(((y * 12 + m) - (sy * 12 + sm - 1)) % list.length + list.length) % list.length];
     const now = new Date();
-    const preview = new URLSearchParams(location.search).get("cotm");
+    const q = new URLSearchParams(location.search);
+    const preview = q.get("cotm");
     const real = pickFor(now.getFullYear(), now.getMonth());
     const pick = (preview && byName(preview)) || real;
     const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    // turn: how many times they've been Critter of the Month (this month included), so each turn gets
+    // a new photo (card.photos). A preview shows their next turn; ?turn=2 previews another one.
+    const first = sy * 12 + sm - 1;
+    const at = (i) => pickFor(Math.floor(i / 12), i % 12).c === pick.c;
+    let month = now.getFullYear() * 12 + now.getMonth();
+    for (let k = 0; k < 240 && !at(month); k++) month++;
+    let turn = 0;
+    for (let i = first; i <= month; i++) if (at(i)) turn++;
+    turn = Math.max(1, +q.get("turn") || turn);
     // live: this really is their month (not just a ?cotm= preview), so their card can be saved as a PDF
-    return { ...pick, list, next: pickFor(next.getFullYear(), next.getMonth()), month: now, live: pick.c === real.c };
+    return { ...pick, list, next: pickFor(next.getFullYear(), next.getMonth()), month: now, turn, live: pick.c === real.c };
+  }
+  // This turn's card photo: card.photos in turn order (starts over when it runs out), else their usual photo
+  function cotmPhoto(m, size) {
+    const { c, emoji, turn } = m;
+    const photos = c.card.photos || [];
+    const p = photos.length ? photos[(turn - 1) % photos.length] : null;
+    return p ? imgTag(p.src, c.name, emoji, p.focus) : critterPhoto(c, emoji, size);
   }
 
   const pips = (n) => Array.from({ length: 5 }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("");
@@ -610,7 +627,7 @@
       <button type="button" class="tcard tcard-mini${k.memorial ? " is-memorial" : ""}" data-cotm-open aria-haspopup="dialog" aria-label="${esc(c.name)} is Critter of the Month! Open the trading card">
         <span class="tcard-banner">★ Critter of the Month ★</span>
         <span class="tcard-top"><span class="tcard-name">${esc(c.name)}</span><span class="tcard-hp"><small>HP</small>${esc(k.hp)}</span></span>
-        <span class="tcard-photo">${critterPhoto(c, emoji, 6)}</span>
+        <span class="tcard-photo">${cotmPhoto(m, 6)}</span>
         <span class="tcard-type">${esc(k.type)} type · ${esc(c[kindField])}</span>
         <span class="tcard-mini-moves">${k.moves.map((mv) => `<span>${esc(mv.name)}</span>`).join("")}</span>
         <span class="tcard-tap">✨ Click to open ✨</span>
@@ -632,7 +649,7 @@
         <span class="tcard-hp"><small>HP</small>${esc(k.hp)}</span>
       </header>
       <button type="button" class="tcard-photo" data-pet="${esc(c.name)}" data-sound="${soundOf(c, kindField)}" aria-label="Pet ${esc(c.name)}">
-        <span class="tcard-actor">${critterPhoto(c, emoji, 10)}</span>
+        <span class="tcard-actor">${cotmPhoto(m, 10)}</span>
         <span class="tcard-sprite" aria-hidden="true">${px(k.sprite || c.name.toLowerCase().replace(/[^a-z].*$/, ""), 5)}</span>
         <span class="tcard-fx" aria-hidden="true"></span>
         <span class="tcard-say" aria-live="polite"></span>

@@ -812,7 +812,8 @@ a.game:hover { background: #34303b; }
   font: inherit;
 }
 .is-memorial .tcard-photo { border-color: #a98fe6; }
-.tcard-photo img { width: 100%; height: 100%; object-fit: cover; }
+/* Pinned to the frame so a photo's focus (object-position) picks the crop */
+.tcard-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
 /* Holo foil: a rainbow shine that slides across the photo */
 .tcard-photo::after {
   content: "";
