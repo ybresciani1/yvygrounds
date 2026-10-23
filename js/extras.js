@@ -380,20 +380,17 @@
   }
 
   /* ---------- "You are visitor #…" ---------- */
-  // Each browser gets counted once and keeps its number. If the API can't be reached, the box stays hidden.
+  // Shows the total number of visits to the site, counting people who come back too (the API treats
+  // reloads within half an hour as the same visit). If the API can't be reached, the box stays hidden.
   async function buildVisitor() {
     const box = $("#visitor");
     if (!box || !API) return;
-    const KEY = "yvy-visitor-no";
-    let n = Number(store.get(KEY)) || 0;
-    if (!n) {
-      try {
-        const res = await fetch(`${API}/api/visit`, { method: "POST" });
-        if (!res.ok) return;
-        n = Number((await res.json()).visitor) || 0;
-        if (n) store.set(KEY, String(n));
-      } catch (e) { return; }
-    }
+    let n = 0;
+    try {
+      const res = await fetch(`${API}/api/visit`, { method: "POST" });
+      if (!res.ok) return;
+      n = Number((await res.json()).visitor) || 0;
+    } catch (e) { return; }
     if (!n) return;
     $("#visitorNum").innerHTML = String(n).padStart(6, "0").split("").map((d) => `<span>${d}</span>`).join("");
     $("#visitorNum").setAttribute("aria-label", `number ${n}`);

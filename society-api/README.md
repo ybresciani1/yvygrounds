@@ -9,7 +9,7 @@ pending until Yvy approves them on `society-admin.html` → Guestbook. Spam guar
 a minimum time on the form, no links/emails/phone numbers, 3 signings per visitor per hour (tracked by a
 hash of the address, not the address), and a cap of 200 waiting entries.
 
-Also: the "You are visitor #…" counter (`/api/visit`, once per address every 12 hours), arcade high
+Also: the "You are visitor #…" counter (`/api/visit`, total visits; the same address within 30 minutes is one visit), arcade high
 scores (`/api/scores`, 3-letter initials, rude ones blocked, impossible scores refused per game in
 `GAMES`), the Critter Corner pet counter (`/api/pets`, batched, 600 pets per visitor an hour; critters listed in
 `CRITTERS`), and the Rabbit & Frog hall of fame (`/api/hall`; Yvy adds students and photos on the admin

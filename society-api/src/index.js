@@ -10,7 +10,7 @@
  *   GET  /api/garden                                                       garden map: feedings and crossed-off to-dos
  *   GET  /api/guestbook                                                    approved guestbook entries
  *   POST /api/guestbook  { name, role?, avatar?, message, website, ms }    sign it (no passcode), waits for approval
- *   POST /api/visit                                                         count a visitor, returns { visitor: N }
+ *   POST /api/visit                                                         count a visit, returns { visitor: N } (total visits)
  *   GET  /api/scores?game=G                                                 arcade top 10
  *   POST /api/scores     { game, initials, score }                          add a high score (3-letter initials)
  *   GET  /api/hall                                                          Rabbit & Frog hall of fame
@@ -339,9 +339,12 @@ async function visitorHash(request, salt) {
 
 // The site calls this once per browser and remembers the number. The same address only
 // counts once every 12 hours, so reloads or a cleared browser don't run the number up.
+// Every visit counts, including people coming back. Reloads and clicking around within
+// VISIT_GAP_MS are the same visit, so refreshing can't pump the number up.
+const VISIT_GAP_MS = 30 * 60 * 1000;
 async function countVisit(request, env) {
   const who = await visitorHash(request, "visit");
-  const since = Date.now() - 12 * 60 * 60 * 1000;
+  const since = Date.now() - VISIT_GAP_MS;
   const recent = await env.DB.prepare("SELECT 1 FROM visitor_hits WHERE who = ? AND at > ? LIMIT 1").bind(who, since).first();
   if (recent) {
     const row = await env.DB.prepare("SELECT value FROM counters WHERE name = 'visitors'").first();
