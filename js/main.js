@@ -594,9 +594,11 @@
       || list[(((y * 12 + m) - (sy * 12 + sm - 1)) % list.length + list.length) % list.length];
     const now = new Date();
     const preview = new URLSearchParams(location.search).get("cotm");
-    const pick = (preview && byName(preview)) || pickFor(now.getFullYear(), now.getMonth());
+    const real = pickFor(now.getFullYear(), now.getMonth());
+    const pick = (preview && byName(preview)) || real;
     const next = new Date(now.getFullYear(), now.getMonth() + 1, 1);
-    return { ...pick, list, next: pickFor(next.getFullYear(), next.getMonth()), month: now };
+    // live: this really is their month (not just a ?cotm= preview), so their card can be saved as a PDF
+    return { ...pick, list, next: pickFor(next.getFullYear(), next.getMonth()), month: now, live: pick.c === real.c };
   }
 
   const pips = (n) => Array.from({ length: 5 }, (_, i) => `<i class="${i < n ? "on" : ""}"></i>`).join("");
@@ -616,14 +618,15 @@
       <p class="critter-pets" data-pets-for="${esc(c.name)}" aria-live="polite"></p>
     </article>`;
   }
+  const monthName = (m) => m.month.toLocaleDateString("en-US", { month: "long", year: "numeric" });
   // The big card in the pop-up
   function cotmBig(m) {
-    const { c, kindField, emoji, list, next, month } = m;
+    const { c, kindField, emoji, list, next } = m;
     const k = c.card;
     const stars = "★".repeat(k.rarity || 1) + "☆".repeat(5 - (k.rarity || 1));
     const num = String(list.findIndex((x) => x.c === c) + 1).padStart(3, "0") + "/" + String(list.length).padStart(3, "0");
     return `<article class="tcard tcard-big${k.memorial ? " is-memorial" : ""}">
-      <p class="tcard-banner">★ Critter of the Month ★ ${esc(month.toLocaleDateString("en-US", { month: "long", year: "numeric" }))}</p>
+      <p class="tcard-banner">★ Critter of the Month ★ ${esc(monthName(m))}</p>
       <header class="tcard-top">
         <span class="tcard-name">${esc(c.name)}</span>
         <span class="tcard-hp"><small>HP</small>${esc(k.hp)}</span>
@@ -652,7 +655,11 @@
         <span class="tcard-num">No. ${num}</span>
       </footer>
       <p class="tcard-hint">Click a move to see it! Click the photo to give ${esc(c.name)} a pet.${next.c !== c ? ` Next month: ${esc(next.c.name)}` : ""}</p>
-    </article>`;
+    </article>${m.live ? `
+    <p class="tcard-save">
+      <button type="button" class="tcard-save-btn" data-cotm-pdf>📥 Save this card (PDF)</button>
+      <small>Only while ${esc(c.name)} is Critter of the Month!</small>
+    </p>` : ""}`;
   }
 
   // Play a move: their little pixel sprite acts it out over the photo, emoji fly out,
@@ -675,6 +682,17 @@
       `<span style="left:${10 + ((i * 37) % 80)}%;top:${20 + ((i * 23) % 60)}%;animation-delay:${i * 0.08}s">${esc(mv.fx || "✨")}</span>`).join("");
     clearTimeout(playMove.t);
     playMove.t = setTimeout(() => { fx.innerHTML = ""; }, 1800);
+  }
+
+  // "Save this card (PDF)": print just the card (style.css → body.print-card) so the
+  // print dialog's "Save as PDF" makes a one-page card. Only for the real critter of the month.
+  // Print mode stays on until the card closes (afterprint fires too early on some phones).
+  const pageTitle = document.title;
+  function saveCard(m) {
+    if (!m.live) return;
+    document.title = `${m.c.name} - Critter of the Month - ${monthName(m)}`; // the PDF's file name
+    document.body.classList.add("print-card");
+    window.print();
   }
 
   function buildCritters() {
@@ -700,12 +718,15 @@
       if (box.hidden) return;
       box.hidden = true;
       slot.innerHTML = "";
+      document.body.classList.remove("print-card");
+      document.title = pageTitle;
       if (back) back.focus();
     };
     $("#critters").addEventListener("click", (e) => { if (e.target.closest("[data-cotm-open]")) open(); });
     slot.addEventListener("click", (e) => {
       const b = e.target.closest("[data-move]");
       if (b) playMove(slot, m.c, m.c.card.moves[+b.dataset.move]);
+      if (e.target.closest("[data-cotm-pdf]")) saveCard(m);
     });
     $("#critterCardClose").addEventListener("click", close);
     box.addEventListener("click", (e) => { if (e.target === box) close(); });

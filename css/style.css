@@ -899,6 +899,40 @@ a.game:hover { background: #34303b; }
 .tcard-num { text-align: right; font: 7px var(--f-pixel); }
 .tcard-hint { margin: 8px 0 0; text-align: center; font: 400 15px/1.3 var(--f-hand); color: #6b4a1f; }
 
+/* "📥 Save this card (PDF)": only on the real critter of the month (main.js → saveCard) */
+.tcard-save { margin: 16px 0 0; text-align: center; }
+.tcard-save-btn {
+  padding: 9px 16px;
+  border: 4px solid var(--ink);
+  border-radius: 16px;
+  background: #ffb53d;
+  color: var(--ink);
+  font: 400 19px/1 var(--f-logo);
+  box-shadow: 4px 5px 0 var(--ink);
+  transform: rotate(-2deg);
+  transition: transform .15s;
+  cursor: pointer;
+}
+.tcard-save-btn:hover, .tcard-save-btn:focus-visible { transform: rotate(0) scale(1.05); }
+.tcard-save small { display: block; margin-top: 10px; font: 7px/1.6 var(--f-pixel); color: #fff; }
+
+/* Printing with body.print-card shows only the card, one page, colors on, nothing moving */
+@media print {
+  body.print-card { background: #fff; }
+  body.print-card > :not(#critterCardBox) { display: none !important; }
+  body.print-card .ccard-box { position: static; display: block; padding: 0; background: none; }
+  body.print-card .ccard-wrap { width: 105mm; max-height: none; margin: 0 auto; padding: 3mm 0 0; overflow: visible; }
+  body.print-card .ccard-wrap .lightbox-close,
+  body.print-card .tcard-save,
+  body.print-card .tcard-hint,
+  body.print-card .tcard-say,
+  body.print-card .tcard-fx,
+  body.print-card .tcard-photo::after { display: none; }
+  body.print-card .tcard { box-shadow: 0 0 0 3px #c99a10; break-inside: avoid; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  body.print-card .tcard.is-memorial { box-shadow: 0 0 0 3px #a98fe6; }
+  body.print-card .tcard *, body.print-card .tcard { animation: none !important; transition: none !important; }
+}
+
 /* "Riot used BLIND CHARGE!": a Pokémon-style text box across the top of the photo */
 .tcard-say {
   position: absolute;
