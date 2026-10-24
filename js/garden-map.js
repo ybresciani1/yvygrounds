@@ -164,6 +164,11 @@
     const special = (s.dated || []).find((d) => (d.dates || []).includes(today));
     return special ? special.about : s.about;
   };
+  // keep: plants not to pull (basil in the wood chips). Their names in about become buttons that show their photos.
+  const aboutHtml = (s, text) => (s.keep || []).reduce((html, k, n) => {
+    const word = new RegExp(`\\b(${esc(k.name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})\\b`, "i");
+    return html.replace(word, `<button type="button" class="gm-keep" data-keep="${n}" aria-expanded="false">$1</button>`);
+  }, esc(text));
   let shown = null; // the spot in the speech box right now
   function show(i) {
     shown = i;
@@ -178,7 +183,8 @@
     name.textContent = s.name;
     body.innerHTML =
       (s.planted ? `<p class="gm-what">Growing now:</p><ul class="gm-plants">${s.planted.map(plant).join("")}</ul>` : "") +
-      (aboutToday(s) ? `<p>${esc(aboutToday(s))}</p>` : "") +
+      (aboutToday(s) ? `<p>${aboutHtml(s, aboutToday(s))}</p>` : "") +
+      (s.keep ? '<div class="gm-keep-photo" hidden></div>' : "") +
       (s.lesson && lessonNow ? `<p class="gm-what">Now learning:</p><p>📚 Unit ${esc(lessonNow.unit)} · Lesson ${esc(lessonNow.lesson)}: <b>${esc(lessonNow.title)}</b>
         (${esc(lessonNow.island)} in Gardenbound)</p>` : "") +
       (s.fix ? `<p class="gm-what gm-what-fix">Needs fixing:</p>${list(s.fix, "gm-fix")}` : "") +
@@ -203,8 +209,24 @@
     if (info.top < 0) body.parentElement.scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
   });
   map.addEventListener("focusin", (e) => { const el = spotOf(e); if (el) { pinned = +el.dataset.i; show(pinned); } });
-  // "See the compost log" opens that Garden Society tab
+  // "See the compost log" opens that Garden Society tab; a plant name (keep) shows or hides its photo
   body.addEventListener("click", (e) => {
+    const k = e.target.closest("[data-keep]");
+    if (k) {
+      const plant = spots[shown].keep[+k.dataset.keep];
+      const box = body.querySelector(".gm-keep-photo");
+      const open = k.getAttribute("aria-expanded") !== "true";
+      body.querySelectorAll("[data-keep]").forEach((el) => el.setAttribute("aria-expanded", "false"));
+      k.setAttribute("aria-expanded", String(open));
+      box.hidden = !open;
+      box.innerHTML = open ? `${plant.note ? `<p class="gm-keep-note">${esc(plant.note)}</p>` : ""}
+        <div class="gm-keep-pics">${(plant.photos || []).map((p) => `<figure>
+          <img src="${esc(p.src)}" alt="${esc(p.alt || plant.name)}" data-fallback="🌿">
+          ${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}
+          ${p.credit ? `<small class="gm-credit">Photo: ${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.credit)}</a>` : esc(p.credit)}</small>` : ""}
+        </figure>`).join("")}</div>` : "";
+      return;
+    }
     const b = e.target.closest("[data-tab-go]");
     const tab = b && document.querySelector(`.society-tabs [data-tab="${b.dataset.tabGo}"]`);
     if (tab) { tab.click(); tab.focus(); }

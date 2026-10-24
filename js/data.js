@@ -1317,6 +1317,9 @@ window.YVY = {
      * grid size (cols × rows) and spots, written the same way as the Central Garden's.
      * Extra kinds here: mulch (wood chips), shade (a possible future garden, dashed edge), hall (a hallway or
      * walkway, dashed edge), faucet, fence. tone "oval" rounds a bed; tone "native" is a native garden.
+     * keep: [{ name, note, photos: [{ src, alt, caption, credit, link }] }] plants growing where they might
+     *       get weeded by mistake. Their names in about become buttons that show the photos (images/plants/).
+     *       credit and link: who took the photo and its Wikimedia Commons page (CC BY photos need the credit).
      */
     otherMaps: [
       {
@@ -1333,8 +1336,32 @@ window.YVY = {
           { kind: "building", tone: "green", x: 1, y: 0, w: 10, h: 9 },
           // The wood chip areas can be tapped too, but they stay underneath the beds (they're drawn first)
           { kind: "mulch", x: 11, y: 0, w: 13, h: 9,
-            id: "ms-chips-top", name: "Wood Chips (Top Beds)", about: "Mulch and wood chips around MS Beds #4 to #7 and the tree, up top on the first floor.",
-            todo: ["Weed the wood chips."] },
+            id: "ms-chips-top", name: "Wood Chips (Top Beds)",
+            about: "Mulch and wood chips around MS Beds #4 to #7 and the tree, up top on the first floor. Careful: basil and milkweed (narrowleaf and tropical) are growing in the wood chips here, so don't pull them out! Tap their names to see what they look like.",
+            keep: [
+              { name: "basil",
+                note: "Basil: bright green, shiny, oval leaves. Rub a leaf and it smells sweet, like pizza and pesto 🌿",
+                photos: [
+                  { src: "images/plants/basil-1.jpg", alt: "A bushy basil plant with lots of bright green, shiny, oval leaves",
+                    credit: "USDA, public domain", link: "https://commons.wikimedia.org/wiki/File:2018_USDA_Farmers_Market_-_Watermelon_(20180803-AMS-LSC-0898).jpg" },
+                  { src: "images/plants/basil-2.jpg", alt: "Close-up of the top of a basil plant: smooth oval leaves in pairs",
+                    credit: "Amada44, public domain", link: "https://commons.wikimedia.org/wiki/File:Ocimum_basilicum-001.jpg" },
+                ] },
+              { name: "milkweed",
+                note: "We have two kinds of milkweed! Monarch caterpillars eat both, so please leave them for the butterflies 🦋",
+                photos: [
+                  { src: "images/plants/milkweed-narrowleaf-1.jpg", caption: "Narrowleaf milkweed (a California native): pale pink and white flower balls",
+                    alt: "Narrowleaf milkweed in bloom: round clusters of small pale pink and white flowers above long thin leaves",
+                    credit: "Braines123, CC0", link: "https://commons.wikimedia.org/wiki/File:Asclepias_Fascicularis_in_bloom.jpg" },
+                  { src: "images/plants/milkweed-narrowleaf-2.jpg", caption: "Narrowleaf milkweed without flowers: long, thin leaves in bunches",
+                    alt: "A narrowleaf milkweed plant with no flowers: tall stems covered in long, very thin leaves",
+                    credit: "glmory, CC0", link: "https://commons.wikimedia.org/wiki/File:Asclepias_fascicularis,_Narrowleaf_Milkweed.jpg" },
+                  { src: "images/plants/milkweed-tropical.jpg", caption: "Tropical milkweed: orange-red and yellow flowers, wider leaves",
+                    alt: "Tropical milkweed: a cluster of small orange-red and yellow flowers on a green stem",
+                    credit: "Forest & Kim Starr, CC BY 3.0", link: "https://commons.wikimedia.org/wiki/File:Starr_071024-0085_Asclepias_curassavica.jpg" },
+                ] },
+            ],
+            todo: ["Weed the wood chips, but leave the basil and milkweed!"] },
           { kind: "building", tone: "green", text: "MIDDLE SCHOOL BUILDING", x: 1, y: 9, w: 36, h: 12 },
           { kind: "hall", text: "1ST FLOOR HALLWAY (WALKWAY ABOVE)", x: 10, y: 21, w: 27, h: 4 },
           { kind: "mulch", x: 0, y: 21, w: 22, h: 20,
