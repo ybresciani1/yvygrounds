@@ -17,6 +17,8 @@
   const ROUND_SECS = 60;
   const WINS_NEEDED = 2;
   const MAX_HP = 100;
+  const HURT_W = 28, HURT_H = 44;  // everyone is the same size to hit, whatever they look like
+  const SPEED = 95, JUMP = 315;     // ...and walks and jumps the same, so nobody has the edge
   const GRAVITY = 900;
   const RECORD_KEY = "yvy-fluffers-ladder";
   const MUTE_KEY = "yvy-arcade-muted";
@@ -156,39 +158,39 @@
         "...TTT..TTT...",
       ],
     },
-    // Penny: Chug (Chihuahua x Pug). Big ears, black mask, pink tongue and her pink collar.
+    // Penny: black and tan like Bojjii, with big ears, a white chest, her pink collar and red heart tag.
     penny: {
-      colors: { F: "#e8c590", M: "#3a2a2a", K: "#2b1a52", W: "#ffffff", P: "#ff6fa8", Y: "#ffd23f" },
+      colors: { B: "#2b2433", T: "#d8b088", L: "#f0dcc0", K: "#120e18", W: "#ffffff", P: "#ff8cc6", R: "#e8352e" },
       grid: [
-        "MM..........MM",
-        "MFM........MFM",
-        "MFFM......MFFM",
-        ".MFFFFFFFFFFM.",
-        "..FFFFFFFFFF..",
-        ".FFKWFFFFKWFF.",
-        ".FFKKFFFFKKFF.",
-        ".FFFMMMMMMFFF.",
-        ".FFMMMKKMMMFF.",
-        "..FMMMMMMMMF..",
-        "..FMMMPPMMMF..",
-        "...FFFPPFFF...",
+        "BB..........BB",
+        "BLB........BLB",
+        "BLLB......BLLB",
+        ".BLLBBBBBBLLB.",
+        "..BBBBBBBBBB..",
+        ".BBTBBBBBBTBB.",
+        ".BKWBBBBBBKWB.",
+        ".TKKTBBBBTKKT.",
+        ".TTTTBBBBTTTT.",
+        "..TTTTBBTTTT..",
+        "..TTTTKKTTTT..",
+        "...TTTTTTTT...",
         "...PPPPPPPP...",
-        "......YY......",
+        "......RR......",
       ],
     },
     pennyBody: {
-      colors: { F: "#e8c590", L: "#f6e2bd", M: "#3a2a2a" },
+      colors: { B: "#2b2433", T: "#d8b088", W: "#ffffff", L: "#f0dcc0" },
       grid: [
-        "...FFFFFF...",
-        "..FFLLLLFF..",
-        ".FFLLLLLLFF.",
-        ".FFLLLLLLFF.",
-        ".FFLLLLLLFF.",
-        "..FFLLLLFF..",
-        "...FFFFFF...",
-        "...FF..FF...",
-        "...FF..FF...",
-        "...MM..MM...",
+        "...BBBBBB...",
+        "..BBWWWWBB..",
+        ".BBWWWWWWBB.",
+        ".BBWWWWWWBB.",
+        ".BBTWWWWTBB.",
+        "..BBTWWTBB..",
+        "...BBBBBB...",
+        "...TT..TT...",
+        "...TT..TT...",
+        "...LL..LL...",
       ],
     },
     // Chickens stand side-on (facing right) and fight with their beaks and feet.
@@ -273,8 +275,8 @@
       grid: ["............", "............", "..G.G.......", "..GGG......G", ".GKGG......G", "PGLGG......G", ".LLGG.....G.", "..GGDGDGDGG.", "..GGGDGDGGG.", "..GDGGGGDGG.", "..GG....GG..", "..GG....GG.."],
     },
     miniPenny: {
-      colors: { F: "#e8c590", M: "#3a2a2a", K: "#ffffff", P: "#ff6fa8" },
-      grid: ["............", "............", "..M..M......", "..MFFM......", ".MKFF.......", "MMMFF....F..", "PMFFFFFFFFF.", "..FFFFFFFFF.", "..FFFFFFFF..", "..FF....FF..", "..FF....FF..", "..MM....MM.."],
+      colors: { B: "#2b2433", T: "#d8b088", W: "#ffffff", P: "#ff6fa8" },
+      grid: ["............", "............", "..B..B......", "..BTTB......", ".BWBB.......", "TTTBB....B..", "PTTBBBBBBBB.", "..WWBBBBBBB.", "..WWBBBBBB..", "..TT....TT..", "..TT....TT..", "..TT....TT.."],
     },
   };
 
@@ -307,6 +309,10 @@
     "🎉": {
       c: { K: "#2b1a52", Y: "#ffd23f", O: "#ff8a1e", P: "#ff4d8d", S: "#37c6e6", G: "#7cc85a" },
       g: ["....P.....Y.", ".......S....", "..Y.....SP..", "......G.....", "...K......S.", "..KOK...Y...", "..KYOK.....P", ".KYOYOK.....", ".KOYOYOK....", ".KYOKKK.....", "KOKK........", "KK.........."],
+    },
+    "🎾": {
+      c: { K: "#2b1a52", Y: "#d4e84a", L: "#eef78a", W: "#ffffff" },
+      g: ["....KKKK....", "..KKYYYYKK..", ".KYLLYYYWYK.", ".KLLYYYWYYK.", "KYLYYYWYYYYK", "KYYYYWYYYYYK", "KYYYWYYYYYYK", "KYYWYYYYYYYK", ".KYWYYYYYYK.", ".KYYWYYYYYK.", "..KKYYYYKK..", "....KKKK...."],
     },
     "🥞": {
       c: { K: "#2b1a52", T: "#e0c98e", G: "#e0a800", B: "#a0643a", Y: "#ffd23f" },
@@ -358,11 +364,10 @@
     peaches: {
       name: "Peaches", kind: "pet", type: "Fashion", headScale: 2, headDrop: 4,
       main: "#eeaa55", light: "#fbe3b8", dark: "#b8682a", glove: "#ff6fa8", mini: "miniPeaches",
-      speed: 92, jump: 310,
       specials: [
-        { name: "Outfit Change", fx: "🎀", kind: "spin", dmg: 11, range: 30, move: 50, startup: 120, dur: 650, cool: 2400, outfit: true,
+        { name: "Outfit Change", fx: "🎀", kind: "spin", dmg: 10, range: 36, move: 40, startup: 120, dur: 650, cool: 2600, outfit: true,
           blurb: "Spins into a brand new outfit" },
-        { name: "Hehe Bite", fx: "💥", kind: "dash", dmg: 10, speed: 230, dist: 52, startup: 110, cool: 1800, chomp: true,
+        { name: "Hehe Bite", fx: "💥", kind: "dash", dmg: 10, speed: 240, dist: 80, startup: 110, cool: 2600, chomp: true,
           blurb: "A tiny, very dramatic nibble" },
       ],
       win: "The crowd goes wild for the outfit!",
@@ -371,11 +376,10 @@
     bojjii: {
       name: "Bojjii", kind: "pet", type: "Gentle Giant", headScale: 3, headDrop: 6,
       main: "#2b2433", light: "#c98a4a", dark: "#120e18", glove: "#e8352e", mini: "miniBojjii",
-      speed: 74, jump: 285,
       specials: [
-        { name: "Costume Party", fx: "🎉", kind: "spin", dmg: 10, range: 38, move: 0, startup: 120, dur: 700, cool: 2600, costume: true,
-          blurb: "Confetti spin into a fresh costume" },
-        { name: "Pancake Stare", fx: "🥞", kind: "drop", dmg: 14, startup: 480, cool: 3200, pose: "glare",
+        { name: "Ball Frenzy", fx: "🎾", kind: "spin", dmg: 10, range: 36, move: 0, startup: 120, dur: 700, cool: 2600, balls: true,
+          blurb: "Spins and sprays tennis balls" },
+        { name: "Pancake Stare", fx: "🥞", kind: "drop", dmg: 10, startup: 480, cool: 2600, pose: "glare",
           blurb: "Stares until a pancake drops on you" },
       ],
       win: "Good game! Now... pancakes?",
@@ -384,11 +388,10 @@
     lychee: {
       name: "Lychee", kind: "pet", type: "Loaf", headScale: 2, headDrop: 4,
       main: "#7d7a82", light: "#c4bfc7", dark: "#4a4650", glove: "#ff8a1e", mini: "miniLychee",
-      speed: 110, jump: 335,
       specials: [
-        { name: "Veggie Lounge", fx: "🥒", kind: "roll", dmg: 8, speed: 165, startup: 260, dur: 750, cool: 2400,
+        { name: "Veggie Lounge", fx: "🥒", kind: "roll", dmg: 10, speed: 165, startup: 260, dur: 750, cool: 2600,
           blurb: "Loafs low and rolls a cucumber" },
-        { name: "Unimpressed Stare", fx: "💤", kind: "bolt", shot: "zzz", dmg: 7, speed: 115, stun: 1100, status: "SNOOZING...", statusFx: "💤", startup: 340, cool: 3000, pose: "glare",
+        { name: "Unimpressed Stare", fx: "💤", kind: "bolt", shot: "zzz", dmg: 6, speed: 170, stun: 900, status: "SNOOZING...", statusFx: "💤", startup: 340, cool: 3000, pose: "glare",
           blurb: "So boring you fall asleep" },
       ],
       win: "I wasn't even trying. Mrrp.",
@@ -396,13 +399,12 @@
     },
     penny: {
       name: "Penny", kind: "pet", type: "Sweetheart", headScale: 2, headDrop: 4,
-      main: "#e8c590", light: "#f6e2bd", dark: "#3a2a2a", glove: "#ff6fa8", mini: "miniPenny",
-      speed: 100, jump: 320,
+      main: "#2b2433", light: "#d8b088", dark: "#120e18", glove: "#ff6fa8", mini: "miniPenny",
       specials: [
-        { name: "Happy Circles", fx: "💖", kind: "spin", dmg: 0, range: 44, move: 0, startup: 100, dur: 800, cool: 3500, heal: 6,
+        { name: "Happy Circles", fx: "💖", kind: "spin", dmg: 0, range: 36, move: 0, startup: 100, dur: 800, cool: 3000, heal: 6,
           stun: 900, status: "SMILING!", statusFx: "💕", unblockable: true,
           blurb: "Spins until everyone is smiling" },
-        { name: "Chocolate Stash", fx: "💖", kind: "hide", dur: 1400, heal: 12, cool: 5000, cover: "blanket",
+        { name: "Chocolate Stash", fx: "💖", kind: "hide", dur: 1500, heal: 8, cool: 3000, cover: "blanket",
           blurb: "Hides under the blankets (+health)" },
       ],
       win: "Happy circles for everybody!",
@@ -410,11 +412,10 @@
     },
     riot: {
       name: "Riot", kind: "bird", type: "Pom-Pom", side: "riotSide", legs: "#ffb62e", mini: "miniRiot",
-      speed: 104, jump: 330,
       specials: [
-        { name: "Blind Charge", fx: "💨", kind: "dash", dmg: 12, speed: 270, dist: 170, startup: 200, cool: 2400, blind: true,
+        { name: "Blind Charge", fx: "💨", kind: "dash", dmg: 10, speed: 260, dist: 150, startup: 200, cool: 2600, blind: true,
           blurb: "Can't see you. Hits anyway" },
-        { name: "Hair Flip", fx: "✨", kind: "burst", dmg: 6, range: 54, stun: 900, status: "DAZZLED!", statusFx: "✨", startup: 260, cool: 3000,
+        { name: "Hair Flip", fx: "✨", kind: "burst", dmg: 6, range: 44, stun: 900, status: "DAZZLED!", statusFx: "✨", startup: 260, cool: 3000,
           blurb: "So fabulous you can't move" },
       ],
       win: "Couldn't see a thing. Still won!",
@@ -422,11 +423,10 @@
     },
     beyonce: {
       name: "Beyonce", kind: "bird", type: "Diva", side: "beyonceSide", legs: "#ffb62e", mini: "miniBeyonce",
-      speed: 96, jump: 320,
       specials: [
-        { name: "Coop Rules", fx: "💥", kind: "stomp", dmg: 12, range: 110, speed: 230, startup: 120, cool: 2600,
+        { name: "Coop Rules", fx: "💥", kind: "stomp", dmg: 10, range: 100, speed: 230, startup: 120, cool: 2600,
           blurb: "A stomp everyone has to obey" },
-        { name: "Signature Glare", fx: "⚡", kind: "bolt", shot: "bolt", dmg: 6, speed: 240, stun: 1000, status: "THINKING ABOUT IT", statusFx: "⚡", startup: 300, cool: 2800, pose: "glare",
+        { name: "Signature Glare", fx: "⚡", kind: "bolt", shot: "bolt", dmg: 6, speed: 170, stun: 900, status: "THINKING ABOUT IT", statusFx: "⚡", startup: 300, cool: 3000, pose: "glare",
           blurb: "Think about what you did" },
       ],
       win: "The coop runs on MY rules.",
@@ -434,12 +434,11 @@
     },
     snow: {
       name: "Snow", kind: "bird", type: "Cloud", side: "snowSide", legs: "#8a84a3", fluffyFeet: true, mini: "miniSnow",
-      speed: 86, jump: 300,
       specials: [
-        { name: "Marshmallow Hug", fx: "💕", kind: "hug", heal: 18, range: 44, stun: 800, status: "HUGGED!", statusFx: "💕", startup: 300, cool: 5000,
+        { name: "Marshmallow Hug", fx: "💕", kind: "hug", heal: 8, range: 36, stun: 900, status: "HUGGED!", statusFx: "💕", startup: 300, cool: 3000,
           blurb: "Heals up, then hugs you tight" },
-        { name: "Puffball Camo", fx: "🌼", kind: "hide", dur: 1600, cool: 4500, cover: "flowers",
-          blurb: "Hides in dandelions. Can't be hit" },
+        { name: "Puffball Camo", fx: "🌼", kind: "hide", dur: 1500, heal: 8, cool: 3000, cover: "flowers",
+          blurb: "Hides in dandelions (+health)" },
       ],
       win: "A big marshmallow hug for the loser.",
       lose: "Snow floats off for a cloud nap.",
@@ -808,7 +807,7 @@
   let roundResult = null;   // { winner: fighter | null, how: "ko" | "time", perfect }
   let freezeT = 0, shakeT = 0, flashT = 0, cheerT = 0;
   let banner = null;        // "PEACHES used OUTFIT CHANGE!"
-  let dress = {};           // outfits and costumes picked up during the current match
+  let dress = {};           // outfits Peaches picks up during the current match
   let record = {};          // per critter: { best: levels beaten, champ: times }
   try { record = JSON.parse(store.get(RECORD_KEY)) || {}; } catch (e) { record = {}; }
   let p1 = null, p2 = null;
@@ -838,13 +837,12 @@
       f.bw = body.width * 2; f.bh = body.height * 2;
       f.hw = head.width * C.headScale; f.hh = head.height * C.headScale;
       f.height = f.bh + f.hh - C.headDrop;
-      f.bapY = -f.bh + 6; f.kickY = -10; f.reachBap = 16; f.reachKick = 20;
-      f.front = f.bw / 2; f.space = f.bw;
     } else {
-      // Chickens are drawn wider (tail and beak) than the part that can be hit
-      f.bw = 28; f.height = 43; f.bh = 36; f.front = 20; f.space = 40;
-      f.bapY = -29; f.kickY = -6; f.reachBap = 14; f.reachKick = 16;
+      f.bw = 28; f.height = 43; f.bh = 36;
     }
+    // Same reach for everyone
+    f.front = HURT_W / 2; f.space = HURT_W;
+    f.bapY = -22; f.kickY = -8; f.reachBap = 16; f.reachKick = 20;
     return f;
   }
 
@@ -1003,8 +1001,8 @@
   }
 
   function hurtbox(f) {
-    const h = f.loaf ? f.height * 0.45 : f.height;
-    return { x0: f.x - f.bw / 2, x1: f.x + f.bw / 2, y0: f.y - h, y1: f.y };
+    const h = f.loaf ? HURT_H * 0.45 : HURT_H;
+    return { x0: f.x - HURT_W / 2, x1: f.x + HURT_W / 2, y0: f.y - h, y1: f.y };
   }
 
   function hitbox(f) {
@@ -1076,14 +1074,14 @@
   function updateSpecial(f, o, dt) {
     const m = f.sp, t = f.t;
     const dx = (o.x - f.x) * f.face;              // how far in front the opponent is
-    const near = (r, around) => (around ? Math.abs(dx) : dx) > -f.bw / 2 && Math.abs(dx) < f.bw / 2 + r + o.bw / 2 && Math.abs(o.y - f.y) < 40;
+    const near = (r, around) => (around ? Math.abs(dx) : dx) > -HURT_W / 2 && Math.abs(dx) < HURT_W + r && Math.abs(o.y - f.y) < 40;
     if (m.kind === "dash") {
       if (t < m.startup) { f.vx = 0; return; }
       if (f.dashLeft > 0 && !f.spHit) {
         f.vx = f.face * m.speed;
         f.dashLeft -= (m.speed * dt) / 1000;
         if (!reduceMotion && Math.random() < 0.6) bits.push({ x: f.x - f.face * 14, y: f.y - rand(6, f.height - 6), vx: -f.face * 0.06, vy: 0, life: 0, max: 220, color: "#ffffff", size: 2, streak: true });
-        const hb = { x0: Math.min(f.x, f.x + f.face * (f.bw / 2 + 8)), x1: Math.max(f.x, f.x + f.face * (f.bw / 2 + 8)), y0: f.y - f.height * 0.8, y1: f.y };
+        const hb = { x0: Math.min(f.x, f.x + f.face * (HURT_W / 2 + 8)), x1: Math.max(f.x, f.x + f.face * (HURT_W / 2 + 8)), y0: f.y - HURT_H * 0.8, y1: f.y };
         if (overlap(hb, hurtbox(o))) {
           f.spHit = true; f.dashLeft = 0;
           applyHit(f, o, { dmg: m.dmg, stun: 420, block: 220, push: 170, heavy: true }, m.chomp ? "CHOMP!" : "WHUMP!", f.x + f.face * (f.bw / 2 + 4), f.y - f.height / 2);
@@ -1123,7 +1121,7 @@
       if (!f.spDone && t >= m.startup) {
         f.spDone = true;
         const zzz = m.shot === "zzz";
-        shots.push({ owner: f, kind: m.shot, x: f.x + f.face * (f.bw / 2 + 8), y: f.y - f.height + (zzz ? 8 : 14), y0: f.y - f.height + 8, vx: f.face * m.speed, r: 7, t: 0, life: 4000,
+        shots.push({ owner: f, kind: m.shot, x: f.x + f.face * (HURT_W / 2 + 8), y: f.y - HURT_H + (zzz ? 8 : 14), y0: f.y - HURT_H + 8, vx: f.face * m.speed, r: 7, t: 0, life: 4000,
           dmg: m.dmg, stun: m.stun, status: m.status, statusFx: m.statusFx, push: 40, word: zzz ? "YAWN!" : "ZAP!" });
         (zzz ? SFX.snore : SFX.zap)();
       }
@@ -1132,7 +1130,7 @@
       f.loaf = true;
       if (!f.spDone && t >= m.startup) {
         f.spDone = true;
-        shots.push({ owner: f, kind: "cucumber", x: f.x + f.face * (f.bw / 2 + 6), y: FLOOR_Y - 7, vx: f.face * m.speed, r: 7, t: 0, life: 4000, ground: true,
+        shots.push({ owner: f, kind: "cucumber", x: f.x + f.face * (HURT_W / 2 + 6), y: FLOOR_Y - 7, vx: f.face * m.speed, r: 7, t: 0, life: 4000, ground: true,
           dmg: m.dmg, stun: 320, push: 90, word: "BONK!" });
         SFX.roll();
       }
@@ -1152,11 +1150,11 @@
         if (!f.spHit && near(m.range, true)) {
           f.spHit = true;
           applyHit(f, o, { dmg: m.dmg, stun: m.stun || 340, block: 200, push: m.dmg ? 130 : 20, heavy: m.dmg >= 10, status: m.status, statusFx: m.statusFx, unblockable: m.unblockable },
-            m.dmg ? (m.costume ? "PARTY!" : "TWIRL!") : "AWW!", f.x + f.face * 20, f.y - f.height / 2);
+            m.dmg ? (m.balls ? "FETCH!" : "TWIRL!") : "AWW!", f.x + f.face * 20, f.y - f.height / 2);
         }
       } else if (t >= m.dur) {
         if (m.outfit) { dress[f.side] = (dress[f.side] || 0) % 3 + 1; emitFx("🎀", f.x, f.y - f.height, 5, "pop"); }
-        if (m.costume) { dress[f.side] = (dress[f.side] || 0) % 3 + 1; emitFx("🎉", f.x, f.y - f.height, 6, "pop"); }
+        if (m.balls) emitFx("🎾", f.x, f.y - f.height / 2, 7, "bounce");
         heal(f, m.heal);
         endSpecial(f);
       }
@@ -1196,8 +1194,8 @@
         f.state = "idle";
       } else if (inp.up && grounded(f)) {
         f.state = "jump"; f.t = 0;
-        f.vy = -f.C.jump;
-        f.vx = dir * f.C.speed * 1.1;
+        f.vy = -JUMP;
+        f.vx = dir * SPEED * 1.1;
         SFX.jump();
       } else if (fresh(inp.sp1) && f.cool[0] <= 0) {
         inp.sp1 = -1e9; startSpecial(f, 0);
@@ -1208,7 +1206,7 @@
       } else if (fresh(inp.bap)) {
         inp.bap = -1e9; startMove(f, "bap");
       } else {
-        f.vx = dir * f.C.speed * (f.holdBack ? 0.7 : 1);
+        f.vx = dir * SPEED * (f.holdBack ? 0.7 : 1);
         f.state = dir ? "walk" : "idle";
       }
     } else if (f.state === "jump") {
@@ -1377,12 +1375,13 @@
     }
   }
 
-  // The card's little emoji fly out: "pop" floats up, "orbit" swirls around
+  // The card's little emoji fly out: "pop" floats up, "orbit" swirls around, "bounce" scatters along the ground
   function emitFx(emoji, x, y, n, how) {
     if (reduceMotion || !FX[emoji]) return;
     for (let i = 0; i < n; i++) {
       const a = rand(0, Math.PI * 2);
-      fxBits.push({ img: FX[emoji], x: x + rand(-10, 10), y: y + rand(-8, 8), a, r: rand(6, 14), how, life: 0, max: rand(700, 1000), cx: x, cy: y });
+      fxBits.push({ img: FX[emoji], x: x + rand(-10, 10), y: y + rand(-8, 8), a, r: rand(6, 14), how, life: 0, max: how === "bounce" ? rand(1100, 1500) : rand(700, 1000), cx: x, cy: y,
+        vx: rand(-0.14, 0.14), vy: rand(-0.28, -0.14) });
     }
   }
 
@@ -1446,6 +1445,10 @@
       const b = fxBits[i];
       b.life += dt;
       if (b.how === "orbit") { b.a += dt / 160; b.r += dt * 0.03; b.x = b.cx + Math.cos(b.a) * b.r; b.y = b.cy + Math.sin(b.a) * b.r * 0.7; }
+      else if (b.how === "bounce") {
+        b.vy += 0.0008 * dt; b.x += b.vx * dt; b.y += b.vy * dt;
+        if (b.y > FLOOR_Y - 6) { b.y = FLOOR_Y - 6; b.vy *= -0.6; b.vx *= 0.8; }
+      }
       else b.y -= dt * 0.04;
       if (b.life >= b.max) fxBits.splice(i, 1);
     }
@@ -1591,7 +1594,7 @@
     }
   }
 
-  // Peaches' outfits and Bojjii's costumes, picked up from their spin moves
+  // Peaches' outfits, picked up from her Outfit Change spin
   function drawDress(f, ht) {
     const d = dress[f.side];
     if (!d) return;
@@ -1606,27 +1609,6 @@
         ctx.fillStyle = "#ffd23f"; ctx.fillRect(-4, ht - 3, 8, 3); ctx.fillRect(-4, ht - 6, 2, 3); ctx.fillRect(-1, ht - 7, 2, 4); ctx.fillRect(2, ht - 6, 2, 3);
       } else { // big pink bow
         ctx.drawImage(FX["🎀"], -8, ht - 8, 16, 16);
-      }
-    } else if (f.id === "bojjii") {
-      if (d === 1) { // reindeer antlers
-        ctx.fillStyle = "#a0643a";
-        [-1, 1].forEach((s) => { ctx.fillRect(s * 10 - 1, ht - 12, 3, 13); ctx.fillRect(s * 10 + (s > 0 ? 1 : -5), ht - 9, 5, 2); ctx.fillRect(s * 10 + (s > 0 ? 3 : -5), ht - 13, 2, 5); });
-      } else if (d === 2) { // curly yellow wig
-        ctx.fillStyle = "#ffd23f";
-        for (let i = -14; i <= 14; i += 5) { ctx.beginPath(); ctx.arc(i, ht + 1, 4, 0, Math.PI * 2); ctx.fill(); }
-        ctx.fillStyle = "#e0a800"; for (let i = -12; i <= 12; i += 5) ctx.fillRect(i, ht + 2, 2, 2);
-      } else { // a golden crown (the party hat is saved for winning)
-        const y = ht + 7;
-        ctx.fillStyle = "#2b1a52";
-        ctx.fillRect(-11, y - 4, 22, 8);
-        [-10, -2, 6].forEach((x) => ctx.fillRect(x - 1, y - 12, 6, 9));
-        ctx.fillStyle = "#ffd23f";
-        ctx.fillRect(-10, y - 3, 20, 6);
-        [-10, -2, 6].forEach((x) => { ctx.fillRect(x, y - 11, 4, 8); });
-        ctx.fillStyle = "#fff6c2"; ctx.fillRect(-9, y - 2, 18, 1);
-        ctx.fillStyle = "#ff4d6d"; ctx.fillRect(-7, y - 1, 3, 3); ctx.fillRect(4, y - 1, 3, 3);
-        ctx.fillStyle = "#7cc6ff"; ctx.fillRect(-1, y - 1, 3, 3);
-        ctx.fillStyle = "#ffffff"; [-10, -2, 6].forEach((x) => ctx.fillRect(x + 1, y - 13, 2, 2));
       }
     }
   }
@@ -1653,7 +1635,7 @@
 
   function shotColor(f, i) {
     const k = f.C.specials[i].fx;
-    return { "🎀": "#ff8cc6", "💥": "#ff8a1e", "🎉": "#ffd23f", "🥞": "#e0c98e", "🥒": "#7cc85a", "💤": "#c9b8f2", "💖": "#ff4d8d", "💨": "#ffffff", "✨": "#ffd23f", "⚡": "#ffd23f", "💕": "#ff8cc6", "🌼": "#ffd23f" }[k] || "#ffd23f";
+    return { "🎀": "#ff8cc6", "💥": "#ff8a1e", "🎾": "#d4e84a", "🥞": "#e0c98e", "🥒": "#7cc85a", "💤": "#c9b8f2", "💖": "#ff4d8d", "💨": "#ffffff", "✨": "#ffd23f", "⚡": "#ffd23f", "💕": "#ff8cc6", "🌼": "#ffd23f" }[k] || "#ffd23f";
   }
 
   // Pose transforms for the card-style special moves

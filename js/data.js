@@ -943,7 +943,7 @@ window.YVY = {
           { src: "images/pets/bojjii-backpack.jpg" },
         ],
         moves: [
-          { name: "Costume Party", dmg: 20, anim: "spin", fx: "🎉", text: "Puts on antlers, a wig or a party hat. Takes one for the team, every time." },
+          { name: "Ball Frenzy", dmg: 20, anim: "spin", fx: "🎾", text: "Spins in circles and tennis balls go flying everywhere. Fetch? FETCH!" },
           { name: "Pancake Stare", dmg: 50, anim: "glare", fx: "🥞", text: "Stares until a pancake appears. It always works." },
         ],
         stats: { Sweetness: 5, Size: 5, Begging: 5, "Hat Tolerance": 5, Speed: 3 },
