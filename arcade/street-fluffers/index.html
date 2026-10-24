@@ -10,16 +10,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../arcade.css">
   <style>
+    /* Character select: 7 critters in two rows */
+    #select { gap: 1.4cqw; padding: 0 3cqw; }
+    #select button { font-size: 1.8cqw; padding: 1.6cqw 1.8cqw; }
+    #select button[aria-pressed="true"] { background: #fff8e4; outline: .6cqw dashed #ff5a3c; outline-offset: .3cqw; }
+
     /* Touch controls over the canvas (only shown on touch screens, during a fight) */
     .pad { position: absolute; left: 0; right: 0; bottom: 1.5cqw; display: flex; justify-content: space-between; align-items: flex-end; padding: 0 2cqw; pointer-events: none; }
     .pad[hidden] { display: none; }
-    .pad-group { display: flex; gap: 1.4cqw; pointer-events: auto; }
+    .pad-group { display: flex; gap: 1.2cqw; pointer-events: auto; }
     .pad-group.attacks { margin-right: 12cqw; } /* leave room for the mute button */
     .pad button {
-      width: 9cqw; height: 9cqw; padding: 0;
+      width: 8.5cqw; height: 8.5cqw; padding: 0;
       border: .5cqw solid #2b1a52; border-radius: 50%;
       background: rgba(255, 248, 228, .75); color: #2b1a52;
-      font: 1.7cqw/1 "Press Start 2P", monospace;
+      font: 1.6cqw/1 "Press Start 2P", monospace;
       touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
       cursor: pointer;
     }
@@ -35,15 +40,23 @@
 
   <div class="stage">
     <canvas id="game" width="960" height="720" tabindex="0"
-      aria-label="Street Fluffers. Peaches the Pomeranian takes on Bojjii or Lychee in a best of three backyard brawl. Bap, kick, block by holding back, and throw your special move."></canvas>
-    <!-- Menus sit under the title panel / winner panel (positions match the canvas layout) -->
-    <div class="arcade-menu" id="menu" style="top: 79%; bottom: auto;">
-      <button type="button" data-opp="bojjii" aria-label="Fight Bojjii">🐕 vs Bojjii</button>
-      <button type="button" data-opp="lychee" class="alt" aria-label="Fight Lychee">🐱 vs Lychee</button>
+      aria-label="Street Fluffers. Pick a critter and fight your way up the ladder against the rest of the crew. Each critter has a regular attack, a kick, and the two special moves from their trading card."></canvas>
+    <!-- Menus sit under the canvas panels (positions match the canvas layout) -->
+    <div class="arcade-menu" id="select" style="top: 69%; bottom: auto;">
+      <button type="button" data-pick="peaches">🦊 Peaches</button>
+      <button type="button" data-pick="bojjii" class="alt2">🐕 Bojjii</button>
+      <button type="button" data-pick="lychee" class="alt">🐱 Lychee</button>
+      <button type="button" data-pick="penny" class="alt">💖 Penny</button>
+      <button type="button" data-pick="riot">🐔 Riot</button>
+      <button type="button" data-pick="beyonce" class="alt2">👑 Beyonce</button>
+      <button type="button" data-pick="snow" class="alt">☁️ Snow</button>
+    </div>
+    <div class="arcade-menu" id="ladderMenu" style="top: 81%; bottom: auto;" hidden>
+      <button type="button" id="fight">Fight!</button>
     </div>
     <div class="arcade-menu" id="overMenu" style="top: 79%; bottom: auto;" hidden>
-      <button type="button" id="rematch">Rematch!</button>
-      <button type="button" id="toMenu" class="alt">Menu</button>
+      <button type="button" id="overA">Continue</button>
+      <button type="button" id="overB" class="alt">New critter</button>
     </div>
     <div class="pad" id="pad" hidden>
       <div class="pad-group">
@@ -54,14 +67,15 @@
       <div class="pad-group attacks">
         <button type="button" data-press="bap" class="bap" aria-label="Bap">BAP</button>
         <button type="button" data-press="kick" class="kick" aria-label="Kick">KICK</button>
-        <button type="button" data-press="special" class="special" aria-label="Special move">✨</button>
+        <button type="button" data-press="sp1" class="special" aria-label="Special move 1">✨</button>
+        <button type="button" data-press="sp2" class="special" aria-label="Special move 2">✨</button>
       </div>
     </div>
     <button class="mute" id="mute" type="button" aria-pressed="false" aria-label="Mute sound">🔊</button>
   </div>
 
-  <p class="arcade-help">Peaches vs. Bojjii or Lychee, best of 3! <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> walk, <kbd>↑</kbd> or <kbd>W</kbd> jumps. <kbd>J</kbd> baps, <kbd>K</kbd> kicks, <kbd>L</kbd> throws a Fluff Ball (or go <kbd>↓</kbd> <kbd>→</kbd> + <kbd>J</kbd>, like the old days). Hold away from your opponent to block. On a phone, use the buttons on screen. <kbd>P</kbd> pauses, <kbd>M</kbd> mutes.</p>
+  <p class="arcade-help">Pick a critter, then fight your way up the ladder! <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> walk, <kbd>↑</kbd> or <kbd>W</kbd> jumps. <kbd>J</kbd> baps (or pecks), <kbd>K</kbd> kicks. <kbd>L</kbd> and <kbd>I</kbd> are your two special moves from your trading card (or go <kbd>↓</kbd> <kbd>→</kbd> + <kbd>J</kbd> / <kbd>K</kbd>, like the old days). Hold away from your opponent to block. On a phone, use the buttons on screen. <kbd>P</kbd> pauses, <kbd>M</kbd> mutes.</p>
 
-  <script src="game.js"></script>
+  <script src="game.js?v=2026-10-23c"></script>
 </body>
 </html>
