@@ -105,6 +105,25 @@ window.Pixel = (function () {
         "..PPPPPP..",
       ],
     },
+    glove: { // Street Fluffers: a pink boxing glove wearing the Critter of the Month Crown
+      colors: { K: "#2b1a52", Y: "#ffd23f", R: "#ff4d6d", P: "#ff6fa8", H: "#ffc2df", W: "#ffffff", D: "#c9579a" },
+      grid: [
+        "...Y..Y..Y...",
+        "...YYYYYYY...",
+        "...YRYYYRY...",
+        "...KKKKKKK...",
+        "..KPPPPPPPK..",
+        ".KPHHPPPPPPK.",
+        "KPHPPPPPPPKPK",
+        "KPHPPPPPPPKPK",
+        "KPPPPPPPPPPPK",
+        "KPPPPPPPPPPK.",
+        ".KDPPPPPPDK..",
+        ".KWWWWWWWWK..",
+        ".KWDWDWDWWK..",
+        ".KKKKKKKKKK..",
+      ],
+    },
     heart: {
       colors: { P: "#ff6fa8", H: "#ffc2df" },
       grid: [
