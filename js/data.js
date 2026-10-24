@@ -603,6 +603,23 @@ window.YVY = {
       tools: ["JavaScript (no libraries)", "HTML canvas", "Web Audio synth sounds", "Pixel art in code"],
       stats: [["🐾", "players", "1 or 2"], ["🏆", "first to", "3"], ["📄", "lines of code", "735"]],
     },
+    "Street Fluffers": {
+      made: "Oct 2026", status: "arcade game #3 (a bonus!)",
+      idea: "Bowl Brawl grew up into a real fighting game. Pick any of the seven critters and fight up the backyard ladder for the Critter of the Month Crown, Street Fighter style. Each critter's two special moves come straight from their trading card, and there are slow-mo K.O.s, a backstory, seven different endings and 84 lines of trash talk.",
+      wrong: [
+        "Bojjii was too big to jump over, and the chickens' pecks missed even when they looked like hits. Now everyone has the same size, speed and reach, no matter how they look.",
+        "On phones, the touch buttons covered the fighters until they moved down onto the grass.",
+        "The first robot announcer paused for three whole seconds between “K” and “O”.",
+        "Browsers kept showing the old game after updates, until every file got a version number.",
+      ],
+      learned: [
+        "Fair beats realistic: the critters can look different, but they should all play the same.",
+        "Little touches make it feel like a real arcade game: hitstop, slow motion, an announcer and a party hat.",
+        "Keep the real photos open while drawing. Bojjii and Penny's first colors were way off!",
+      ],
+      tools: ["JavaScript (no libraries)", "HTML canvas", "Web Audio synth sounds", "Announcer voice clips", "Pixel art in code", "Battle music from Tijuana Estuary Explorer", "Cloudflare Worker high scores"],
+      stats: [["🐾", "critters", "7"], ["✨", "special moves", "14"], ["💬", "matchup lines", "84"], ["📄", "lines of code", "~3,200"]],
+    },
     "Who is my wife cheating with!?": {
       status: "made with ALCaline",
       idea: "A crime of passion, investigated entirely in MS Paint, in English or Español.",

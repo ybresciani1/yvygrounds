@@ -280,7 +280,16 @@
   const unlockDay = (g) => new Date(g.date + "T00:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric" });
   const sortedGames = () => D.games.filter((g) => !isLocked(g)).sort((a, b) => String(b.date).localeCompare(String(a.date)));
   const isNew = (g) => g.date && !isLocked(g) && (Date.now() - new Date(g.date + "T00:00:00")) / 864e5 < 45;
-  const gameIcon = (g) => (g.thumb ? imgTag(g.thumb, "", TYPES[typeKey(g)].emoji, g.focus) : px(g.icon || TYPES[typeKey(g)].icon, 5));
+  // Pixel icons draw 5x, or smaller if that wouldn't fit the 70px square
+  const iconScale = (name) => {
+    const art = window.Pixel.ART[name];
+    return art ? Math.min(5, Math.floor(64 / Math.max(art.grid.length, art.grid[0].length))) : 5;
+  };
+  const gameIcon = (g) => {
+    if (g.thumb) return imgTag(g.thumb, "", TYPES[typeKey(g)].emoji, g.focus);
+    const name = g.icon || TYPES[typeKey(g)].icon;
+    return px(name, iconScale(name));
+  };
   const playable = (g) => !isLocked(g) && Boolean(g.play || g.url);
   // PG-13 games ask "are you 13 or older?" first (see buildAgeCheck).
   const isPG13 = (g) => g.rated === "PG-13";
