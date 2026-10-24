@@ -464,6 +464,67 @@
   };
   const ROSTER = ["peaches", "bojjii", "lychee", "penny", "riot", "beyonce", "snow"];
 
+  // What they say after a match, depending on who they beat (or lost to):
+  // TALK[winner][loser] = [what the winner says, what the loser says back]
+  const TALK = {
+    peaches: {
+      bojjii: ["Sorry, big guy. Fashion beats fetch.", "You looked so pretty doing it, Peaches."],
+      lychee: ["Who's leaving the room NOW, Lychee?", "I'm only lying down because I want to."],
+      penny: ["Penny! Twirl with me! Victory twirl!", "You're so fancy, Peaches! Happy circles!"],
+      riot: ["Riot, sweetie, your hair is in your eyes.", "Peaches? Is that you? Where did you go?"],
+      beyonce: ["New coop rule: Peaches wins. Write it down.", "Ugh. Fine. You can make ONE rule."],
+      snow: ["You're the fluffiest, Snow... but I'm the fanciest!", "Your outfit is so pretty! Hug?"],
+    },
+    bojjii: {
+      peaches: ["Good game, Peaches! Share a pancake?", "Ew! You got slobber on my outfit!"],
+      lychee: ["Lychee! Play ball with me now? Please?", "Do not. Fetch. With me."],
+      penny: ["Penny, you're the best! Nap together?", "Yay, Bojjii! I'll share my blanket!"],
+      riot: ["Over here, Riot! No, HERE!", "Was that a dog or a really big squirrel?"],
+      beyonce: ["New coop rule... pancakes for everyone?", "Big dog, big mistake. I'll remember this."],
+      snow: ["Snow! You're like a tennis ball made of clouds!", "Such a sweet boy. Belly rubs for you."],
+    },
+    lychee: {
+      peaches: ["Peaches. Leave the room.", "I'm telling Yvy you were mean!"],
+      bojjii: ["Do not bring me that ball.", "You won, Lychee! Can I lick you?"],
+      penny: ["Fine, Penny. You may sit near me. Briefly.", "Yay, Lychee! Can I nap next to you?"],
+      riot: ["You walked into me. I simply stayed still.", "Was that a cat? Or a fuzzy cucumber?"],
+      beyonce: ["Your rules bore me.", "Unimpressed? I'll show you unimpressed!"],
+      snow: ["...Okay, Snow. You can be my pillow.", "Nap time? I'll be your cloud."],
+    },
+    penny: {
+      peaches: ["Happy circles, Peaches! You did so good!", "Even when I lose, I look adorable."],
+      bojjii: ["I love you, Bojjii! Snuggle time?", "Penny won! Best day ever!"],
+      lychee: ["Lychee! Can we be friends now? Please?", "...Fine. One snuggle. Tell no one."],
+      riot: ["Riot! I'm over here! You did great!", "Somebody is spinning. Is it me?"],
+      beyonce: ["Don't be grumpy, Beyonce. Have a hug!", "Nobody beats me AND hugs me. Hmph."],
+      snow: ["Snow! Let's spin happy circles together!", "My sweet Penny. Come cuddle with me."],
+    },
+    riot: {
+      peaches: ["I bonked someone fancy-smelling! Peaches?", "My outfit! She didn't even LOOK!"],
+      bojjii: ["Something big and fluffy fell over. Was it me?", "You're really good at running into things!"],
+      lychee: ["I think I bonked a cat. Sorry, cat!", "Beaten by a pom-pom. How embarrassing."],
+      penny: ["Penny? Where are you? Did I win?", "You won, Riot! Yay! Watch out for the fence!"],
+      beyonce: ["Sis! I beat you! ...I think?", "You can't even SEE, Riot! How?!"],
+      snow: ["Snow? Your hug feels like a cloud!", "You did it, Riot! I'll guide you home."],
+    },
+    beyonce: {
+      peaches: ["Cute outfit. Too bad it lost.", "This is NOT my color."],
+      bojjii: ["Sit. Stay. Good boy.", "Can I still have a pancake?"],
+      lychee: ["Who's unimpressed now, kitty?", "Whatever. I was napping anyway."],
+      penny: ["Okay, okay. One hug. Don't tell the coop.", "That's okay! You're still my friend!"],
+      riot: ["Sis, the fence is that way.", "I can't see, but I bet you're smirking."],
+      snow: ["Even I can't stay mad at that much fluff.", "You run the coop, Beyonce. We know."],
+    },
+    snow: {
+      peaches: ["You're so pretty, Peaches! Come get a hug!", "Beaten by a marshmallow? Honestly."],
+      bojjii: ["Good boy, Bojjii! Fluffy hugs for you.", "Snow won! Can I have a fluffy hug?"],
+      lychee: ["Shh, Lychee. Rest on my fluff.", "...Your fluff is acceptable. Zzz."],
+      penny: ["My sweet Penny. Hug time?", "Snow won! Everybody, happy circles!"],
+      riot: ["Riot, sweetie, follow my voice!", "I lost to a cloud? A soft cloud?"],
+      beyonce: ["Even bosses need hugs, Beyonce.", "Okay... that hug was really nice."],
+    },
+  };
+
   // Regular attacks: frame data in ms. reach = how far the paw/beak/foot sticks out past the body.
   const MOVES = {
     bap:  { startup: 60, active: 90, recover: 130, dmg: 5, stun: 240, block: 150, push: 70 },
@@ -962,7 +1023,8 @@
   // After the match, both critters say something: the winner happy, the loser sad
   function startTalk() {
     const w = matchWon ? p1 : p2, l = matchWon ? p2 : p1;
-    talk = { winner: w.id, loser: l.id, winLine: pick(w.C.sayWin), loseLine: pick(l.C.sayLose), t: 0, said: 0 };
+    const pair = TALK[w.id] && TALK[w.id][l.id];   // matchup lines first, general ones as a backup
+    talk = { winner: w.id, loser: l.id, winLine: pair ? pair[0] : pick(w.C.sayWin), loseLine: pair ? pair[1] : pick(l.C.sayLose), t: 0, said: 0 };
     talk.winAt = 350 + talk.loseLine.length * TYPE_MS + 450;
     talk.endAt = talk.winAt + talk.winLine.length * TYPE_MS;
     if (reduceMotion) talk.t = talk.endAt;
