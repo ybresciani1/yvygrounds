@@ -1315,7 +1315,7 @@ window.YVY = {
     /*
      * More maps, picked with the buttons above the map. Each has its own title, season, hint,
      * grid size (cols × rows) and spots, written the same way as the Central Garden's.
-     * Extra kinds here: patio, shade (a possible future garden, dashed edge), hall (a hallway or
+     * Extra kinds here: mulch (wood chips), shade (a possible future garden, dashed edge), hall (a hallway or
      * walkway, dashed edge), faucet, fence. tone "oval" rounds a bed; tone "native" is a native garden.
      */
     otherMaps: [
@@ -1328,13 +1328,19 @@ window.YVY = {
         // Traced from Yvy's map on a grid 46 squares wide × 42 tall (the fence line is the last column)
         cols: 46, rows: 42,
         spots: [
-          // Buildings, hallways and patios first (drawn underneath everything else)
+          // Buildings, hallways and wood chips first (drawn underneath everything else)
           { kind: "hedge", x: 0, y: 0, w: 1, h: 21 },
           { kind: "building", tone: "green", x: 1, y: 0, w: 10, h: 9 },
-          { kind: "patio", x: 11, y: 0, w: 13, h: 9 },
+          // The wood chip areas can be tapped too, but they stay underneath the beds (they're drawn first)
+          { kind: "mulch", x: 11, y: 0, w: 13, h: 9,
+            id: "ms-chips-top", name: "Wood Chips (Top Beds)", about: "Mulch and wood chips around MS Beds #4 to #7 and the tree, up top on the first floor.",
+            todo: ["Weed the wood chips."] },
           { kind: "building", tone: "green", text: "MIDDLE SCHOOL BUILDING", x: 1, y: 9, w: 36, h: 12 },
           { kind: "hall", text: "1ST FLOOR HALLWAY (WALKWAY ABOVE)", x: 10, y: 21, w: 27, h: 4 },
-          { kind: "patio", x: 6, y: 21, w: 4, h: 16, more: [[0, 37, 22, 4]] },
+          { kind: "mulch", x: 0, y: 21, w: 22, h: 20,
+            clip: "polygon(27.27% 0, 45.45% 0, 45.45% 80%, 100% 80%, 100% 100%, 0 100%, 0 80%, 27.27% 80%)",
+            id: "ms-chips-corner", name: "Wood Chips (Corner Beds)", about: "Mulch and wood chips around MS Beds #1 to #3 in the bottom left corner.",
+            todo: ["Weed the wood chips."] },
           { kind: "building", tone: "green", x: 10, y: 25, w: 12, h: 12 },
           { kind: "hall", tone: "narrow", text: "WALK WAY", x: 22, y: 25, w: 3, h: 17 },
           { kind: "building", tone: "green", x: 25, y: 25, w: 16, h: 12 },
@@ -1353,7 +1359,8 @@ window.YVY = {
           { kind: "bed", text: "#5", x: 12, y: 7, w: 5, h: 2, id: "ms5", name: "MS Bed #5",
             about: "Middle school garden bed #5, up top by the tree (still the first floor)." },
           { kind: "bed", text: "#6", x: 18, y: 7, w: 5, h: 2, id: "ms6", name: "MS Bed #6",
-            about: "Middle school garden bed #6, up top by the tree (still the first floor)." },
+            about: "Middle school garden bed #6, up top by the tree (still the first floor).",
+            fix: ["Needs new irrigation hoses."] },
           { kind: "bed", text: "#7", x: 20, y: 1, w: 3, h: 5, id: "ms7", name: "MS Bed #7",
             about: "Middle school garden bed #7, up top by the tree (still the first floor)." },
           { kind: "tree", x: 16, y: 2, w: 3, h: 3,

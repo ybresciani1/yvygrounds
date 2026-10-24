@@ -331,8 +331,8 @@ div.gm-spot:not(.gm-more) { pointer-events: none; }
 .gm-grass .gm-shape { background-image: var(--t-grass); }
 .gm-hedge { filter: none; }
 .gm-hedge .gm-shape { background-image: var(--t-hedge); }
-.gm-patio { filter: none; }
-.gm-patio .gm-shape { background-image: var(--t-run); }
+.gm-mulch { filter: none; } /* wood chips */
+.gm-mulch .gm-shape { background-image: var(--t-run); }
 /* Hallways and walkways: just a dashed edge on the pavement */
 .gm-hall { filter: none; }
 .gm-hall .gm-shape { outline: 2px dashed rgba(43, 26, 82, .45); outline-offset: -3px; }
