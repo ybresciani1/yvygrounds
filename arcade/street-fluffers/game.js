@@ -22,6 +22,9 @@
   const GRAVITY = 900;
   const RECORD_KEY = "yvy-fluffers-ladder";
   const MUTE_KEY = "yvy-arcade-muted";
+  const KO_FREEZE = 260;        // the last hit freezes for a moment (hitstop)...
+  const KO_SLOW = 2600;         // ...then plays out in slow motion, easing back to full speed
+  const TYPE_MS = 34;           // speech box typing speed
 
   const canvas = document.getElementById("game");
   const ctx = canvas.getContext("2d");
@@ -31,6 +34,7 @@
   const overMenu = document.getElementById("overMenu");
   const overA = document.getElementById("overA");
   const overB = document.getElementById("overB");
+  const talkMenu = document.getElementById("talkMenu");
   const pad = document.getElementById("pad");
   const embedded = window.self !== window.top;
   if (embedded) document.body.classList.add("embedded");
@@ -372,6 +376,8 @@
       ],
       win: "The crowd goes wild for the outfit!",
       lose: "Peaches does her sad hamster face.",
+      sayWin: ["Did you see my outfit? EVERYONE saw my outfit.", "Hehe! Tiny teeth, big win!"],
+      sayLose: ["This outfit was supposed to be lucky...", "Hmph. I'm still the cutest one here."],
     },
     bojjii: {
       name: "Bojjii", kind: "pet", type: "Gentle Giant", headScale: 3, headDrop: 6,
@@ -384,6 +390,8 @@
       ],
       win: "Good game! Now... pancakes?",
       lose: "Bojjii flops over for belly rubs.",
+      sayWin: ["Good game! Now... pancakes?", "FETCH! I mean... I win!"],
+      sayLose: ["That's okay. Belly rubs instead?", "I just wanted to play ball..."],
     },
     lychee: {
       name: "Lychee", kind: "pet", type: "Loaf", headScale: 2, headDrop: 4,
@@ -396,6 +404,8 @@
       ],
       win: "I wasn't even trying. Mrrp.",
       lose: "Lychee pretends she slipped.",
+      sayWin: ["I wasn't even trying. Mrrp.", "This cucumber is mine now."],
+      sayLose: ["I meant to do that.", "I'm going back to my nap."],
     },
     penny: {
       name: "Penny", kind: "pet", type: "Sweetheart", headScale: 2, headDrop: 4,
@@ -409,6 +419,8 @@
       ],
       win: "Happy circles for everybody!",
       lose: "Penny curls up under the blankets.",
+      sayWin: ["Happy circles for everybody!", "I saved you some chocolate! ...For momma."],
+      sayLose: ["That's okay! I still love you.", "Time for blankets and snuggles."],
     },
     riot: {
       name: "Riot", kind: "bird", type: "Pom-Pom", side: "riotSide", legs: "#ffb62e", mini: "miniRiot",
@@ -420,6 +432,8 @@
       ],
       win: "Couldn't see a thing. Still won!",
       lose: "Riot walks into the fence. Again.",
+      sayWin: ["I couldn't see a thing! Did I win?!", "Pom-pom power!"],
+      sayLose: ["Who turned off the lights?", "Ow. That fence came out of nowhere."],
     },
     beyonce: {
       name: "Beyonce", kind: "bird", type: "Diva", side: "beyonceSide", legs: "#ffb62e", mini: "miniBeyonce",
@@ -431,6 +445,8 @@
       ],
       win: "The coop runs on MY rules.",
       lose: "Beyonce demands a recount.",
+      sayWin: ["The coop runs on MY rules.", "Bow down, hun."],
+      sayLose: ["I demand a recount.", "This never happened. Got it?"],
     },
     snow: {
       name: "Snow", kind: "bird", type: "Cloud", side: "snowSide", legs: "#8a84a3", fluffyFeet: true, mini: "miniSnow",
@@ -442,6 +458,8 @@
       ],
       win: "A big marshmallow hug for the loser.",
       lose: "Snow floats off for a cloud nap.",
+      sayWin: ["Come here, everyone gets a hug!", "Fluffy AND victorious."],
+      sayLose: ["That's okay... I'll float off for a cloud nap.", "Hugs anyway?"],
     },
   };
   const ROSTER = ["peaches", "bojjii", "lychee", "penny", "riot", "beyonce", "snow"];
@@ -806,6 +824,11 @@
   let wins = { p1: 0, p2: 0 };
   let roundResult = null;   // { winner: fighter | null, how: "ko" | "time", perfect }
   let freezeT = 0, shakeT = 0, flashT = 0, cheerT = 0;
+  let slow = null;          // K.O. slow motion, zoomed in on the last hit: { t, dur, x, y }
+  let fade = null;          // fades between scenes: { t, dur, out, then }
+  let talk = null;          // the after-match speech boxes
+  let matchWon = false;     // did the player win the match that just ended?
+  let pausedT = 0;
   let banner = null;        // "PEACHES used OUTFIT CHANGE!"
   let dress = {};           // outfits Peaches picks up during the current match
   let record = {};          // per critter: { best: levels beaten, champ: times }
@@ -911,21 +934,57 @@
 
   function endRound(winner, how) {
     if (roundResult) return;
-    roundResult = { winner, how, perfect: !!winner && winner.hp >= MAX_HP };
-    if (winner) {
-      wins[winner === p1 ? "p1" : "p2"]++;
-      winner.state = "win"; winner.t = 0; winner.sp = null; winner.hideT = 0;
-      burst(winner.x, winner.y - winner.height - 6, 18, ["#ff8cc6", "#ffd23f", "#7cc6ff", "#c9d86a"], 0.12); // confetti
-    }
+    roundResult = { winner, how, perfect: !!winner && winner.hp >= MAX_HP, at: slow ? KO_FREEZE + KO_SLOW : 900, celebrated: false, done: false };
+    if (winner) wins[winner === p1 ? "p1" : "p2"]++;
     setState("ko");
   }
 
+  // The winner puts on the party hat (only now, when they're celebrating)
+  function celebrate() {
+    const w = roundResult.winner;
+    roundResult.celebrated = true;
+    if (!w) return;
+    w.state = "win"; w.t = 0; w.sp = null; w.hideT = 0; w.move = null;
+    burst(w.x, w.y - w.height - 6, 18, ["#ff8cc6", "#ffd23f", "#7cc6ff", "#c9d86a"], 0.12); // confetti
+    emitFx("🎉", w.x, w.y - w.height, 4, "pop");
+    cheerT = 1500;
+    VOICES[w.id]();
+  }
+
   function finishRound() {
+    roundResult.done = true;
     const champ = wins.p1 >= WINS_NEEDED ? "p1" : wins.p2 >= WINS_NEEDED ? "p2" : null;
-    if (!champ && round < 5) { nextRound(); return; }
-    const playerWon = champ ? champ === "p1" : wins.p1 >= wins.p2;
+    if (!champ && round < 5) { transition(nextRound); return; }
+    matchWon = champ ? champ === "p1" : wins.p1 >= wins.p2;
+    transition(startTalk);
+  }
+
+  // After the match, both critters say something: the winner happy, the loser sad
+  function startTalk() {
+    const w = matchWon ? p1 : p2, l = matchWon ? p2 : p1;
+    talk = { winner: w.id, loser: l.id, winLine: pick(w.C.sayWin), loseLine: pick(l.C.sayLose), t: 0, said: 0 };
+    talk.winAt = 350 + talk.loseLine.length * TYPE_MS + 450;
+    talk.endAt = talk.winAt + talk.winLine.length * TYPE_MS;
+    if (reduceMotion) talk.t = talk.endAt;
+    setState("talk");
+    document.getElementById("talkNext").focus({ preventScroll: true });
+  }
+
+  function advanceTalk() {
+    if (state !== "talk" || fade) return;
+    if (talk.t < talk.endAt) talk.t = talk.endAt;   // show the whole thing first
+    else transition(endMatch);
+  }
+
+  // Fade out, do the thing, fade back in
+  function transition(then) {
+    if (fade && fade.out) return;
+    fade = { t: 0, dur: 450, out: true, then };
+  }
+
+  function endMatch() {
     const r = record[hero] || (record[hero] = { best: 0, champ: 0 });
-    if (playerWon) {
+    if (matchWon) {
       lastBeaten = opponent();
       level++;
       r.best = Math.max(r.best, level);
@@ -951,6 +1010,7 @@
   function pause() {
     if (state === "intro" || state === "fight" || state === "ko") {
       pausedFrom = state;
+      pausedT = stateT;
       setState("paused");
       pin.left = pin.right = pin.up = false;
       document.querySelectorAll(".pad .is-down").forEach((b) => b.classList.remove("is-down"));
@@ -959,7 +1019,7 @@
   function resume() {
     if (state !== "paused") return;
     setState(pausedFrom);
-    if (pausedFrom === "ko") stateT = 1200; // skip straight to the "wins" part
+    stateT = pausedT;
   }
 
   /* ---------- Fighting ---------- */
@@ -1061,7 +1121,8 @@
       def.hp = 0;
       def.state = "ko"; def.t = 0; def.status = null;
       def.vy = -230; def.kb = face * 170;
-      freezeT = 350;
+      freezeT = KO_FREEZE;
+      if (!reduceMotion) slow = { t: 0, dur: KO_SLOW, x, y };
       flashT = reduceMotion ? 0 : 120;
       if (!reduceMotion) shakeT = 350;
       cheerT = 2000;
@@ -1386,8 +1447,35 @@
   }
 
   /* ---------- Update ---------- */
-  function update(dt) {
-    stateT += dt;
+  // Slow motion: 15% speed at first, easing back to full speed
+  function slowEase() {
+    if (!slow) return 1;
+    const k = clamp((slow.t / slow.dur - 0.3) / 0.7, 0, 1);
+    return k * k * (3 - 2 * k);
+  }
+  const timeScale = () => (slow && freezeT <= 0 ? 0.15 + 0.85 * slowEase() : 1);
+
+  function update(realDt) {
+    if (fade) {
+      fade.t += realDt;
+      if (fade.t >= fade.dur) {
+        if (fade.out) { const then = fade.then; fade = { t: 0, dur: 450, out: false }; then(); }
+        else fade = null;
+      }
+    }
+    if (state === "talk") {
+      const before = talk.t;
+      talk.t += realDt;
+      // A little Animal Crossing babble while the words type out
+      const said = Math.floor(Math.max(0, talk.t - 350) / TYPE_MS) + Math.floor(Math.max(0, talk.t - talk.winAt) / TYPE_MS);
+      if (said > talk.said && said % 2 === 0 && before < talk.endAt) {
+        const who = talk.t >= talk.winAt ? talk.winner : talk.loser;
+        tone(who === talk.winner ? rand(600, 900) : rand(260, 420), 0, 0.03, "square", 0.025);
+      }
+      talk.said = said;
+    }
+    const dt = realDt * timeScale();          // the world runs slow during a K.O.
+    stateT += realDt;
     if (cheerT > 0) cheerT -= dt;
     if (shakeT > 0) shakeT -= dt;
     if (flashT > 0) flashT -= dt;
@@ -1404,7 +1492,10 @@
         endRound(p1.hp > p2.hp ? p1 : p2.hp > p1.hp ? p2 : null, "time");
       }
     }
-    if (state === "ko" && stateT >= 2600) finishRound();
+    if (state === "ko" && roundResult) {
+      if (!roundResult.celebrated && stateT >= roundResult.at) celebrate();
+      if (!roundResult.done && stateT >= roundResult.at + 1500) finishRound();
+    }
     if (state === "lose" && stateT >= 10000) { showSelect(); return; }
     if ((state === "lose" || state === "champ") && stateT > 600 && overMenu.hidden) {
       overMenu.hidden = false;
@@ -1418,8 +1509,9 @@
 
     if (p1 && (state === "intro" || state === "fight" || state === "ko")) {
       if (freezeT > 0) {
-        freezeT -= dt;
+        freezeT -= realDt;
       } else {
+        if (slow && (slow.t += realDt) >= slow.dur) slow = null;
         clock += dt;
         if (state === "fight") {
           ai.next -= dt;
@@ -1990,7 +2082,7 @@
       else text("FIGHT!", W / 2, 84, { font: "logo", size: 46, color: "#ff5a3c", outline: "#2b1a52", ow: 7 });
     } else if (state === "ko" && roundResult) {
       const r = roundResult;
-      if (stateT < 1200) {
+      if (!r.celebrated) {
         text(r.how === "ko" ? "K.O.!" : "TIME!", W / 2, 84, { font: "logo", size: 50, color: "#ff4d6d", outline: "#2b1a52", ow: 7 });
       } else if (r.winner) {
         text(`${r.winner.C.name} wins!`, W / 2, 80, { font: "logo", size: 30, color: "#ffd23f", outline: "#2b1a52", ow: 6 });
@@ -2003,6 +2095,87 @@
       ctx.fillRect(0, 0, W, H);
       text("Paused", W / 2, H / 2 - 12, { font: "logo", size: 40, color: "#fff8e4", outline: "#2b1a52", ow: 6 });
       text("CLICK OR SPACE TO KEEP BRAWLING", W / 2, H / 2 + 22, { size: 6 });
+    }
+  }
+
+  // Split a line into rows that fit the speech box
+  function wrap(str, maxW) {
+    ctx.font = '6px "Press Start 2P", monospace';
+    const rows = [];
+    let row = "";
+    str.split(" ").forEach((word) => {
+      const tryRow = row ? row + " " + word : word;
+      if (ctx.measureText(tryRow).width > maxW && row) { rows.push(row); row = word; } else row = tryRow;
+    });
+    if (row) rows.push(row);
+    return rows;
+  }
+
+  // Animal Crossing style speech box with a nameplate and a portrait that shows how they feel
+  function speechBox(id, happy, line, shown, y, right, now) {
+    const C = CHARS[id];
+    const x = 14, w = 292, h = 66;
+    panel(x, y, w, h);
+    // Portrait
+    const px = right ? x + w - 60 : x + 8, py = y + 7, ps = 52;
+    ctx.fillStyle = "#2b1a52"; ctx.fillRect(px - 2, py - 2, ps + 4, ps + 4);
+    ctx.fillStyle = happy ? "#ffd6ec" : "#c9d6f2"; ctx.fillRect(px, py, ps, ps);
+    const img = C.kind === "pet" ? IMG[id] : IMG[C.side];
+    const sc = Math.floor(Math.min(42 / img.width, 38 / img.height) * 2) / 2;
+    const iw = img.width * sc, ih = img.height * sc;
+    const bob = reduceMotion ? 0 : happy ? Math.abs(Math.round(Math.sin(now / 150) * 2)) : 0;
+    const ix = Math.round(px + ps / 2 - iw / 2), iy = Math.round(py + ps - ih - 3 - bob + (happy ? 0 : 2));
+    const flip = C.kind === "bird" && right;   // chickens face into the box
+    ctx.save();
+    ctx.beginPath(); ctx.rect(px, py, ps, ps); ctx.clip();
+    if (flip) { ctx.save(); ctx.translate(ix + iw, iy); ctx.scale(-1, 1); ctx.drawImage(img, 0, 0, iw, ih); ctx.restore(); }
+    else ctx.drawImage(img, ix, iy, iw, ih);
+    const faceX = C.kind === "pet" ? px + ps / 2 : (flip ? ix + iw * 0.25 : ix + iw * 0.75);
+    if (happy) {
+      ctx.fillStyle = "rgba(255, 111, 168, .55)";
+      if (C.kind === "pet") { ctx.fillRect(Math.round(px + ps / 2 - iw * 0.36), Math.round(iy + ih * 0.62), 5, 2); ctx.fillRect(Math.round(px + ps / 2 + iw * 0.36 - 5), Math.round(iy + ih * 0.62), 5, 2); }
+      partyHat(Math.round(faceX), iy + 5, 10, 12);
+    } else {
+      // Gloomy lines and tears
+      ctx.fillStyle = "rgba(90, 110, 190, .35)"; ctx.fillRect(px, py, ps, 18);
+      ctx.fillStyle = "#5a6ebe";
+      for (let i = 0; i < 4; i++) ctx.fillRect(px + 8 + i * 11, py + 3 + (i % 2) * 3, 1, 9);
+      const drop = reduceMotion ? 4 : (now / 9) % 14;
+      ctx.fillStyle = "#7cc6ff";
+      const tears = C.kind === "pet" ? [px + ps / 2 - iw * 0.24, px + ps / 2 + iw * 0.24] : [faceX];
+      tears.forEach((tx) => { const ty = Math.round(iy + ih * 0.45 + drop); ctx.fillRect(Math.round(tx), ty, 2, 3); ctx.fillRect(Math.round(tx), ty + 3, 1, 1); });
+    }
+    ctx.restore();
+    if (happy) [[px - 4, py - 6], [px + ps - 6, py + ps - 8]].forEach(([sx, sy], i) => {
+      if (reduceMotion || Math.floor(now / 250 + i) % 2) sprite(FX["✨"], sx, sy, 1);
+    });
+    // Nameplate
+    ctx.font = '7px "Press Start 2P", monospace';
+    const nw = ctx.measureText(C.name).width + 16;
+    const nx = right ? px - nw + 20 : px + 30;
+    ctx.fillStyle = "#2b1a52"; ctx.fillRect(nx - 1, y - 9, nw + 2, 15);
+    ctx.fillStyle = happy ? "#ff8cc6" : "#9fb4e8"; ctx.fillRect(nx, y - 8, nw, 13);
+    text(C.name, nx + nw / 2, y - 1, { size: 7, color: "#fff8e4" });
+    // What they say, typed out
+    const tx = right ? x + 12 : px + ps + 10;
+    const rows = wrap(line, w - ps - 34);
+    let left = shown;
+    rows.forEach((r, i) => {
+      if (left <= 0) return;
+      text(r.slice(0, left), tx, y + 22 + i * 12, { size: 6, align: "left", color: "#2b1a52", outline: false });
+      left -= r.length + 1;
+    });
+  }
+
+  function drawTalk(now) {
+    ctx.fillStyle = "rgba(43, 26, 82, .45)";
+    ctx.fillRect(0, 0, W, H);
+    const typed = (line, t) => (t <= 0 ? 0 : Math.min(line.length, Math.floor(t / TYPE_MS) + 1));
+    speechBox(talk.loser, false, talk.loseLine, typed(talk.loseLine, talk.t - 350), 22, false, now);
+    if (talk.t >= talk.winAt - 250) speechBox(talk.winner, true, talk.winLine, typed(talk.winLine, talk.t - talk.winAt), 110, true, now);
+    if (talk.t >= talk.endAt && (reduceMotion || Math.floor(now / 400) % 2)) {
+      ctx.fillStyle = "#ff5a3c";
+      ctx.beginPath(); ctx.moveTo(196, 166); ctx.lineTo(204, 166); ctx.lineTo(200, 171); ctx.fill();
     }
   }
 
@@ -2036,15 +2209,39 @@
     shots.forEach((s) => drawShot(s, now));
   }
 
+  // The camera zooms in on the last hit, then drifts back out as time speeds up again
+  function camera() {
+    if (!slow) return null;
+    const e = freezeT > 0 ? 0 : slowEase();
+    const z = 1 + 0.8 * (1 - e);
+    const vw = W / z, vh = H / z;
+    return { z, x: clamp(lerp(slow.x, W / 2, e), vw / 2, W - vw / 2), y: clamp(lerp(slow.y, H / 2, e), vh / 2, H - vh / 2) };
+  }
+
   function draw(now) {
     ctx.setTransform(K, 0, 0, K, 0, 0);
     ctx.imageSmoothingEnabled = false;
+    drawScene(now);
+    if (fade) {
+      ctx.setTransform(K, 0, 0, K, 0, 0);
+      ctx.fillStyle = "#2b1a52";
+      ctx.globalAlpha = clamp(fade.out ? fade.t / fade.dur : 1 - fade.t / fade.dur, 0, 1);
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function drawScene(now) {
     if (shakeT > 0) ctx.translate(Math.round(rand(-3, 3)), Math.round(rand(-2, 2)));
 
     const stageId = state === "select" ? preview : opponent();
+    const cam = camera();
+    ctx.save();
+    if (cam) { ctx.translate(W / 2, H / 2); ctx.scale(cam.z, cam.z); ctx.translate(-cam.x, -cam.y); }
     drawStage(stageId, now);
-    if (state === "select") { drawSelect(now); return; }
-    if (state === "ladder") { drawLadder(now); return; }
+    if (state === "select") { ctx.restore(); drawSelect(now); return; }
+    if (state === "ladder") { ctx.restore(); drawLadder(now); return; }
+    if (state === "talk") { ctx.restore(); drawTalk(now); return; }
 
     if (p1) drawWorld(now);
     bits.forEach((b) => {
@@ -2065,6 +2262,7 @@
       else text(p.text, clamp(p.x, 20, W - 20), y, { size: p.size, color: p.color });
     });
     ctx.globalAlpha = 1;
+    ctx.restore();
 
     if (state === "lose") { drawLose(now); return; }
     if (state === "champ") { drawChamp(now); return; }
@@ -2080,6 +2278,7 @@
   function syncMenus() {
     selectMenu.hidden = state !== "select";
     ladderMenu.hidden = state !== "ladder";
+    talkMenu.hidden = state !== "talk";
     if (state !== "lose" && state !== "champ") overMenu.hidden = true;
     if (state === "lose") { overA.textContent = "Continue (9)"; overA.dataset.n = "9"; overB.textContent = "New critter"; }
     if (state === "champ") { overA.textContent = "Play again"; overA.dataset.n = ""; overB.textContent = "New critter"; }
@@ -2096,6 +2295,7 @@
   function primary() {
     if (state === "paused") resume();
     else if (state === "ladder") startMatch();
+    else if (state === "talk") advanceTalk();
   }
 
   // Special moves the old way: ↓ then → (toward the opponent), then BAP or KICK
@@ -2121,6 +2321,7 @@
     b.addEventListener("pointerenter", () => setPreview(b.dataset.pick));
   });
   document.getElementById("fight").addEventListener("click", startMatch);
+  document.getElementById("talkNext").addEventListener("click", advanceTalk);
   overA.addEventListener("click", () => { if (state === "lose") startMatch(); else startRun(hero); });
   overB.addEventListener("click", showSelect);
 
