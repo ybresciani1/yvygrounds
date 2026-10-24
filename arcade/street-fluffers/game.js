@@ -355,19 +355,21 @@
   }
   const IMG = {};
   Object.keys(ART).forEach((name) => { IMG[name] = bake(name); IMG[name + "Flash"] = bake(name, true); });
-  // Pets' eyes are drawn on their own layer, so they can glance toward their opponent.
-  // rows: which rows of the head hold the eyes, and what fills the gap they leave.
+  // Pets' pupils glance toward their opponent. The eye stays put (white, or green for
+  // Lychee) and only the pupil slides from side to side inside it. Peaches keeps her
+  // black button eyes, and just the little white shine moves (shineOnly).
+  //   rows/letters: the eye pixels in the head art, and what fills the gap they leave
+  //   sockets: top-left of each 2-pixel-wide eye, h: how tall the eyes are
   const EYES = {
-    peaches: { rows: { 5: "O", 6: "O" }, letters: "KW" },
-    lychee: { rows: { 5: "G", 6: "G" }, letters: "EK" },
-    bojjii: { rows: { 5: "T" }, letters: "KW" },
-    penny: { rows: { 6: "B", 7: "T" }, letters: "KW" },
+    peaches: { rows: { 5: "O", 6: "O" }, letters: "KW", sockets: [[2, 5], [10, 5]], h: 2, white: "#ffffff", pupil: "#2b1a52", shineOnly: true },
+    lychee: { rows: { 5: "G", 6: "G" }, letters: "EK", sockets: [[2, 5], [10, 5]], h: 2, white: "#c9d86a", pupil: "#2b1a52" },
+    bojjii: { rows: { 5: "T" }, letters: "KW", sockets: [[1, 5], [9, 5]], h: 1, white: "#ffffff", pupil: "#120e18" },
+    penny: { rows: { 6: "B", 7: "T" }, letters: "KW", sockets: [[2, 6], [10, 6]], h: 2, white: "#ffffff", pupil: "#120e18" },
   };
   Object.keys(EYES).forEach((id) => {
     const art = ART[id], e = EYES[id];
     const isEye = (ch, y) => e.rows[y] && e.letters.includes(ch);
     IMG[id + "NoEyes"] = bakeGrid(art.grid.map((row, y) => [...row].map((ch) => (isEye(ch, y) ? e.rows[y] : ch)).join("")), art.colors);
-    IMG[id + "Eyes"] = bakeGrid(art.grid.map((row, y) => [...row].map((ch) => (isEye(ch, y) ? ch : ".")).join("")), art.colors);
   });
   const FX = {};
   Object.keys(FX_ART).forEach((k) => { FX[k] = bakeGrid(FX_ART[k].g, FX_ART[k].c); });
@@ -1907,15 +1909,33 @@
     drawTail(f, now, bt);
     if (f.state !== "ko") paw(front - 12, shoulder + 3, C);   // back paw (behind the body)
     ctx.drawImage(body, -f.bw / 2, bt, f.bw, f.bh);
-    if (flash || !IMG[f.id + "Eyes"]) {
+    const eyes = EYES[f.id];
+    if (flash || !eyes) {
       ctx.drawImage(head, -f.hw / 2, ht, f.hw, f.hh);
     } else {
-      // Look toward the opponent (in this mirrored space, +1 is the way they're facing)
+      // Which side the pupils sit on: toward the opponent (in this mirrored space, +1 is the way they face)
       let look;
-      if (f.lookX === undefined) look = reduceMotion ? 1 : Math.round(Math.sin(now / 900 + f.x));
-      else look = Math.abs(f.lookX - f.x) < 4 ? 0 : Math.sign((f.lookX - f.x) * f.face);
+      if (f.lookX === undefined) look = reduceMotion ? 1 : Math.sin(now / 900 + f.x) > 0 ? 1 : -1;
+      else look = Math.sign((f.lookX - f.x) * f.face) || 1;
       ctx.drawImage(IMG[f.id + "NoEyes"], -f.hw / 2, ht, f.hw, f.hh);
-      ctx.drawImage(IMG[f.id + "Eyes"], -f.hw / 2 + look * C.headScale, ht, f.hw, f.hh);
+      const s = C.headScale;
+      eyes.sockets.forEach(([col, row]) => {
+        const ex = -f.hw / 2 + col * s, ey = ht + row * s;
+        if (eyes.shineOnly) {
+          ctx.fillStyle = eyes.pupil;
+          ctx.fillRect(ex, ey, 2 * s, eyes.h * s);
+          ctx.fillStyle = eyes.white;
+          ctx.fillRect(ex + (look > 0 ? s : 0), ey, s, s);
+          return;
+        }
+        ctx.fillStyle = eyes.white;
+        ctx.fillRect(ex, ey, 2 * s, eyes.h * s);
+        const px = ex + (look > 0 ? s : 0);
+        ctx.fillStyle = eyes.pupil;
+        ctx.fillRect(px, ey, s, eyes.h * s);
+        ctx.fillStyle = "#ffffff";                       // a tiny shine
+        ctx.fillRect(px + s - Math.ceil(s / 2), ey, Math.ceil(s / 2), Math.ceil(s / 2));
+      });
     }
     if (f.state !== "win") drawDress(f, ht);
 
