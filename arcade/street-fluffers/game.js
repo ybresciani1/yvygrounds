@@ -35,6 +35,7 @@
   const overA = document.getElementById("overA");
   const overB = document.getElementById("overB");
   const talkMenu = document.getElementById("talkMenu");
+  const titleMenu = document.getElementById("titleMenu");
   const pad = document.getElementById("pad");
   const embedded = window.self !== window.top;
   if (embedded) document.body.classList.add("embedded");
@@ -354,6 +355,20 @@
   }
   const IMG = {};
   Object.keys(ART).forEach((name) => { IMG[name] = bake(name); IMG[name + "Flash"] = bake(name, true); });
+  // Pets' eyes are drawn on their own layer, so they can glance toward their opponent.
+  // rows: which rows of the head hold the eyes, and what fills the gap they leave.
+  const EYES = {
+    peaches: { rows: { 5: "O", 6: "O" }, letters: "KW" },
+    lychee: { rows: { 5: "G", 6: "G" }, letters: "EK" },
+    bojjii: { rows: { 5: "T" }, letters: "KW" },
+    penny: { rows: { 6: "B", 7: "T" }, letters: "KW" },
+  };
+  Object.keys(EYES).forEach((id) => {
+    const art = ART[id], e = EYES[id];
+    const isEye = (ch, y) => e.rows[y] && e.letters.includes(ch);
+    IMG[id + "NoEyes"] = bakeGrid(art.grid.map((row, y) => [...row].map((ch) => (isEye(ch, y) ? e.rows[y] : ch)).join("")), art.colors);
+    IMG[id + "Eyes"] = bakeGrid(art.grid.map((row, y) => [...row].map((ch) => (isEye(ch, y) ? ch : ".")).join("")), art.colors);
+  });
   const FX = {};
   Object.keys(FX_ART).forEach((k) => { FX[k] = bakeGrid(FX_ART[k].g, FX_ART[k].c); });
 
@@ -873,7 +888,7 @@
   muteBtn.addEventListener("click", () => { setMuted(!muted); canvas.focus({ preventScroll: true }); });
 
   /* ---------- Game state ---------- */
-  let state = "select";     // select, ladder, intro, fight, ko, lose, champ, paused
+  let state = "title";      // title, select, ladder, intro, fight, ko, talk, lose, champ, paused
   let pausedFrom = null;
   let stateT = 0;           // ms spent in the current state
   let hero = "peaches";     // who you play as
@@ -936,6 +951,12 @@
   const opponent = () => ladder[Math.min(level, ladder.length - 1)];
 
   function saveRecord() { store.set(RECORD_KEY, JSON.stringify(record)); }
+
+  let lineup = null;
+  function showTitle() {
+    setState("title");
+    document.getElementById("startBtn").focus({ preventScroll: true });
+  }
 
   function showSelect() {
     setState("select");
@@ -1686,7 +1707,7 @@
       }
     }
     // The crowd: everyone who isn't fighting cheers from the side
-    const fighting = state === "select" ? [preview] : [hero, opponent()];
+    const fighting = state === "title" ? ROSTER : state === "select" ? [preview] : [hero, opponent()];
     const crowd = ROSTER.filter((c) => !fighting.includes(c));
     st.crowd.forEach(([x, y], i) => {
       const id = crowd[i];
@@ -1732,10 +1753,14 @@
       ctx.fillRect(x - 4, bt - 4 + wag, 5, 3);
       ctx.fillRect(x - 9, bt + 1 + wag, 2, 4);
     } else if (f.id === "lychee") {
-      for (let i = 0; i < 7; i++) {
-        ctx.fillStyle = i % 2 ? C.dark : C.main;
-        ctx.fillRect(x - 2 - i + (i > 4 ? (i - 4) * 2 : 0), f.bh * -0.3 - i * 4 + (i > 3 ? wag : 0), 3, 5);
-      }
+      // Fluffy striped tabby tail: starts tucked behind her hip and curls up
+      [[-8, -9], [-12, -10], [-15, -13], [-17, -17], [-17, -22], [-15, -26], [-12, -29]].forEach(([tx, ty], i) => {
+        const sz = i < 4 ? 8 : i < 6 ? 7 : 6, w = i > 2 ? wag : 0;
+        const px = tx + w - sz / 2, py = ty - sz / 2;
+        ctx.fillStyle = i % 2 || i === 6 ? C.dark : C.main;   // tabby stripes, dark tip
+        ctx.fillRect(px + 1, py, sz - 2, sz);
+        ctx.fillRect(px, py + 1, sz, sz - 2);
+      });
     } else if (f.id === "penny") {
       // Curly pug tail
       ctx.fillStyle = C.main;
@@ -1882,7 +1907,16 @@
     drawTail(f, now, bt);
     if (f.state !== "ko") paw(front - 12, shoulder + 3, C);   // back paw (behind the body)
     ctx.drawImage(body, -f.bw / 2, bt, f.bw, f.bh);
-    ctx.drawImage(head, -f.hw / 2, ht, f.hw, f.hh);
+    if (flash || !IMG[f.id + "Eyes"]) {
+      ctx.drawImage(head, -f.hw / 2, ht, f.hw, f.hh);
+    } else {
+      // Look toward the opponent (in this mirrored space, +1 is the way they're facing)
+      let look;
+      if (f.lookX === undefined) look = reduceMotion ? 1 : Math.round(Math.sin(now / 900 + f.x));
+      else look = Math.abs(f.lookX - f.x) < 4 ? 0 : Math.sign((f.lookX - f.x) * f.face);
+      ctx.drawImage(IMG[f.id + "NoEyes"], -f.hw / 2, ht, f.hw, f.hh);
+      ctx.drawImage(IMG[f.id + "Eyes"], -f.hw / 2 + look * C.headScale, ht, f.hw, f.hh);
+    }
     if (f.state !== "win") drawDress(f, ht);
 
     const m = f.move && MOVES[f.move];
@@ -2078,6 +2112,24 @@
     }
   }
 
+  function drawTitle(now) {
+    // All seven critters lined up and ready to rumble
+    if (!lineup) lineup = ROSTER.map((id, i) => {
+      const x = 34 + i * 42;
+      return makeFighter(id, x, x < W / 2 ? 1 : -1, makeInput(), i % 2);
+    });
+    lineup.forEach((f, i) => { f.t = now + i * 120; drawFighter(f, now + i * 170); });
+    // Logo with a chunky drop shadow, like an arcade marquee
+    const bounce = reduceMotion ? 0 : Math.round(Math.sin(now / 400) * 2);
+    text("Street", W / 2 - 48, 46 + bounce, { font: "logo", size: 40, color: "#ff8cc6", outline: "#2b1a52", ow: 7 });
+    text("Fluffers", W / 2 + 40, 82 - bounce, { font: "logo", size: 48, color: "#ffd23f", outline: "#2b1a52", ow: 8 });
+    text("THE BACKYARD BRAWL", W / 2, 108, { size: 8, color: "#fff8e4" });
+    sprite(FX["✨"], 40, 30, 1); sprite(FX["💥"], 264, 56, 1);
+    if (!reduceMotion && Math.floor(now / 500) % 2) sprite(FX["✨"], 270, 24, 1);
+    const champs = ROSTER.filter((id) => record[id] && record[id].champ);
+    if (champs.length) text(`CHAMPS: ${champs.map((id) => CHARS[id].name.toUpperCase()).join(", ")}`, W / 2, 124, { size: 5, color: "#ffd23f" });
+  }
+
   function drawSelect(now) {
     text("Street Fluffers", W / 2, 14, { font: "logo", size: 22, color: "#ffd23f", outline: "#2b1a52", ow: 5 });
     panel(14, 28, 292, 134);
@@ -2267,6 +2319,7 @@
     // Whoever is attacking draws on top
     const busy = (f) => f.state === "attack" || f.state === "special";
     const order = busy(p2) ? [p1, p2] : [p2, p1];
+    p1.lookX = p2.x; p2.lookX = p1.x;
     order.forEach((f) => drawFighter(f, now));
     shots.forEach((s) => drawShot(s, now));
   }
@@ -2296,11 +2349,12 @@
   function drawScene(now) {
     if (shakeT > 0) ctx.translate(Math.round(rand(-3, 3)), Math.round(rand(-2, 2)));
 
-    const stageId = state === "select" ? preview : opponent();
+    const stageId = state === "title" ? "peaches" : state === "select" ? preview : opponent();
     const cam = camera();
     ctx.save();
     if (cam) { ctx.translate(W / 2, H / 2); ctx.scale(cam.z, cam.z); ctx.translate(-cam.x, -cam.y); }
     drawStage(stageId, now);
+    if (state === "title") { ctx.restore(); drawTitle(now); return; }
     if (state === "select") { ctx.restore(); drawSelect(now); return; }
     if (state === "ladder") { ctx.restore(); drawLadder(now); return; }
     if (state === "talk") { ctx.restore(); drawTalk(now); return; }
@@ -2338,6 +2392,7 @@
 
   /* ---------- Input ---------- */
   function syncMenus() {
+    titleMenu.hidden = state !== "title";
     selectMenu.hidden = state !== "select";
     ladderMenu.hidden = state !== "ladder";
     talkMenu.hidden = state !== "talk";
@@ -2357,6 +2412,7 @@
   function primary() {
     if (state === "paused") resume();
     else if (state === "ladder") startMatch();
+    else if (state === "title") { audio(); showSelect(); }
     else if (state === "talk") advanceTalk();
   }
 
@@ -2447,6 +2503,7 @@
     else if (key === "p") (state === "paused" ? resume() : pause());
     else if (key === "escape") {
       if (state === "intro" || state === "fight" || state === "ko") pause();
+      else if (state === "select") showTitle();   // back to the title screen
       else if (embedded) { try { window.parent.postMessage({ yvyArcade: "close" }, location.origin); } catch (err) { /* ignore */ } }
     } else handled = false;
     if (handled) e.preventDefault();
@@ -2471,5 +2528,6 @@
   syncMenus();
   setPreview(preview);
   requestAnimationFrame(frame);
-  if (!embedded) selectMenu.querySelector("button").focus({ preventScroll: true });
+  document.getElementById("startBtn").addEventListener("click", () => { audio(); showSelect(); });
+  if (!embedded) document.getElementById("startBtn").focus({ preventScroll: true });
 })();

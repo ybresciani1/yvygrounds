@@ -42,7 +42,10 @@
     <canvas id="game" width="960" height="720" tabindex="0"
       aria-label="Street Fluffers. Pick a critter and fight your way up the ladder against the rest of the crew. Each critter has a regular attack, a kick, and the two special moves from their trading card."></canvas>
     <!-- Menus sit under the canvas panels (positions match the canvas layout) -->
-    <div class="arcade-menu" id="select" style="top: 69%; bottom: auto;">
+    <div class="arcade-menu" id="titleMenu" style="top: 84%; bottom: auto;">
+      <button type="button" id="startBtn">▶ Press Start</button>
+    </div>
+    <div class="arcade-menu" id="select" style="top: 69%; bottom: auto;" hidden>
       <button type="button" data-pick="peaches">🦊 Peaches</button>
       <button type="button" data-pick="bojjii" class="alt2">🐕 Bojjii</button>
       <button type="button" data-pick="lychee" class="alt">🐱 Lychee</button>
@@ -77,8 +80,8 @@
     <button class="mute" id="mute" type="button" aria-pressed="false" aria-label="Mute sound">🔊</button>
   </div>
 
-  <p class="arcade-help">Pick a critter, then fight your way up the ladder! <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> walk, <kbd>↑</kbd> or <kbd>W</kbd> jumps. <kbd>J</kbd> baps (or pecks), <kbd>K</kbd> kicks. <kbd>L</kbd> and <kbd>I</kbd> are your two special moves from your trading card (or go <kbd>↓</kbd> <kbd>→</kbd> + <kbd>J</kbd> / <kbd>K</kbd>, like the old days). Hold away from your opponent to block. On a phone, use the buttons on screen. <kbd>P</kbd> pauses, <kbd>M</kbd> mutes.</p>
+  <p class="arcade-help">Press Start, pick a critter, then fight your way up the ladder! <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> walk, <kbd>↑</kbd> or <kbd>W</kbd> jumps. <kbd>J</kbd> baps (or pecks), <kbd>K</kbd> kicks. <kbd>L</kbd> and <kbd>I</kbd> are your two special moves from your trading card (or go <kbd>↓</kbd> <kbd>→</kbd> + <kbd>J</kbd> / <kbd>K</kbd>, like the old days). Hold away from your opponent to block. On a phone, use the buttons on screen. <kbd>P</kbd> pauses, <kbd>M</kbd> mutes.</p>
 
-  <script src="game.js?v=2026-10-24b"></script>
+  <script src="game.js?v=2026-10-24d"></script>
 </body>
 </html>
