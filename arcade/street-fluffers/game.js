@@ -818,17 +818,91 @@
     return STAGE_IMG[id];
   }
 
-  /* ---------- Sound (tiny WebAudio bleeps) ---------- */
+  /* ---------- Sound (tiny WebAudio bleeps, battle music and the K.O.! clip) ---------- */
+  // Battle music streams from Yvy's Tijuana Estuary Explorer game (nothing loads until a fight starts)
+  const MUSIC = [
+    "https://tijuana-estuary-game.vercel.app/Sound/Battle/Battle%20Music/Battle%20Music%201.mp3",
+    "https://tijuana-estuary-game.vercel.app/Sound/Battle/Battle%20Music/Battle%20Music%202.mp3",
+  ];
+  const VOLUME_KEY = "yvy-fluffers-volume";
   let actx = null;
   let noiseBuf = null;      // one second of noise, reused by every hit
   let muted = store.get(MUTE_KEY) === "1";
+  const vol = { music: 0.5, sfx: 0.8 };
+  try { Object.assign(vol, JSON.parse(store.get(VOLUME_KEY)) || {}); } catch (e) { /* defaults */ }
+  let sfxGain = null, musicGain = null, musicEl = null, musicTrack = -1, musicOn = false, koBuf = null;
   function audio() {
     if (!actx) {
       const AC = window.AudioContext || window.webkitAudioContext;
-      if (AC) actx = new AC({ latencyHint: "interactive" });
+      if (AC) {
+        actx = new AC({ latencyHint: "interactive" });
+        sfxGain = actx.createGain();
+        sfxGain.gain.value = vol.sfx;
+        sfxGain.connect(actx.destination);
+        loadKO();
+      }
     }
     if (actx && actx.state === "suspended") actx.resume();
     return actx;
+  }
+  const out = (a) => sfxGain || a.destination;
+
+  // The announcer's "K.O.!" (ko.wav)
+  function loadKO() {
+    fetch("ko.wav").then((r) => r.arrayBuffer())
+      .then((b) => new Promise((res, rej) => actx.decodeAudioData(b, res, rej)))
+      .then((buf) => { koBuf = buf; })
+      .catch(() => { /* no clip, the bleeps still play */ });
+  }
+  function playKO() {
+    if (muted || !koBuf || !actx) return;
+    const src = actx.createBufferSource();
+    src.buffer = koBuf;
+    src.connect(out(actx));
+    src.start(actx.currentTime + 0.05);
+  }
+
+  // Music goes through its own gain so the volume slider works everywhere (iPhones ignore audio.volume)
+  function musicPlayer() {
+    if (musicEl) return musicEl;
+    musicEl = new Audio();
+    musicEl.crossOrigin = "anonymous";
+    musicEl.loop = true;
+    musicEl.preload = "none";
+    const a = audio();
+    if (a && a.createMediaElementSource) {
+      try {
+        musicGain = a.createGain();
+        a.createMediaElementSource(musicEl).connect(musicGain).connect(a.destination);
+      } catch (e) { musicGain = null; }
+    }
+    return musicEl;
+  }
+  function applyVolume() {
+    const m = muted ? 0 : vol.music;
+    if (musicGain && actx) { musicGain.gain.cancelScheduledValues(actx.currentTime); musicGain.gain.setValueAtTime(musicOn ? m : 0, actx.currentTime); }
+    else if (musicEl) musicEl.volume = m;
+    if (sfxGain) sfxGain.gain.value = vol.sfx;
+  }
+  function playMusic(track, fromTop) {
+    const el = musicPlayer();
+    if (musicTrack !== track) { musicTrack = track; el.src = MUSIC[track]; }
+    else if (fromTop) el.currentTime = 0;
+    musicOn = true;
+    applyVolume();
+    const pr = el.play();
+    if (pr && pr.catch) pr.catch(() => { /* offline or blocked: play on without music */ });
+  }
+  function resumeMusic() { if (musicTrack >= 0) playMusic(musicTrack, false); }
+  function stopMusic(fadeMs) {
+    musicOn = false;
+    if (!musicEl || musicEl.paused) return;
+    if (fadeMs && musicGain && actx) {
+      musicGain.gain.cancelScheduledValues(actx.currentTime);
+      musicGain.gain.setValueAtTime(musicGain.gain.value, actx.currentTime);
+      musicGain.gain.linearRampToValueAtTime(0, actx.currentTime + fadeMs / 1000);
+      setTimeout(() => { if (!musicOn) musicEl.pause(); }, fadeMs + 50);
+    } else musicEl.pause();
   }
   function tone(freq, freq2, dur, type, vol, delay) {
     if (muted) return;
@@ -842,7 +916,7 @@
     if (freq2) o.frequency.exponentialRampToValueAtTime(freq2, t + dur);
     g.gain.setValueAtTime(vol || 0.06, t);
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    o.connect(g).connect(a.destination);
+    o.connect(g).connect(out(a));
     o.start(t);
     o.stop(t + dur + 0.02);
   }
@@ -864,7 +938,7 @@
     filter.frequency.value = cutoff;
     g.gain.setValueAtTime(vol, t);
     g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-    src.connect(filter).connect(g).connect(a.destination);
+    src.connect(filter).connect(g).connect(out(a));
     src.start(t, Math.random() * (1 - dur), dur);
   }
   const bawk = () => { tone(620, 480, 0.09, "square", 0.06); tone(520, 820, 0.14, "square", 0.06, 0.1); };
@@ -904,15 +978,37 @@
     sad: () => [392, 370, 349, 294].forEach((f, i) => tone(f, i === 3 ? 200 : 0, i === 3 ? 0.5 : 0.18, "triangle", 0.07, i * 0.2)),
     tick: () => tone(880, 0, 0.05, "square", 0.04),
   };
+  const volPanel = document.getElementById("volPanel");
+  const volMusic = document.getElementById("volMusic");
+  const volSfx = document.getElementById("volSfx");
+  const volMute = document.getElementById("volMute");
   function setMuted(on) {
     muted = on;
     store.set(MUTE_KEY, on ? "1" : "0");
     muteBtn.textContent = on ? "🔇" : "🔊";
-    muteBtn.setAttribute("aria-pressed", String(on));
-    muteBtn.setAttribute("aria-label", on ? "Turn sound on" : "Mute sound");
+    volMute.textContent = on ? "🔊 Sound on" : "🔇 Mute all";
+    volMute.setAttribute("aria-pressed", String(on));
+    applyVolume();
   }
   setMuted(muted);
-  muteBtn.addEventListener("click", () => { setMuted(!muted); canvas.focus({ preventScroll: true }); });
+  volMusic.value = Math.round(vol.music * 100);
+  volSfx.value = Math.round(vol.sfx * 100);
+  const saveVolume = () => store.set(VOLUME_KEY, JSON.stringify(vol));
+  volMusic.addEventListener("input", () => { vol.music = volMusic.value / 100; applyVolume(); saveVolume(); });
+  volSfx.addEventListener("input", () => { vol.sfx = volSfx.value / 100; audio(); applyVolume(); saveVolume(); });
+  volSfx.addEventListener("change", () => tone(880, 0, 0.08, "square", 0.06));   // a little test bleep
+  volMute.addEventListener("click", () => setMuted(!muted));
+  function showVolume(open) {
+    volPanel.hidden = !open;
+    muteBtn.setAttribute("aria-expanded", String(open));
+    if (open) { pause(); volMusic.focus({ preventScroll: true }); }
+    else canvas.focus({ preventScroll: true });
+  }
+  muteBtn.addEventListener("click", () => { audio(); showVolume(volPanel.hidden); });
+  // Click anywhere else to close it
+  document.addEventListener("pointerdown", (e) => {
+    if (!volPanel.hidden && !volPanel.contains(e.target) && e.target !== muteBtn) showVolume(false);
+  }, true);
 
   /* ---------- Game state ---------- */
   let state = "title";      // title, select, ladder, intro, fight, ko, talk, lose, champ, paused
@@ -1024,6 +1120,7 @@
   }
 
   function showSelect() {
+    stopMusic(0);
     setState("select");
     const btn = selectMenu.querySelector(`[data-pick="${hero}"]`) || selectMenu.querySelector("button");
     setPreview(btn.dataset.pick);
@@ -1055,6 +1152,7 @@
   }
 
   function startMatch() {
+    playMusic(level === ladder.length - 1 ? 1 : level % 2, true);   // battle music starts with the match
     audio();
     wins = { p1: 0, p2: 0 };
     round = 0;
@@ -1065,6 +1163,7 @@
 
   function nextRound() {
     round++;
+    if (round > 1) resumeMusic();
     p1 = makeFighter(hero, 96, 1, pin, 0);
     p2 = makeFighter(opponent(), 224, -1, cin, 1);
     Object.assign(pin, makeInput(), { left: pin.left, right: pin.right, up: pin.up });
@@ -1082,6 +1181,7 @@
 
   function endRound(winner, how) {
     if (roundResult) return;
+    stopMusic(700);           // the music stops when someone wins
     roundResult = { winner, how, perfect: !!winner && winner.hp >= MAX_HP, at: slow ? KO_FREEZE + KO_SLOW : 900, celebrated: false, done: false };
     if (winner) wins[winner === p1 ? "p1" : "p2"]++;
     // Points for winning a round: health left, time left, and a big bonus for a perfect
@@ -1167,6 +1267,7 @@
       pausedFrom = state;
       pausedT = stateT;
       setState("paused");
+      if (pausedFrom !== "ko") stopMusic(0);
       pin.left = pin.right = pin.up = false;
       document.querySelectorAll(".pad .is-down").forEach((b) => b.classList.remove("is-down"));
     }
@@ -1175,6 +1276,7 @@
     if (state !== "paused") return;
     setState(pausedFrom);
     stateT = pausedT;
+    if (pausedFrom !== "ko") resumeMusic();
   }
 
   /* ---------- Fighting ---------- */
@@ -1282,6 +1384,7 @@
       if (!reduceMotion) shakeT = 350;
       cheerT = 2000;
       SFX.ko();
+      playKO();
       endRound(att, "ko");
     }
     return true;
@@ -2936,6 +3039,10 @@
   window.addEventListener("keydown", (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey || e.key === "Tab" || e.key === "Shift") return;
     if (window.YvyScores && YvyScores.isOpen()) return;   // typing initials
+    if (!volPanel.hidden) {
+      if (e.key === "Escape") { e.preventDefault(); showVolume(false); }
+      return;                                             // arrow keys move the sliders
+    }
     if (e.target.tagName === "BUTTON" && (e.key === " " || e.key === "Enter")) return; // let buttons work
     const key = e.key.toLowerCase();
     let handled = true;

@@ -32,6 +32,21 @@
     .pad button.bap { background: rgba(255, 140, 198, .85); }
     .pad button.kick { background: rgba(124, 198, 255, .85); }
     .pad button.special { background: rgba(255, 210, 63, .9); font-size: 3.4cqw; }
+    /* Sound settings: the speaker button opens volume sliders */
+    .vol {
+      position: absolute; right: 8px; bottom: 54px; z-index: 5;
+      display: flex; flex-direction: column; gap: max(1.2cqw, 6px);
+      padding: max(1.6cqw, 8px) max(2cqw, 10px);
+      background: #fff8e4; color: #2b1a52;
+      border: 3px solid #2b1a52; border-radius: 12px; box-shadow: 0 4px 0 #2b1a52;
+      font: max(1.7cqw, 9px)/1.4 "Press Start 2P", monospace;
+    }
+    .vol[hidden] { display: none; }
+    .vol label { display: flex; align-items: center; justify-content: space-between; gap: max(1.5cqw, 8px); }
+    .vol input[type="range"] { width: max(18cqw, 96px); accent-color: #ff5a3c; cursor: pointer; }
+    .vol button { font: inherit; padding: max(1cqw, 6px); border: 3px solid #2b1a52; border-radius: 10px; background: #ffd23f; color: #2b1a52; cursor: pointer; }
+    .vol button[aria-pressed="true"] { background: #ff8cc6; }
+    .vol :focus-visible { outline: 3px dashed #ff5a3c; outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -81,12 +96,17 @@
         <button type="button" data-press="sp2" class="special" aria-label="Special move 2">✨</button>
       </div>
     </div>
-    <button class="mute" id="mute" type="button" aria-pressed="false" aria-label="Mute sound">🔊</button>
+    <button class="mute" id="mute" type="button" aria-expanded="false" aria-controls="volPanel" aria-label="Sound settings">🔊</button>
+    <div class="vol" id="volPanel" role="dialog" aria-label="Sound settings" hidden>
+      <label>🎵 Music <input type="range" id="volMusic" min="0" max="100" step="5"></label>
+      <label>🔔 Sounds <input type="range" id="volSfx" min="0" max="100" step="5"></label>
+      <button type="button" id="volMute" aria-pressed="false">🔇 Mute all</button>
+    </div>
   </div>
 
-  <p class="arcade-help">Press Start, pick a critter, then fight your way up the ladder! <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> walk, <kbd>↑</kbd> or <kbd>W</kbd> jumps. <kbd>J</kbd> baps (or pecks), <kbd>K</kbd> kicks. <kbd>L</kbd> and <kbd>I</kbd> are your two special moves from your trading card (or go <kbd>↓</kbd> <kbd>→</kbd> + <kbd>J</kbd> / <kbd>K</kbd>, like the old days). Hold away from your opponent to block. On a phone, use the buttons on screen. <kbd>P</kbd> pauses, <kbd>M</kbd> mutes.</p>
+  <p class="arcade-help">Press Start, pick a critter, then fight your way up the ladder! <kbd>←</kbd> <kbd>→</kbd> or <kbd>A</kbd> <kbd>D</kbd> walk, <kbd>↑</kbd> or <kbd>W</kbd> jumps. <kbd>J</kbd> baps (or pecks), <kbd>K</kbd> kicks. <kbd>L</kbd> and <kbd>I</kbd> are your two special moves from your trading card (or go <kbd>↓</kbd> <kbd>→</kbd> + <kbd>J</kbd> / <kbd>K</kbd>, like the old days). Hold away from your opponent to block. On a phone, use the buttons on screen. <kbd>P</kbd> pauses, <kbd>M</kbd> mutes, and the 🔊 button has volume sliders. Battle music is from Yvy's Tijuana Estuary Explorer.</p>
 
   <script src="../scores.js"></script>
-  <script src="game.js?v=2026-10-24i"></script>
+  <script src="game.js?v=2026-10-24j"></script>
 </body>
 </html>
