@@ -59,7 +59,7 @@
         "..CC......CC..",
       ],
     },
-    // Lychee: gray tabby with her orange collar charm. Very dignified.
+    // Lychee: gray tabby with his orange collar charm. Very dignified.
     lychee: {
       colors: { G: "#7d7a82", S: "#4a4650", L: "#c4bfc7", E: "#c9d86a", K: "#2b1a52", N: "#e58a9a", O: "#ff8a1e" },
       grid: [
@@ -125,7 +125,7 @@
     peaches: { name: "Peaches", home: 78, dir: 1, key: "a",
       lose: "Peaches does her sad hamster face." },
     lychee:  { name: "Lychee",  home: 242, dir: -1, key: "l",
-      lose: "Lychee pretends she wasn't hungry anyway." },
+      lose: "Lychee pretends he wasn't hungry anyway." },
   };
   const other = (p) => (p === "peaches" ? "lychee" : "peaches");
 
@@ -643,7 +643,7 @@
         text(`${secs(r.react)} SEC`, W / 2, 68, { size: 8, color: "#2b1a52", outline: false });
       } else if (r.type === "trip") {
         text("Too early!", W / 2, 46, { font: "logo", size: 28, color: "#ff6b6b", outline: "#2b1a52", ow: 5 });
-        text(`${PETS[r.loser].name} tripped over her paws!`, W / 2, 68, { size: 6, color: "#2b1a52", outline: false });
+        text(`${PETS[r.loser].name} tripped over ${r.loser === "lychee" ? "his" : "her"} paws!`, W / 2, 68, { size: 6, color: "#2b1a52", outline: false });
       } else {
         text("Too slow!", W / 2, 46, { font: "logo", size: 28, color: "#ff6b6b", outline: "#2b1a52", ow: 5 });
         text("Bojjii ate the kibble. Again!", W / 2, 68, { size: 6, color: "#2b1a52", outline: false });

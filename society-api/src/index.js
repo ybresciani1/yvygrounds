@@ -65,6 +65,7 @@ const STATUSES = ["pending", "approved", "rejected"];
 const GAMES = {
   "tomato-tussle": { order: "high", min: 1, max: 20000 },
   "bowl-brawl": { order: "low", min: 90, max: 3000 },
+  "street-fluffers": { order: "high", min: 1, max: 100000 },
 };
 const SCORES_PER_HOUR = 20;
 // 3-letter initials that aren't allowed on the board

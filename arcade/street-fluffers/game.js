@@ -25,6 +25,7 @@
   const KO_FREEZE = 260;        // the last hit freezes for a moment (hitstop)...
   const KO_SLOW = 2600;         // ...then plays out in slow motion, easing back to full speed
   const TYPE_MS = 34;           // speech box typing speed
+  const STORY_MS = 30;          // story caption typing speed
 
   const canvas = document.getElementById("game");
   const ctx = canvas.getContext("2d");
@@ -36,6 +37,7 @@
   const overB = document.getElementById("overB");
   const talkMenu = document.getElementById("talkMenu");
   const titleMenu = document.getElementById("titleMenu");
+  const storyMenu = document.getElementById("storyMenu");
   const pad = document.getElementById("pad");
   const embedded = window.self !== window.top;
   if (embedded) document.body.classList.add("embedded");
@@ -95,7 +97,7 @@
         "...CC..CC...",
       ],
     },
-    // Lychee: gray tabby with her orange collar charm. Very dignified.
+    // Lychee: gray tabby with his orange collar charm. Very dignified.
     lychee: {
       colors: { G: "#7d7a82", S: "#4a4650", L: "#c4bfc7", E: "#c9d86a", K: "#2b1a52", N: "#e58a9a", O: "#ff8a1e" },
       grid: [
@@ -130,37 +132,38 @@
         "...LL..LL...",
       ],
     },
-    // Bojjii (German Shepherd x Aussie, we think). The big guy.
+    // Bojjii (German Shepherd x Aussie, we think). The big guy: golden-ginger and fluffy, dark ear tips
+    // and muzzle, a cream-white chest and a brown tail.
     bojjii: {
-      colors: { B: "#2b2433", T: "#c98a4a", K: "#120e18", W: "#ffffff", P: "#ff6fa8" },
+      colors: { T: "#d9934a", D: "#5a3a26", L: "#f6e6cc", K: "#120e18", W: "#ffffff", N: "#2b1a1a", P: "#ff6fa8" },
       grid: [
-        ".B........B.",
-        ".BB......BB.",
-        ".BTB....BTB.",
-        ".BBBBBBBBBB.",
-        "BBTBBBBBBTBB",
-        "BKWTBBBBTKWB",
-        "BTTTTBBTTTTB",
-        ".TTTTKKTTTT.",
+        ".D........D.",
+        ".DD......DD.",
+        ".DTD....DTD.",
         ".TTTTTTTTTT.",
-        "..TTTPPTTT..",
+        "TTDTTTTTTDTT",
+        "TKWTTTTTTKWT",
+        "LTTTTDDTTTTL",
+        ".LTTDNNDTTL.",
+        ".LLTDDDDTLL.",
+        "..LLLPPLLL..",
       ],
     },
     bojjiiBody: {
-      colors: { B: "#2b2433", T: "#c98a4a" },
+      colors: { T: "#d9934a", S: "#b8763a", L: "#f6e6cc" },
       grid: [
-        "...BBBBBBBB...",
-        "..BBTTTTTTBB..",
-        ".BBTTTTTTTTBB.",
-        ".BBTTTTTTTTBB.",
-        ".BBTTTTTTTTBB.",
-        ".BBTTTTTTTTBB.",
-        "..BBTTTTTTBB..",
-        "...BBBBBBBB...",
-        "...BBB..BBB...",
-        "...BBB..BBB...",
+        "...TTTTTTTT...",
+        "..TTLLLLLLTT..",
+        ".STLLLLLLLLTS.",
+        ".STLLLLLLLLTS.",
+        ".STTLLLLLLTTS.",
+        ".STTTLLLLTTTS.",
+        "..TTTTTTTTTT..",
+        "...TTTTTTTT...",
         "...TTT..TTT...",
         "...TTT..TTT...",
+        "...TTT..TTT...",
+        "...LLL..LLL...",
       ],
     },
     // Penny: black and tan like Bojjii, with big ears, a white chest, her pink collar and red heart tag.
@@ -235,9 +238,9 @@
         "....GGGGGGG.....",
       ],
     },
-    // Snow: Silkie, one big white puff with turquoise ears
+    // Snow: Silkie, one big white puff with turquoise ears and a little gray beak
     snowSide: {
-      colors: { W: "#ffffff", F: "#e2dbef", K: "#2b1a52", T: "#37c6e6", Y: "#ffb62e" },
+      colors: { W: "#ffffff", F: "#e2dbef", K: "#2b1a52", T: "#37c6e6", Y: "#9a94a8" },
       grid: [
         ".........WWWW...",
         "........WWWWWW..",
@@ -254,6 +257,21 @@
       ],
     },
 
+    // The Critter of the Month Crown: the prize everyone is fighting over
+    crown: {
+      colors: { K: "#2b1a52", Y: "#ffd23f", D: "#e0a800", R: "#ff4d6d", B: "#7cc6ff" },
+      grid: [
+        ".K...K...K.",
+        "KYK.KYK.KYK",
+        "KYYKYYYKYYK",
+        "KYYYYYYYYYK",
+        "KYRYYBYYRYK",
+        "KYYYYYYYYYK",
+        "KDDDDDDDDDK",
+        "KKKKKKKKKKK",
+      ],
+    },
+
     // Tiny side-view critters for the crowd (the same sprites as the trading cards; they face left)
     miniRiot: {
       colors: { C: "#f7e2c2", B: "#f2d3a8", L: "#c99a62", Y: "#ffb62e" },
@@ -264,7 +282,7 @@
       grid: ["..DGDG......", ".GDGDGD.....", "DGDGDGDG....", ".GDGDGD.....", "YYGKGG......", ".GGGGGG..DD.", "..GDGDGGGDD.", "..GGDGDGDGG.", "..GDGDGDGG..", "...GGGGGG...", ".....Y.Y....", "....YY.YY..."],
     },
     miniSnow: {
-      colors: { W: "#ffffff", F: "#e2dbef", K: "#2b1a52", T: "#37c6e6", Y: "#ffb62e", S: "#8a84a3" },
+      colors: { W: "#ffffff", F: "#e2dbef", K: "#2b1a52", T: "#37c6e6", Y: "#9a94a8", S: "#8a84a3" },
       grid: ["..WWWW......", ".WWWWWW.....", "WWWWWWWW....", ".WWKWWWW....", "YYWWTWWW....", ".WWWWWWW.WW.", "WWWWWWWWWWWW", "WWFWWFWWWFWW", ".WWWWWWWWWW.", "..WWWWWWWW..", "...SSS.SSS..", "...S.....S.."],
     },
     miniPeaches: {
@@ -272,7 +290,7 @@
       grid: ["............", "..O.O.......", "..OOOO......", ".OKOOOO...O.", "KOLLOOOO.OO.", ".LLOOOOOOOO.", "..OOOOOOOOO.", "..OOOOOOOOO.", "..LOOOOOOOO.", "..OOOOOOOO..", "..OO....OO..", "..OO....OO.."],
     },
     miniBojjii: {
-      colors: { T: "#c98a4a", B: "#3a2a2a", L: "#f0d9b0", K: "#2b1a52" },
+      colors: { T: "#d9934a", B: "#8a5230", L: "#f6e6cc", K: "#2b1a52" },
       grid: ["..B.B.......", "..BTT.......", ".TKTT.......", "BTTTT.......", ".LTTTBBBBB.T", "..TTBBBBBBTT", "..TTTBBBBTT.", "..TTTTTTTT..", "..LT....TL..", "..T.....T...", "..T.....T...", ".TT....TT..."],
     },
     miniLychee: {
@@ -384,6 +402,7 @@
   const CHARS = {
     peaches: {
       name: "Peaches", kind: "pet", type: "Fashion", headScale: 2, headDrop: 4,
+      quote: "Fashion first. Fighting second.",
       main: "#eeaa55", light: "#fbe3b8", dark: "#b8682a", glove: "#ff6fa8", mini: "miniPeaches",
       specials: [
         { name: "Outfit Change", fx: "🎀", kind: "spin", dmg: 10, range: 36, move: 40, startup: 120, dur: 650, cool: 2600, outfit: true,
@@ -398,7 +417,8 @@
     },
     bojjii: {
       name: "Bojjii", kind: "pet", type: "Gentle Giant", headScale: 3, headDrop: 6,
-      main: "#2b2433", light: "#c98a4a", dark: "#120e18", glove: "#e8352e", mini: "miniBojjii",
+      quote: "Fight now, pancakes later!",
+      main: "#d9934a", light: "#f6e6cc", dark: "#5a3a26", glove: "#e8352e", mini: "miniBojjii",
       specials: [
         { name: "Ball Frenzy", fx: "🎾", kind: "spin", dmg: 10, range: 36, move: 0, startup: 120, dur: 700, cool: 2600, balls: true,
           blurb: "Spins and sprays tennis balls" },
@@ -412,6 +432,7 @@
     },
     lychee: {
       name: "Lychee", kind: "pet", type: "Loaf", headScale: 2, headDrop: 4,
+      quote: "Wake me when it's over.",
       main: "#7d7a82", light: "#c4bfc7", dark: "#4a4650", glove: "#ff8a1e", mini: "miniLychee",
       specials: [
         { name: "Veggie Lounge", fx: "🥒", kind: "roll", dmg: 10, speed: 165, startup: 260, dur: 750, cool: 2600,
@@ -420,12 +441,13 @@
           blurb: "So boring you fall asleep" },
       ],
       win: "I wasn't even trying. Mrrp.",
-      lose: "Lychee pretends she slipped.",
+      lose: "Lychee pretends he slipped.",
       sayWin: ["I wasn't even trying. Mrrp.", "This cucumber is mine now."],
       sayLose: ["I meant to do that.", "I'm going back to my nap."],
     },
     penny: {
       name: "Penny", kind: "pet", type: "Sweetheart", headScale: 2, headDrop: 4,
+      quote: "Spin first, snuggle after!",
       main: "#2b2433", light: "#d8b088", dark: "#120e18", glove: "#ff6fa8", mini: "miniPenny",
       specials: [
         { name: "Happy Circles", fx: "💖", kind: "spin", dmg: 0, range: 36, move: 0, startup: 100, dur: 800, cool: 3000, heal: 6,
@@ -441,6 +463,7 @@
     },
     riot: {
       name: "Riot", kind: "bird", type: "Pom-Pom", side: "riotSide", legs: "#ffb62e", mini: "miniRiot",
+      quote: "Where's my opponent? Over there?",
       specials: [
         { name: "Blind Charge", fx: "💨", kind: "dash", dmg: 10, speed: 260, dist: 150, startup: 200, cool: 2600, blind: true,
           blurb: "Can't see you. Hits anyway" },
@@ -454,6 +477,7 @@
     },
     beyonce: {
       name: "Beyonce", kind: "bird", type: "Diva", side: "beyonceSide", legs: "#ffb62e", mini: "miniBeyonce",
+      quote: "My coop. My rules. My crown.",
       specials: [
         { name: "Coop Rules", fx: "💥", kind: "stomp", dmg: 10, range: 100, speed: 230, startup: 120, cool: 2600,
           blurb: "A stomp everyone has to obey" },
@@ -467,6 +491,7 @@
     },
     snow: {
       name: "Snow", kind: "bird", type: "Cloud", side: "snowSide", legs: "#8a84a3", fluffyFeet: true, mini: "miniSnow",
+      quote: "Everyone gets a hug. Even you.",
       specials: [
         { name: "Marshmallow Hug", fx: "💕", kind: "hug", heal: 8, range: 36, stun: 900, status: "HUGGED!", statusFx: "💕", startup: 300, cool: 3000,
           blurb: "Heals up, then hugs you tight" },
@@ -898,6 +923,8 @@
   let ladder = [];          // the opponents, in order
   let level = 0;            // index into ladder
   let lastBeaten = null;
+  let score = 0;            // points for this run up the ladder (for the high score board)
+  let story = null;         // the backstory or ending being shown: { kind, panels, i, t, said }
   let round = 0, timeLeft = ROUND_SECS * 1000, clock = 0, lastTick = 0;
   let wins = { p1: 0, p2: 0 };
   let roundResult = null;   // { winner: fighter | null, how: "ko" | "time", perfect }
@@ -960,6 +987,42 @@
     document.getElementById("startBtn").focus({ preventScroll: true });
   }
 
+  // ----- Story scenes: the backstory after the title screen, and each champion's ending -----
+  function startStory(kind) {
+    story = { kind, panels: kind === "intro" ? INTRO : ENDINGS[hero].concat(THE_END), i: 0, t: 0, said: 0 };
+    setState("story");
+    document.getElementById("storyNext").focus({ preventScroll: true });
+  }
+  const captionDone = () => story.t >= 300 + story.panels[story.i].text.length * STORY_MS;
+  function advanceStory() {
+    if (state !== "story" || fade) return;
+    if (!captionDone()) { story.t = 1e9; return; }          // show the whole caption first
+    if (story.i < story.panels.length - 1) transition(() => { story.i++; story.t = 0; story.said = 0; });
+    else finishStory();
+  }
+  function skipStory() {
+    if (state !== "story" || fade) return;
+    if (story.kind === "intro" || story.i === story.panels.length - 1) finishStory();
+    else transition(() => { story.i = story.panels.length - 1; story.t = 0; story.said = 0; });
+  }
+  function finishStory() {
+    if (story.kind === "intro") transition(showSelect);
+    else transition(() => { setState("champ"); offerScores(); });
+  }
+
+  // The shared high score box (arcade/scores.js) asks for 3-letter initials
+  function offerScores() {
+    if (!window.YvyScores || !(score > 0)) return;
+    setTimeout(() => {
+      if (state !== "champ") return;
+      YvyScores.show({
+        game: "street-fluffers", score, format: (n) => `${n.toLocaleString("en-US")} pts`,
+        onPlayAgain: () => startRun(hero),
+        onClose: () => overA.focus({ preventScroll: true }),
+      });
+    }, 900);
+  }
+
   function showSelect() {
     setState("select");
     const btn = selectMenu.querySelector(`[data-pick="${hero}"]`) || selectMenu.querySelector("button");
@@ -981,6 +1044,7 @@
     ladder = others;
     level = 0;
     lastBeaten = null;
+    score = 0;
     VOICES[id]();
     showLadder();
   }
@@ -1020,6 +1084,11 @@
     if (roundResult) return;
     roundResult = { winner, how, perfect: !!winner && winner.hp >= MAX_HP, at: slow ? KO_FREEZE + KO_SLOW : 900, celebrated: false, done: false };
     if (winner) wins[winner === p1 ? "p1" : "p2"]++;
+    // Points for winning a round: health left, time left, and a big bonus for a perfect
+    if (winner === p1) {
+      roundResult.points = 100 + Math.round(p1.hp) * 10 + Math.ceil(timeLeft / 1000) * 10 + (roundResult.perfect ? 1000 : 0);
+      score += roundResult.points;
+    }
     setState("ko");
   }
 
@@ -1071,12 +1140,13 @@
     const r = record[hero] || (record[hero] = { best: 0, champ: 0 });
     if (matchWon) {
       lastBeaten = opponent();
+      score += 1000 * (level + 1);                    // level clear bonus
       level++;
       r.best = Math.max(r.best, level);
       if (level >= ladder.length) {
         r.champ++;
         saveRecord();
-        setState("champ");
+        startStory("ending");
         SFX.champ();
         setTimeout(() => VOICES[hero](), 900);
         return;
@@ -1548,6 +1618,13 @@
         else fade = null;
       }
     }
+    if (state === "story") {
+      story.t += realDt;
+      const said = Math.floor(Math.max(0, story.t - 300) / STORY_MS);
+      const len = story.panels[story.i].text.length;
+      if (said > story.said && said % 3 === 0 && said < len) tone(rand(420, 620), 0, 0.025, "square", 0.02);
+      story.said = said;
+    }
     if (state === "talk") {
       const before = talk.t;
       talk.t += realDt;
@@ -1755,7 +1832,7 @@
       ctx.fillRect(x - 4, bt - 4 + wag, 5, 3);
       ctx.fillRect(x - 9, bt + 1 + wag, 2, 4);
     } else if (f.id === "lychee") {
-      // Fluffy striped tabby tail: starts tucked behind her hip and curls up
+      // Fluffy striped tabby tail: starts tucked behind his hip and curls up
       [[-8, -9], [-12, -10], [-15, -13], [-17, -17], [-17, -22], [-15, -26], [-12, -29]].forEach(([tx, ty], i) => {
         const sz = i < 4 ? 8 : i < 6 ? 7 : 6, w = i > 2 ? wag : 0;
         const px = tx + w - sz / 2, py = ty - sz / 2;
@@ -1768,10 +1845,14 @@
       ctx.fillStyle = C.main;
       ctx.fillRect(x - 5, bt + 2 + wag, 7, 3); ctx.fillRect(x - 6, bt - 2 + wag, 3, 5); ctx.fillRect(x - 4, bt - 3 + wag, 4, 2); ctx.fillRect(x - 1, bt - 2 + wag, 2, 3);
     } else {
-      ctx.fillStyle = C.main;
-      ctx.fillRect(x - 9, bt + 8 + wag, 12, 7);
-      ctx.fillStyle = C.light;
-      ctx.fillRect(x - 11, bt + 10 + wag, 4, 4);
+      // Bojjii: a big fluffy brown tail
+      [[-12, -12], [-16, -13], [-19, -15], [-21, -18]].forEach(([tx, ty], i) => {
+        const sz = i < 2 ? 9 : i < 3 ? 8 : 7, w = i > 0 ? wag : 0;
+        const px = tx + w - sz / 2, py = ty - sz / 2;
+        ctx.fillStyle = i === 3 ? "#c98a4a" : i % 2 ? "#8a5230" : "#a8642e";
+        ctx.fillRect(px + 1, py, sz - 2, sz);
+        ctx.fillRect(px, py + 1, sz, sz - 2);
+      });
     }
   }
 
@@ -2122,6 +2203,7 @@
     const secs = Math.ceil(timeLeft / 1000);
     text(String(secs).padStart(2, "0"), W / 2, 15, { size: 10, outline: false, color: secs <= 10 ? "#ff6b6b" : "#ffd23f" });
     text(`LV ${level + 1}`, W / 2, 29, { size: 5, color: "#fff8e4" });
+    text(`${score}`, W / 2, 37, { size: 5, color: "#ffd23f" });
     // "PEACHES used OUTFIT CHANGE!"
     if (banner) {
       ctx.font = '6px "Press Start 2P", monospace';
@@ -2173,15 +2255,18 @@
       text(m.name.toUpperCase(), 132, y + 6, { size: 6, align: "left", color: "#2b1a52", outline: false });
       text(m.blurb, 116, y + 19, { size: 5, align: "left", color: "#7d5ad4", outline: false });
     });
+    // Something they might say
+    text(`"${C.quote}"`, 116, 137, { font: "logo", size: 10, align: "left", color: "#e8357f", outline: false });
     const r = record[preview];
     const rec = !r ? "Never played yet!" : r.champ ? `CHAMPION x${r.champ}!` : `BEST: BEAT ${r.best} OF 6`;
-    text(rec, 116, 142, { size: 5, align: "left", color: r && r.champ ? "#ff5a3c" : "#2b1a52", outline: false });
+    text(rec, 116, 152, { size: 5, align: "left", color: r && r.champ ? "#ff5a3c" : "#2b1a52", outline: false });
   }
 
   function drawLadder(now) {
     panel(20, 18, 280, 162);
     const opp = opponent();
     const final = level === ladder.length - 1;
+    if (score) text(`SCORE ${score}`, 290, 28, { size: 5, align: "right", color: "#7d5ad4", outline: false });
     text(final ? "Final boss!" : `Level ${level + 1}`, W / 2, 38, { font: "logo", size: 28, color: final ? "#ff4d6d" : "#ffd23f", outline: "#2b1a52", ow: 5 });
     if (lastBeaten) text(`You beat ${CHARS[lastBeaten].name}!`, W / 2, 56, { size: 6, color: "#3f8f2e", outline: false });
     else text(`${ladder.length} critters to beat`, W / 2, 56, { size: 6, color: "#7d5ad4", outline: false });
@@ -2221,6 +2306,7 @@
       } else if (r.winner) {
         text(`${r.winner.C.name} wins!`, W / 2, 80, { font: "logo", size: 30, color: "#ffd23f", outline: "#2b1a52", ow: 6 });
         if (r.perfect) text("PERFECT!", W / 2, 104, { size: 10, color: "#ff8cc6" });
+        if (r.points) text(`+${r.points} PTS`, W / 2, r.perfect ? 120 : 104, { size: 8, color: "#ffd23f" });
       } else {
         text("Draw!", W / 2, 84, { font: "logo", size: 34, color: "#fff8e4", outline: "#2b1a52", ow: 6 });
       }
@@ -2333,6 +2419,7 @@
     text(`"${CHARS[hero].win}"`, 194, 104, { size: 5, color: "#7d5ad4", outline: false });
     const r = record[hero] || { champ: 1 };
     text(`${CHARS[hero].name.toUpperCase()} CHAMPION x${r.champ}`, 194, 126, { size: 6, color: "#ff5a3c", outline: false });
+    text(`SCORE ${score}`, 194, 146, { size: 8, color: "#2b1a52", outline: false });
   }
 
   function drawWorld(now) {
@@ -2371,6 +2458,7 @@
 
     const stageId = state === "title" ? "peaches" : state === "select" ? preview : opponent();
     const cam = camera();
+    if (state === "story") { drawStory(now); return; }
     ctx.save();
     if (cam) { ctx.translate(W / 2, H / 2); ctx.scale(cam.z, cam.z); ctx.translate(-cam.x, -cam.y); }
     drawStage(stageId, now);
@@ -2410,9 +2498,347 @@
     }
   }
 
+
+  /* ---------- Story scenes ---------- */
+  // Each panel is a little picture plus a caption. Pictures are drawn in "stage" space,
+  // shifted up so the ground sits just above the caption box.
+  const STORY_SHIFT = 44;
+  function storyBg(id, dim) {
+    ctx.drawImage(stageImg(id), 0, 0, W, H);
+    if (dim) { ctx.fillStyle = `rgba(43, 26, 82, ${dim})`; ctx.fillRect(0, 0, W, H + STORY_SHIFT); }
+  }
+  function mini(id, x, y, s, faceRight, hop) {
+    const img = IMG[CHARS[id].mini];
+    ctx.save();
+    ctx.translate(Math.round(x) + (faceRight ? 12 * s : 0), Math.round(y - (hop || 0)));
+    if (faceRight) ctx.scale(-1, 1);
+    ctx.drawImage(img, 0, 0, 12 * s, 12 * s);
+    ctx.restore();
+  }
+  const cheer = (now, i) => (reduceMotion ? 0 : Math.abs(Math.round(Math.sin(now / 160 + i) * 4)));
+  function crown(cx, bottom, s) { sprite(IMG.crown, cx - (11 * s) / 2, bottom - 8 * s, s); }
+  function thought(x, y, emoji) {
+    ctx.fillStyle = "#2b1a52";
+    ctx.beginPath(); ctx.ellipse(x, y, 11, 9, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillRect(x - 3, y + 10, 4, 3); ctx.fillRect(x - 6, y + 14, 3, 2);
+    ctx.fillStyle = "#fff8e4";
+    ctx.beginPath(); ctx.ellipse(x, y, 10, 8, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillRect(x - 2, y + 11, 2, 1);
+    sprite(FX[emoji], x - 6, y - 6, 1);
+  }
+  // A critter standing in a scene; crown: wearing the crown; pose: a card move ("spin", "hug", "roll")
+  function critter(id, x, now, o) {
+    o = o || {};
+    const f = makeFighter(id, x, o.face || 1, makeInput(), 5);
+    if (o.y !== undefined) f.y = o.y;
+    if (o.pose) { f.state = "special"; f.sp = { kind: o.pose, startup: 0, dur: 900 }; f.t = o.pose === "spin" ? now % 900 : now; }
+    drawFighter(f, now);
+    if (o.crown) {
+      const C = CHARS[id];
+      const top = C.kind === "pet" ? f.y - f.bh - f.hh + C.headDrop + 7 : f.y - 42;
+      crown(C.kind === "pet" ? f.x : f.x + f.face * 11, o.pose === "roll" ? f.y - 14 : top, 2);
+    }
+    return f;
+  }
+  function sparkleField(now, n, y0, y1) {
+    for (let i = 0; i < n; i++) {
+      if (!reduceMotion && Math.floor(now / 300 + i) % 3 === 0) continue;
+      sprite(FX["✨"], 20 + ((i * 97) % 280), y0 + ((i * 53) % (y1 - y0)), 1);
+    }
+  }
+
+  const INTRO = [
+    {
+      text: "It was a lazy, sunny afternoon in Yvy's backyard. The whole crew was napping in the warm grass...",
+      draw(now) {
+        storyBg("peaches");
+        ROSTER.forEach((id, i) => {
+          const x = 22 + i * 40;
+          mini(id, x, FLOOR_Y - 24 + (i % 2) * 4, 2, i % 2 === 0);
+          const drift = reduceMotion ? 0 : (now / 40 + i * 17) % 30;
+          ctx.globalAlpha = 1 - drift / 30;
+          sprite(FX["💤"], x + 14, FLOOR_Y - 40 - drift, 1);
+          ctx.globalAlpha = 1;
+        });
+      },
+    },
+    {
+      text: "Then Yvy set something shiny on the picnic table: the Critter of the Month Crown! Whoever wins it gets to wear it... FOREVER.",
+      draw(now) {
+        storyBg("peaches", 0.15);
+        // Picnic table with the crown on a pink cushion
+        ctx.fillStyle = "#a5643a"; ctx.fillRect(110, 160, 100, 8);
+        ctx.fillStyle = "#7a4526"; ctx.fillRect(118, 168, 6, 22); ctx.fillRect(196, 168, 6, 22);
+        ctx.fillStyle = "#ff8cc6"; ctx.fillRect(140, 152, 40, 8);
+        ctx.fillStyle = "#ff4d8d"; ctx.fillRect(140, 158, 40, 2);
+        const bob = reduceMotion ? 0 : Math.round(Math.sin(now / 300) * 2);
+        crown(160, 152 - bob, 3);
+        sparkleField(now, 8, 110, 150);
+        ROSTER.forEach((id, i) => {
+          const x = i < 4 ? 14 + i * 24 : 216 + (i - 4) * 30;
+          mini(id, x, FLOOR_Y - 24, 2, i < 4);
+          text("!", x + 12, FLOOR_Y - 32, { font: "logo", size: 14, color: "#ff5a3c" });
+        });
+      },
+    },
+    {
+      text: "Peaches wanted to wear it. Bojjii wanted to trade it for pancakes. Lychee wanted to nap in it. Beyonce said it was already hers.",
+      draw(now) {
+        storyBg("peaches", 0.3);
+        const wants = { peaches: "🎀", bojjii: "🥞", lychee: "💤", penny: "💖", riot: "✨", beyonce: "⚡", snow: "💕" };
+        ROSTER.forEach((id, i) => {
+          const x = 30 + i * 43;
+          critter(id, x, now + i * 150, { face: x < W / 2 ? 1 : -1 });
+          const bob = reduceMotion ? 0 : Math.round(Math.sin(now / 250 + i) * 2);
+          thought(x + 6, FLOOR_Y - 70 + bob, wants[id]);
+        });
+      },
+    },
+    {
+      text: "There was only one way to settle it. Everybody into the yard... it's time for the BACKYARD BRAWL!",
+      draw(now) {
+        ctx.fillStyle = "#ff8cc6"; ctx.fillRect(0, 0, W, H + STORY_SHIFT);
+        ctx.fillStyle = "#ffd23f";
+        ctx.beginPath(); ctx.moveTo(190, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H + STORY_SHIFT); ctx.lineTo(130, H + STORY_SHIFT); ctx.fill();
+        sparkleField(now, 10, 50, 140);
+        critter("peaches", 70, now, { face: 1, y: FLOOR_Y - 4 });
+        critter("beyonce", 250, now, { face: -1, y: FLOOR_Y - 4 });
+        const pulse = reduceMotion ? 0 : Math.round(Math.sin(now / 200) * 2);
+        crown(160, 118, 3 + (pulse > 0 ? 0 : 0));
+        text("VS", W / 2, 148 + pulse, { font: "logo", size: 34, color: "#fff8e4", outline: "#2b1a52", ow: 6 });
+        text("THE BACKYARD BRAWL", W / 2, 70, { size: 9, color: "#fff8e4" });
+      },
+    },
+  ];
+
+  // Each champion's ending (two panels), then everyone gets "The End"
+  const ENDINGS = {
+    peaches: [
+      {
+        text: "Peaches won the Critter of the Month Crown! She tried it on with seven different outfits. All of them were perfect.",
+        draw(now) {
+          storyBg("peaches");
+          ["bojjii", "lychee", "penny"].forEach((id, i) => mini(id, 14 + i * 26, FLOOR_Y - 24, 2, true, cheer(now, i)));
+          ["riot", "beyonce", "snow"].forEach((id, i) => mini(id, 230 + i * 26, FLOOR_Y - 24, 2, false, cheer(now, i + 3)));
+          critter("peaches", 160, now, { crown: true });
+          for (let i = 0; i < 4; i++) {
+            const a = (reduceMotion ? 0 : now / 500) + (i * Math.PI) / 2;
+            sprite(FX["🎀"], 160 + Math.cos(a) * 34 - 6, FLOOR_Y - 26 + Math.sin(a) * 18 - 6, 1);
+          }
+        },
+      },
+      {
+        text: "Now she's the most fashionable champion the backyard has ever seen. The crowd still hasn't stopped cheering.",
+        draw(now) {
+          ctx.fillStyle = "#2b1a52"; ctx.fillRect(0, 0, W, H + STORY_SHIFT);
+          // Spotlights and a pink runway
+          ctx.fillStyle = "rgba(255, 246, 194, .25)";
+          [[90, 1], [230, -1]].forEach(([x, d]) => { ctx.beginPath(); ctx.moveTo(x, 40); ctx.lineTo(160 - d * 30, FLOOR_Y + 6); ctx.lineTo(160 + d * 10, FLOOR_Y + 6); ctx.fill(); });
+          ctx.fillStyle = "#ff8cc6"; ctx.fillRect(100, FLOOR_Y - 2, 120, 10);
+          ctx.fillStyle = "#ff4d8d"; ctx.fillRect(100, FLOOR_Y + 6, 120, 3);
+          critter("peaches", 160, now, { crown: true });
+          // Camera flashes
+          for (let i = 0; i < 6; i++) if (!reduceMotion && Math.floor(now / 180 + i * 7) % 5 === 0) sprite(FX["✨"], 20 + i * 50, 70 + (i % 3) * 30, 2);
+          text("PEACHES!", 52, 60, { font: "logo", size: 14, color: "#ff8cc6" });
+          text("SO CUTE!", 268, 80, { font: "logo", size: 14, color: "#ffd23f" });
+        },
+      },
+    ],
+    bojjii: [
+      {
+        text: "Bojjii won the crown! He wore it proudly for about a minute... then traded it to Yvy for a stack of pancakes taller than he is.",
+        draw(now) {
+          storyBg("bojjii");
+          critter("bojjii", 120, now, { crown: true });
+          for (let i = 0; i < 6; i++) sprite(FX["🥞"], 196, FLOOR_Y - 26 - i * 12, 2);
+          sparkleField(now, 4, 100, 130);
+        },
+      },
+      {
+        text: "Then he shared every single pancake with his friends, because he's the goodest boy in the whole backyard.",
+        draw(now) {
+          storyBg("bojjii");
+          critter("bojjii", 160, now, { crown: true });
+          ["peaches", "lychee", "penny"].forEach((id, i) => { mini(id, 30 + i * 30, FLOOR_Y - 24, 2, true, cheer(now, i)); sprite(FX["🥞"], 36 + i * 30, FLOOR_Y - 6, 1); });
+          ["riot", "beyonce", "snow"].forEach((id, i) => { mini(id, 210 + i * 30, FLOOR_Y - 24, 2, false, cheer(now, i + 3)); sprite(FX["🥞"], 216 + i * 30, FLOOR_Y - 6, 1); });
+          sprite(FX["💕"], 168, FLOOR_Y - 76 - (reduceMotion ? 0 : (now / 50) % 10), 1);
+        },
+      },
+    ],
+    lychee: [
+      {
+        text: "Lychee won the crown. He looked at it. He looked at everyone. Then he curled up inside it and fell fast asleep.",
+        draw(now) {
+          storyBg("lychee");
+          crown(160, FLOOR_Y + 2, 5);
+          critter("lychee", 160, now, { pose: "roll", y: FLOOR_Y - 8 });
+          const drift = reduceMotion ? 0 : (now / 40) % 30;
+          ctx.globalAlpha = 1 - drift / 30;
+          sprite(FX["💤"], 178, FLOOR_Y - 46 - drift, 2);
+          ctx.globalAlpha = 1;
+        },
+      },
+      {
+        text: "Nobody dared to wake the champion. The crown is his now. So is the cucumber.",
+        draw(now) {
+          storyBg("lychee", 0.2);
+          crown(160, FLOOR_Y + 2, 5);
+          critter("lychee", 160, now, { pose: "roll", y: FLOOR_Y - 8 });
+          sprite(FX["🥒"], 196, FLOOR_Y - 18, 2);
+          const tip = reduceMotion ? 0 : Math.round(Math.sin(now / 400) * 6);
+          mini("peaches", 50 + tip, FLOOR_Y - 24, 2, true);
+          mini("bojjii", 250 - tip, FLOOR_Y - 24, 2, false);
+          thought(76 + tip, FLOOR_Y - 50, "💤");
+          text("Shh!", 270 - tip, FLOOR_Y - 46, { font: "logo", size: 14, color: "#fff8e4" });
+        },
+      },
+    ],
+    penny: [
+      {
+        text: "Penny won the crown! She spun in the happiest circles anyone has ever seen, until everyone was smiling.",
+        draw(now) {
+          storyBg("penny");
+          critter("penny", 160, now, { pose: "spin" });
+          for (let i = 0; i < 6; i++) {
+            const a = (reduceMotion ? 0 : now / 400) + (i * Math.PI) / 3;
+            sprite(FX["💖"], 160 + Math.cos(a) * 42 - 6, FLOOR_Y - 24 + Math.sin(a) * 22 - 6, 1);
+          }
+          crown(160, FLOOR_Y - 58, 2);
+          ["bojjii", "lychee"].forEach((id, i) => mini(id, 30 + i * 30, FLOOR_Y - 24, 2, true, cheer(now, i)));
+          ["riot", "snow"].forEach((id, i) => mini(id, 240 + i * 30, FLOOR_Y - 24, 2, false, cheer(now, i + 2)));
+        },
+      },
+      {
+        text: "Then she tucked the crown under the blankets, a surprise for her momma. The sweetest champion there ever was. Forever loved.",
+        draw(now) {
+          storyBg("penny", 0.2);
+          // A blanket lump with the crown peeking out
+          ctx.fillStyle = "#2b1a52"; ctx.beginPath(); ctx.ellipse(160, FLOOR_Y - 10, 34, 20, 0, Math.PI, Math.PI * 2); ctx.fill(); ctx.fillRect(126, FLOOR_Y - 10, 68, 12);
+          ctx.fillStyle = "#ff8cc6"; ctx.beginPath(); ctx.ellipse(160, FLOOR_Y - 10, 32, 18, 0, Math.PI, Math.PI * 2); ctx.fill(); ctx.fillRect(128, FLOOR_Y - 10, 64, 10);
+          crown(176, FLOOR_Y - 24, 2);
+          sprite(FX["💖"], 146, FLOOR_Y - 22, 1);
+          const drift = reduceMotion ? 0 : (now / 50) % 20;
+          ctx.globalAlpha = 1 - drift / 20;
+          sprite(FX["💕"], 152, FLOOR_Y - 44 - drift, 1);
+          ctx.globalAlpha = 1;
+        },
+      },
+    ],
+    riot: [
+      {
+        text: "Riot won the crown! At least, she thinks she did. She can't actually see it. She's pretty sure it looks amazing.",
+        draw(now) {
+          storyBg("riot");
+          critter("riot", 160, now, { crown: true });
+          sparkleField(now, 6, 90, 140);
+          ["peaches", "bojjii", "penny"].forEach((id, i) => mini(id, 20 + i * 28, FLOOR_Y - 24, 2, true, cheer(now, i)));
+        },
+      },
+      {
+        text: "She wears it everywhere now, and walks into slightly fewer fences. Pom-pom power!",
+        draw(now) {
+          storyBg("riot");
+          const x = reduceMotion ? 150 : 60 + ((now / 20) % 200);
+          critter("riot", x, now, { crown: true });
+          text("POM-POM POWER!", W / 2, 96, { font: "logo", size: 22, color: "#ffd23f", outline: "#2b1a52", ow: 5 });
+        },
+      },
+    ],
+    beyonce: [
+      {
+        text: "Beyonce won the crown, and told everyone she'd had it the whole time.",
+        draw(now) {
+          storyBg("beyonce");
+          critter("beyonce", 160, now, { crown: true });
+          ["peaches", "bojjii", "lychee"].forEach((id, i) => mini(id, 24 + i * 28, FLOOR_Y - 20, 2, true));
+          ["riot", "penny", "snow"].forEach((id, i) => mini(id, 222 + i * 28, FLOOR_Y - 20, 2, false));
+          for (let i = 0; i < 3; i++) if (reduceMotion || Math.floor(now / 200 + i) % 2) sprite(FX["⚡"], 130 + i * 24, FLOOR_Y - 76, 1);
+        },
+      },
+      {
+        text: "New coop rule: Beyonce is Critter of the Month. Forever. No recounts. The coop knows better than to argue.",
+        draw(now) {
+          storyBg("beyonce");
+          // The new rule, posted on a sign
+          ctx.fillStyle = "#7a4526"; ctx.fillRect(64, 120, 4, 70); ctx.fillRect(142, 120, 4, 70);
+          ctx.fillStyle = "#2b1a52"; ctx.fillRect(40, 92, 130, 62);
+          ctx.fillStyle = "#c98a4a"; ctx.fillRect(42, 94, 126, 58);
+          ["COOP RULE #1:", "BEYONCE IS", "CRITTER OF THE", "MONTH. FOREVER."].forEach((l, i) => text(l, 105, 104 + i * 13, { size: 6, color: "#2b1a52", outline: false }));
+          critter("beyonce", 230, now, { crown: true, face: -1 });
+        },
+      },
+    ],
+    snow: [
+      {
+        text: "Snow won the crown... and gave everyone a big, soft marshmallow hug. Even the ones she beat.",
+        draw(now) {
+          storyBg("snow");
+          critter("snow", 160, now, { crown: true, pose: "hug" });
+          ["peaches", "bojjii", "lychee"].forEach((id, i) => mini(id, 60 + i * 24, FLOOR_Y - 24, 2, true));
+          ["riot", "beyonce", "penny"].forEach((id, i) => mini(id, 190 + i * 24, FLOOR_Y - 24, 2, false));
+          for (let i = 0; i < 5; i++) {
+            const drift = reduceMotion ? 0 : (now / 40 + i * 13) % 30;
+            ctx.globalAlpha = 1 - drift / 30;
+            sprite(FX["💕"], 110 + i * 24, FLOOR_Y - 60 - drift, 1);
+          }
+          ctx.globalAlpha = 1;
+        },
+      },
+      {
+        text: "Now she watches over the backyard from her fluffy cloud, keeping the crown warm for everyone. Forever loved.",
+        draw(now) {
+          storyBg("snow");
+          const bob = reduceMotion ? 0 : Math.round(Math.sin(now / 500) * 3);
+          ctx.fillStyle = "#ffffff";
+          ctx.beginPath(); ctx.ellipse(160, 136 + bob, 36, 10, 0, 0, Math.PI * 2); ctx.fill();
+          [[-22, -4], [0, -8], [22, -4]].forEach(([dx, dy]) => { ctx.beginPath(); ctx.arc(160 + dx, 136 + dy + bob, 10, 0, Math.PI * 2); ctx.fill(); });
+          critter("snow", 160, now, { crown: true, y: 132 + bob });
+          sparkleField(now, 10, 50, 120);
+        },
+      },
+    ],
+  };
+  const THE_END = {
+    get text() { return `${CHARS[hero].name} is the backyard champion! Thanks for playing Street Fluffers!`; },
+    draw(now) {
+      storyBg(hero, 0.25);
+      critter(hero, 160, now, { crown: true });
+      if (!reduceMotion && Math.random() < 0.2) emitFx(pick(["🎉", "✨", "💖"]), rand(30, 290), rand(90, 170), 1, "pop");
+      fxBits.forEach((b) => { ctx.globalAlpha = Math.min(1, 2.2 - (b.life / b.max) * 2.2); sprite(b.img, b.x - 6, b.y - 6, 1); });
+      ctx.globalAlpha = 1;
+      text("The End", W / 2, 84, { font: "logo", size: 38, color: "#ffd23f", outline: "#2b1a52", ow: 7 });
+      text(`SCORE ${score}`, W / 2, 110, { size: 9, color: "#fff8e4" });
+    },
+  };
+
+  function drawStory(now) {
+    const pnl = story.panels[story.i];
+    ctx.fillStyle = "#2b1a52";                       // letterbox under the picture
+    ctx.fillRect(0, 0, W, H);
+    ctx.save();
+    ctx.translate(0, -STORY_SHIFT);
+    pnl.draw(now);
+    ctx.restore();
+    // Caption box, typed out
+    panel(10, 150, 300, 58);
+    const shown = Math.max(0, Math.min(pnl.text.length, Math.floor((story.t - 300) / STORY_MS) + 1));
+    let left = shown;
+    wrap(pnl.text, 278).forEach((r, i) => {
+      if (left <= 0) return;
+      text(r.slice(0, left), 20, 164 + i * 12, { size: 6, align: "left", color: "#2b1a52", outline: false });
+      left -= r.length + 1;
+    });
+    // Page dots
+    story.panels.forEach((_, i) => {
+      ctx.fillStyle = i === story.i ? "#ff5a3c" : "#c9b8f2";
+      ctx.fillRect(300 - (story.panels.length - i) * 8, 154, 5, 5);
+    });
+  }
+
   /* ---------- Input ---------- */
   function syncMenus() {
     titleMenu.hidden = state !== "title";
+    storyMenu.hidden = state !== "story";
     selectMenu.hidden = state !== "select";
     ladderMenu.hidden = state !== "ladder";
     talkMenu.hidden = state !== "talk";
@@ -2432,7 +2858,8 @@
   function primary() {
     if (state === "paused") resume();
     else if (state === "ladder") startMatch();
-    else if (state === "title") { audio(); showSelect(); }
+    else if (state === "title") { audio(); startStory("intro"); }
+    else if (state === "story") advanceStory();
     else if (state === "talk") advanceTalk();
   }
 
@@ -2508,6 +2935,7 @@
   const fightStates = ["intro", "fight", "ko", "paused"];
   window.addEventListener("keydown", (e) => {
     if (e.ctrlKey || e.metaKey || e.altKey || e.key === "Tab" || e.key === "Shift") return;
+    if (window.YvyScores && YvyScores.isOpen()) return;   // typing initials
     if (e.target.tagName === "BUTTON" && (e.key === " " || e.key === "Enter")) return; // let buttons work
     const key = e.key.toLowerCase();
     let handled = true;
@@ -2524,6 +2952,7 @@
     else if (key === "escape") {
       if (state === "intro" || state === "fight" || state === "ko") pause();
       else if (state === "select") showTitle();   // back to the title screen
+      else if (state === "story") skipStory();
       else if (embedded) { try { window.parent.postMessage({ yvyArcade: "close" }, location.origin); } catch (err) { /* ignore */ } }
     } else handled = false;
     if (handled) e.preventDefault();
@@ -2548,6 +2977,8 @@
   syncMenus();
   setPreview(preview);
   requestAnimationFrame(frame);
-  document.getElementById("startBtn").addEventListener("click", () => { audio(); showSelect(); });
+  document.getElementById("startBtn").addEventListener("click", () => { audio(); startStory("intro"); });
+  document.getElementById("storyNext").addEventListener("click", advanceStory);
+  document.getElementById("storySkip").addEventListener("click", skipStory);
   if (!embedded) document.getElementById("startBtn").focus({ preventScroll: true });
 })();
