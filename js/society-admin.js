@@ -235,9 +235,11 @@
   });
 
   /* ---------- Garden: cross off to-dos, log feedings, review temps/feedings from members ---------- */
-  // Spots come from data.js → gardenMap; to-do ids and next-feeding dates use js/garden-map.js (window.YvyGarden)
+  // Spots come from data.js → gardenMap (and its otherMaps); to-do ids and next-feeding dates use js/garden-map.js (window.YvyGarden)
   const G = window.YvyGarden;
-  const gardenSpots = ((window.YVY.gardenMap || {}).spots || []).filter((sp) => sp.id && (sp.todo || sp.feedPlan));
+  const GM = window.YVY.gardenMap || {};
+  const gardenSpots = [].concat(GM.spots || [], ...(GM.otherMaps || []).map((m) => m.spots || []))
+    .filter((sp) => sp.id && (sp.todo || sp.feedPlan));
   const feedBeds = gardenSpots.filter((sp) => sp.feedPlan && sp.feedPlan.length);
   const spotById = (id) => gardenSpots.find((sp) => sp.id === id);
   const planName = (spot, id) => ((spot && spot.feedPlan || []).find((p) => p.id === id) || { what: id }).what;

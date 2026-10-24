@@ -1,8 +1,10 @@
 /*
  * Garden Map: the Central Garden drawn as a pixel map (🗺️ Map tab in the Garden Society).
  * Spots come from data.js → gardenMap. Hover, tap or Tab to a bed to see what's planted.
- * Positions are whole grid squares on a 40 × 52 map. Each square is a whole number of pixels
- * (--c, set from the space available), so every edge lands on a pixel and stays straight.
+ * gardenMap.otherMaps adds more maps (the Middle School Garden), picked with buttons above the map.
+ * Positions are whole grid squares (40 × 52 for the Central Garden; other maps set cols and rows).
+ * Each square is a whole number of pixels (--c, set from the space available), so every edge
+ * lands on a pixel and stays straight.
  */
 (function () {
   "use strict";
@@ -14,7 +16,6 @@
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => (
     { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
   ));
-  const COLS = 40, ROWS = 52;
   const place = ([x, y, w, h]) =>
     `left:calc(var(--c) * ${x});top:calc(var(--c) * ${y});width:calc(var(--c) * ${w});height:calc(var(--c) * ${h})`;
   const classes = (s) => `gm-spot gm-${s.kind}${s.tone ? " gm-" + s.tone : ""}${s.clip ? " gm-clip" : ""}`;
@@ -110,14 +111,9 @@
   window.YvyGarden = { todoKey, nextFeeding, parse, midnight };
   if (!box) return;
 
-  const spots = M.spots;
-  box.innerHTML = `
-    <div class="gm-head">
-      <h3 class="leaf-title"><span>${esc(M.title)}</span></h3>
-      <p class="gm-season">🗺️ ${esc(M.season)}</p>
-    </div>
-    <div class="gm-wrap">
-      <div class="gm-frame"><div class="gm-map" role="group" aria-label="Map of ${esc(M.title)}">
+  const maps = [M].concat(M.otherMaps || []);
+  let cur = M, spots = M.spots;
+  const mapHtml = () => `
         ${spots.map((s, i) => {
           const pieces = [[s.x, s.y, s.w, s.h]].concat(s.more || []);
           if (!s.name) {
@@ -128,8 +124,16 @@
             + pieces.slice(1).map((r) => `<div class="${classes(s)} gm-more" style="${place(r)}" data-i="${i}" aria-hidden="true"><span class="gm-shape"></span></div>`).join("");
         }).join("")}
         ${spots.filter((s) => s.runner).map(runner).join("")}
-        ${spots.filter((s) => s.fix).map(alert).join("")}
-      </div></div>
+        ${spots.filter((s) => s.fix).map(alert).join("")}`;
+  box.innerHTML = `
+    ${maps.length > 1 ? `<div class="gm-switch" role="group" aria-label="Pick a garden">${maps.map((m, k) =>
+      `<button type="button" data-map="${k}" aria-pressed="${k ? "false" : "true"}">${esc(m.button || m.title)}</button>`).join("")}</div>` : ""}
+    <div class="gm-head">
+      <h3 class="leaf-title"><span class="gm-title"></span></h3>
+      <p class="gm-season"></p>
+    </div>
+    <div class="gm-wrap">
+      <div class="gm-frame"><div class="gm-map" role="group"></div></div>
       <div class="gm-info" aria-live="polite">
         <span class="gm-name"></span>
         <div class="gm-body"></div>
@@ -146,10 +150,11 @@
   const BORDER = 12; // the map's wooden frame, both sides
   function fit() {
     if (!frame.clientWidth) return; // tab hidden
-    const c = Math.max(5, Math.min(13, Math.floor((frame.clientWidth - BORDER) / COLS)));
+    const cols = cur.cols || 40, rows = cur.rows || 52;
+    const c = Math.max(5, Math.min(13, Math.floor((frame.clientWidth - BORDER) / cols)));
     map.style.setProperty("--c", c + "px");
-    map.style.width = c * COLS + BORDER + "px";
-    map.style.height = c * ROWS + BORDER + "px";
+    map.style.width = c * cols + BORDER + "px";
+    map.style.height = c * rows + BORDER + "px";
   }
   new ResizeObserver(fit).observe(frame);
 
@@ -166,7 +171,7 @@
     map.querySelectorAll(".is-on").forEach((el) => el.classList.remove("is-on"));
     if (!s) {
       name.textContent = "Yvy";
-      body.innerHTML = `<p>${esc(M.hint)}</p>`;
+      body.innerHTML = `<p>${esc(cur.hint || M.hint)}</p>`;
       return;
     }
     map.querySelectorAll(`[data-i="${i}"]`).forEach((el) => el.classList.add("is-on"));
@@ -204,7 +209,25 @@
     const tab = b && document.querySelector(`.society-tabs [data-tab="${b.dataset.tabGo}"]`);
     if (tab) { tab.click(); tab.focus(); }
   });
-  show(null);
+
+  // Draw one of the maps (0 = the Central Garden, then gardenMap.otherMaps in order)
+  function draw(k) {
+    cur = maps[k] || M;
+    spots = cur.spots;
+    pinned = null;
+    box.querySelector(".gm-title").textContent = cur.title;
+    box.querySelector(".gm-season").textContent = `🗺️ ${cur.season || ""}`;
+    map.setAttribute("aria-label", `Map of ${cur.title}`);
+    map.innerHTML = mapHtml();
+    box.querySelectorAll("[data-map]").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.map === k)));
+    fit();
+    show(null);
+  }
+  box.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-map]");
+    if (b) draw(+b.dataset.map);
+  });
+  draw(0);
 
   // Load the live log, then redraw whatever is showing
   fetch(`${API}/api/garden`).then((r) => (r.ok ? r.json() : null)).then((data) => {

@@ -12,6 +12,13 @@
       "runtimeExecutable": "python",
       "runtimeArgs": ["-m", "http.server", "8082"],
       "port": 8082
+    },
+    {
+      "name": "yvygrounds-3",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8093"],
+      "port": 8093,
+      "autoPort": false
     }
   ]
 }

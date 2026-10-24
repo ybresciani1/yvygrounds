@@ -345,9 +345,11 @@
 
     const close = () => { box.hidden = true; if (lastFocus) lastFocus.focus(); };
 
-    // Compost temps and feedings: piles from data.js → society.compost.piles, beds from gardenMap
+    // Compost temps and feedings: piles from data.js → society.compost.piles, beds from gardenMap (and its otherMaps)
     const today = () => new Date().toLocaleDateString("en-CA");
-    const beds = ((window.YVY.gardenMap || {}).spots || []).filter((sp) => sp.id && sp.feedPlan && sp.feedPlan.length);
+    const GM = window.YVY.gardenMap || {};
+    const beds = [].concat(GM.spots || [], ...(GM.otherMaps || []).map((m) => m.spots || []))
+      .filter((sp) => sp.id && sp.feedPlan && sp.feedPlan.length);
     $("#sfPiles").innerHTML = (C.piles || ["Main pile"]).map((p) => `<option>${esc(p)}</option>`).join("");
     $("#sfBeds").innerHTML = '<option value="">Pick a bed…</option>' +
       beds.map((b) => `<option value="${esc(b.id)}">${esc(b.name)}</option>`).join("");

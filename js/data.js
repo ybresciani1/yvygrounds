@@ -1311,6 +1311,66 @@ window.YVY = {
       { kind: "vine", tone: "berry", x: 2, y: 51, w: 17, h: 1,
         name: "Blackberry Vines", about: "Sweet berries, sharp thorns. Pick carefully!" },
     ],
+
+    /*
+     * More maps, picked with the buttons above the map. Each has its own title, season, hint,
+     * grid size (cols × rows) and spots, written the same way as the Central Garden's.
+     * Extra kinds here: patio, shade (a possible future garden, dashed edge), hall (a hallway or
+     * walkway, dashed edge), faucet, fence. tone "oval" rounds a bed; tone "native" is a native garden.
+     */
+    otherMaps: [
+      {
+        key: "ms",
+        button: "🏫 Middle School",
+        title: "The Middle School Garden",
+        season: "First floor · Fall 2026",
+        hint: "Hover or tap a bed to see it! Beds #1 to #3 are in the bottom left corner, and #4 to #7 are up top by the tree.",
+        // Traced from Yvy's map on a grid 46 squares wide × 42 tall (the fence line is the last column)
+        cols: 46, rows: 42,
+        spots: [
+          // Buildings, hallways and patios first (drawn underneath everything else)
+          { kind: "hedge", x: 0, y: 0, w: 1, h: 21 },
+          { kind: "building", tone: "green", x: 1, y: 0, w: 10, h: 9 },
+          { kind: "patio", x: 11, y: 0, w: 13, h: 9 },
+          { kind: "building", tone: "green", text: "MIDDLE SCHOOL BUILDING", x: 1, y: 9, w: 36, h: 12 },
+          { kind: "hall", text: "1ST FLOOR HALLWAY (WALKWAY ABOVE)", x: 10, y: 21, w: 27, h: 4 },
+          { kind: "patio", x: 6, y: 21, w: 4, h: 16, more: [[0, 37, 22, 4]] },
+          { kind: "building", tone: "green", x: 10, y: 25, w: 12, h: 12 },
+          { kind: "hall", tone: "narrow", text: "WALK WAY", x: 22, y: 25, w: 3, h: 17 },
+          { kind: "building", tone: "green", x: 25, y: 25, w: 16, h: 12 },
+          { kind: "hedge", x: 41, y: 25, w: 2, h: 12 },
+          { kind: "fence", x: 45, y: 0, w: 1, h: 42 },
+
+          // The places you can look at
+          { kind: "bed", tone: "oval", text: "#1", x: 7, y: 31, w: 2, h: 5, id: "ms1", name: "MS Bed #1",
+            about: "Middle school garden bed #1, in the bottom left corner on the first floor." },
+          { kind: "bed", tone: "oval", text: "#2", x: 8, y: 38, w: 6, h: 2, id: "ms2", name: "MS Bed #2",
+            about: "Middle school garden bed #2, in the bottom left corner on the first floor." },
+          { kind: "bed", tone: "oval", text: "#3", x: 15, y: 38, w: 6, h: 2, id: "ms3", name: "MS Bed #3",
+            about: "Middle school garden bed #3, in the bottom left corner on the first floor." },
+          { kind: "bed", text: "#4", x: 12, y: 1, w: 3, h: 5, id: "ms4", name: "MS Bed #4",
+            about: "Middle school garden bed #4, up top by the tree (still the first floor)." },
+          { kind: "bed", text: "#5", x: 12, y: 7, w: 5, h: 2, id: "ms5", name: "MS Bed #5",
+            about: "Middle school garden bed #5, up top by the tree (still the first floor)." },
+          { kind: "bed", text: "#6", x: 18, y: 7, w: 5, h: 2, id: "ms6", name: "MS Bed #6",
+            about: "Middle school garden bed #6, up top by the tree (still the first floor)." },
+          { kind: "bed", text: "#7", x: 20, y: 1, w: 3, h: 5, id: "ms7", name: "MS Bed #7",
+            about: "Middle school garden bed #7, up top by the tree (still the first floor)." },
+          { kind: "tree", x: 16, y: 2, w: 3, h: 3,
+            name: "Tree", about: "The tree in the middle of the top garden beds." },
+          { kind: "faucet", x: 8, y: 6, w: 3, h: 3,
+            name: "Water Faucet", about: "The first floor water faucet, right by the top beds. Fill the watering cans here 💧" },
+          { kind: "shade", text: "SHADE GARDEN? 6TH", x: 0, y: 21, w: 6, h: 16,
+            name: "Possible Shade Garden (6th Grade)", about: "Underneath the stairs: a possible shade garden for 6th grade." },
+          { kind: "shade", text: "SHADE GARDEN? 7TH/8TH", x: 37, y: 9, w: 6, h: 16,
+            name: "Possible Shade Garden (7th/8th Grade)", about: "Underneath the stairs: a possible shade garden for 7th and 8th grade." },
+          { kind: "table", x: 31, y: 37, w: 5, h: 3,
+            name: "Table and Chairs", about: "A table and chairs by the native garden." },
+          { kind: "bed", tone: "native", text: "NATIVE GARDEN", x: 25, y: 40, w: 17, h: 1, more: [[42, 37, 1, 4]],
+            id: "msnative", name: "Middle School Native Garden", about: "The middle school's native plant garden, along the bottom by the fence." },
+        ],
+      },
+    ],
   },
 
   /*

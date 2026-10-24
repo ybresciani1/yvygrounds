@@ -260,6 +260,21 @@
   --t-green: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%239db48a'/%3E%3Crect x='0' y='0' width='1' height='1' fill='%2386a073'/%3E%3Crect x='1' y='0' width='1' height='1' fill='%2386a073'/%3E%3Crect x='2' y='0' width='1' height='1' fill='%2386a073'/%3E%3Crect x='3' y='0' width='1' height='1' fill='%2386a073'/%3E%3Crect x='1' y='2' width='1' height='1' fill='%23b3c7a2'/%3E%3C/svg%3E");
 }
 .gm-head { margin-bottom: 12px; }
+/* Garden picker (Central Garden / Middle School), only when data.js has gardenMap.otherMaps */
+.gm-switch { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 0 14px; }
+.gm-switch button {
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font: 700 14px var(--f-round);
+  padding: 5px 14px;
+  box-shadow: 0 3px 0 var(--ink);
+  cursor: pointer;
+}
+.gm-switch button:hover { background: #fff3c4; }
+.gm-switch button[aria-pressed="true"] { background: var(--green-dark); color: #fff; }
+.gm-switch button:focus-visible { outline: 3px dashed var(--pink); outline-offset: 2px; }
 .gm-season { margin: 4px 0 0; font: 10px var(--f-pixel); color: #6b4a1f; }
 .gm-wrap {
   display: grid;
@@ -270,7 +285,7 @@
   text-align: left;
 }
 .gm-frame { width: 100%; }
-/* js/garden-map.js sets the size: 40 × 52 squares of --c pixels, plus the 6px frame */
+/* js/garden-map.js sets the size: 40 × 52 squares of --c pixels (other maps set their own), plus the 6px frame */
 .gm-map {
   --c: 10px;
   position: relative;
@@ -316,7 +331,23 @@ div.gm-spot:not(.gm-more) { pointer-events: none; }
 .gm-grass .gm-shape { background-image: var(--t-grass); }
 .gm-hedge { filter: none; }
 .gm-hedge .gm-shape { background-image: var(--t-hedge); }
+.gm-patio { filter: none; }
+.gm-patio .gm-shape { background-image: var(--t-run); }
+/* Hallways and walkways: just a dashed edge on the pavement */
+.gm-hall { filter: none; }
+.gm-hall .gm-shape { outline: 2px dashed rgba(43, 26, 82, .45); outline-offset: -3px; }
+.gm-hall .gm-text { font-size: 1.6cqw; }
+.gm-narrow .gm-text { font-size: 1.3cqw; padding: 0 1px; }
+/* A possible future garden (shade gardens under the stairs): pale, with a dashed edge */
+.gm-shade .gm-shape { background: #cfd9c3; outline: 2px dashed var(--ink); outline-offset: -4px; }
+.gm-shade .gm-text { font-size: 1.6cqw; padding: 0 4px; }
+.gm-fence { filter: none; }
+.gm-fence .gm-shape { left: 35%; right: 35%; background: repeating-linear-gradient(var(--ink) 0 8px, transparent 8px 14px); }
 .gm-bed .gm-shape { background-image: var(--t-soil); box-shadow: inset 0 0 0 2px #c48a4a, inset 0 0 0 3px #8f5d2a; }
+.gm-native .gm-shape { background-image: var(--t-succ); }
+.gm-native .gm-text { font-size: 1.6cqw; }
+/* Oval beds: corners stepped off like pixel art */
+.gm-oval .gm-shape { clip-path: polygon(20% 0, 80% 0, 80% 8%, 92% 8%, 92% 22%, 100% 22%, 100% 78%, 92% 78%, 92% 92%, 80% 92%, 80% 100%, 20% 100%, 20% 92%, 8% 92%, 8% 78%, 0 78%, 0 22%, 8% 22%, 8% 8%, 20% 8%); }
 .gm-run .gm-shape { background-image: var(--t-run); }
 .gm-coop .gm-shape { background-image: var(--t-wood); }
 .gm-succulents .gm-shape { background-image: var(--t-succ); }
@@ -339,15 +370,18 @@ button.gm-building { filter: drop-shadow(1px 0 0 var(--ink)) drop-shadow(-1px 0 
 .gm-sign .gm-text { color: var(--ink); text-shadow: none; font-size: 1.8cqw; }
 /* Trees and compost piles always sit on top of what they overhang (vines, fences, the classroom).
    Hovering never changes the stacking, so a big spot can't jump in front of a small one. */
-.gm-tree, .gm-compost { z-index: 1; }
+.gm-tree, .gm-compost, .gm-faucet { z-index: 1; }
 /* Trees, compost piles and the mushroom tables are round: circles stepped like pixel art */
 .gm-tree .gm-shape,
 .gm-compost .gm-shape,
+.gm-faucet .gm-shape,
 .gm-mushrooms .gm-shape {
   clip-path: polygon(30% 0, 70% 0, 70% 10%, 90% 10%, 90% 30%, 100% 30%, 100% 70%, 90% 70%, 90% 90%, 70% 90%, 70% 100%, 30% 100%, 30% 90%, 10% 90%, 10% 70%, 0 70%, 0 30%, 10% 30%, 10% 10%, 30% 10%);
 }
 .gm-compost .gm-shape { background-image: var(--t-compost); }
 .gm-worm .gm-shape { background-image: var(--t-worm); } /* the worm bin (broken for now) */
+.gm-tree .gm-shape { background-image: var(--t-avocado); } /* a tree with no tone */
+.gm-faucet .gm-shape { background-image: var(--t-water); }
 .gm-fig .gm-shape { background-image: var(--t-fig); }
 .gm-avocado .gm-shape { background-image: var(--t-avocado); }
 .gm-apple .gm-shape { background-image: var(--t-apple); }
@@ -446,8 +480,8 @@ button.gm-clip { pointer-events: none; }
 @keyframes gm-hop { 50% { transform: translateY(-12%); } }
 
 /* Round spots only catch clicks on the circle itself, not the empty corners of their square */
-button.gm-tree, button.gm-compost, button.gm-mushrooms { pointer-events: none; }
-.gm-tree .gm-shape, .gm-compost .gm-shape, .gm-mushrooms .gm-shape { pointer-events: auto; }
+button.gm-tree, button.gm-compost, button.gm-faucet, button.gm-mushrooms { pointer-events: none; }
+.gm-tree .gm-shape, .gm-compost .gm-shape, .gm-faucet .gm-shape, .gm-mushrooms .gm-shape { pointer-events: auto; }
 /* Trees are drawn a little inside their squares; the small citrus tree even more */
 .gm-tree .gm-shape { inset: 3px; }
 .gm-tree.gm-citrus .gm-shape { inset: 7px; }
