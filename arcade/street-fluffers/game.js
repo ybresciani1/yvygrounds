@@ -830,7 +830,10 @@
   let muted = store.get(MUTE_KEY) === "1";
   const vol = { music: 0.5, sfx: 0.8 };
   try { Object.assign(vol, JSON.parse(store.get(VOLUME_KEY)) || {}); } catch (e) { /* defaults */ }
-  let sfxGain = null, musicGain = null, musicEl = null, musicTrack = -1, musicOn = false, koBuf = null;
+  let sfxGain = null, musicGain = null, musicEl = null, musicTrack = -1, musicOn = false;
+  // The announcer (deep, echoey voice clips in this folder)
+  const CLIPS = { ko: "ko.wav", double: "double-ko.wav", win: "you-win.wav", perfect: "perfect.wav" };
+  const clipBuf = {};
   function audio() {
     if (!actx) {
       const AC = window.AudioContext || window.webkitAudioContext;
@@ -839,7 +842,7 @@
         sfxGain = actx.createGain();
         sfxGain.gain.value = vol.sfx;
         sfxGain.connect(actx.destination);
-        loadKO();
+        loadClips();
       }
     }
     if (actx && actx.state === "suspended") actx.resume();
@@ -847,19 +850,20 @@
   }
   const out = (a) => sfxGain || a.destination;
 
-  // The announcer's "K.O.!" (ko.wav)
-  function loadKO() {
-    fetch("ko.wav").then((r) => r.arrayBuffer())
-      .then((b) => new Promise((res, rej) => actx.decodeAudioData(b, res, rej)))
-      .then((buf) => { koBuf = buf; })
-      .catch(() => { /* no clip, the bleeps still play */ });
+  function loadClips() {
+    Object.keys(CLIPS).forEach((name) => {
+      fetch(CLIPS[name]).then((r) => r.arrayBuffer())
+        .then((b) => new Promise((res, rej) => actx.decodeAudioData(b, res, rej)))
+        .then((buf) => { clipBuf[name] = buf; })
+        .catch(() => { /* no clip, the bleeps still play */ });
+    });
   }
-  function playKO() {
-    if (muted || !koBuf || !actx) return;
+  function announce(name, delay) {
+    if (muted || !clipBuf[name] || !actx) return;
     const src = actx.createBufferSource();
-    src.buffer = koBuf;
+    src.buffer = clipBuf[name];
     src.connect(out(actx));
-    src.start(actx.currentTime + 0.05);
+    src.start(actx.currentTime + (delay || 0));
   }
 
   // Music goes through its own gain so the volume slider works everywhere (iPhones ignore audio.volume)
@@ -941,6 +945,56 @@
     src.connect(filter).connect(g).connect(out(a));
     src.start(t, Math.random() * (1 - dur), dur);
   }
+  // A critter cry: a sliding pitch with vibrato and a little grit, through a vowel-ish filter
+  // o: { mid (pitch halfway), type, vib (Hz), vibDepth, fA/fB (filter sweep, like "ee" to "ow"), q, vol, delay }
+  let grit = null;
+  function cry(f0, f1, dur, o) {
+    if (muted) return;
+    const a = audio();
+    if (!a) return;
+    o = o || {};
+    if (!grit) { grit = new Float32Array(256); for (let i = 0; i < 256; i++) { const x = i / 128 - 1; grit[i] = Math.tanh(x * 2.5) / Math.tanh(2.5); } }
+    const t = a.currentTime + (o.delay || 0);
+    const osc = a.createOscillator();
+    osc.type = o.type || "sawtooth";
+    osc.frequency.setValueAtTime(f0, t);
+    if (o.mid) osc.frequency.linearRampToValueAtTime(o.mid, t + dur * 0.35);
+    osc.frequency.exponentialRampToValueAtTime(f1, t + dur);
+    if (o.vib) {
+      const lfo = a.createOscillator(), depth = a.createGain();
+      lfo.frequency.value = o.vib;
+      depth.gain.value = o.vibDepth || f1 * 0.04;
+      lfo.connect(depth).connect(osc.frequency);
+      lfo.start(t); lfo.stop(t + dur + 0.05);
+    }
+    const shape = a.createWaveShaper();
+    shape.curve = grit;
+    const filt = a.createBiquadFilter();
+    filt.type = "bandpass";
+    filt.Q.value = o.q || 1.1;
+    filt.frequency.setValueAtTime(o.fA || f0 * 2, t);
+    filt.frequency.exponentialRampToValueAtTime(o.fB || f1 * 2, t + dur);
+    const g = a.createGain();
+    const v = o.vol || 0.22;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(v, t + 0.015);
+    g.gain.setValueAtTime(v, t + dur * 0.7);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(shape).connect(filt).connect(g).connect(out(a));
+    osc.start(t); osc.stop(t + dur + 0.05);
+  }
+  const bark = (f, delay, vol) => { cry(f, f * 0.6, 0.11, { delay, vol: vol || 0.25, fA: 1400, fB: 700, q: 0.9 }); noise(0.07, 0.12, 1500, delay); };
+  const cluck = (f, delay, vol) => { cry(f, f * 0.8, 0.07, { delay, type: "square", vol: vol || 0.16, fA: 1500, q: 1.4 }); cry(f * 0.85, f * 1.35, 0.12, { delay: delay + 0.08, type: "square", vol: vol || 0.16, fA: 1700, q: 1.4 }); };
+  // What each critter cries out as they go down (cats, dogs and chickens, not people!)
+  const KO_CRIES = {
+    peaches: () => { bark(1000, 0); bark(1050, 0.13); cry(1300, 480, 0.6, { delay: 0.28, vib: 9, vibDepth: 35, fA: 2000, fB: 900 }); },             // yip yip yeeelp
+    bojjii: () => { bark(330, 0, 0.3); cry(340, 250, 1.1, { delay: 0.18, mid: 470, type: "triangle", vib: 5, vibDepth: 12, fA: 800, fB: 520, q: 0.8, vol: 0.32 }); }, // WOOF, awoooo
+    penny: () => { [0, 0.1, 0.2].forEach((d) => bark(1250, d, 0.18)); cry(900, 560, 0.65, { delay: 0.34, mid: 1150, type: "triangle", vib: 11, vibDepth: 28, vol: 0.2 }); }, // yip yip yip, whimper
+    lychee: () => { cry(250, 300, 0.16, { vib: 25, vibDepth: 20, fA: 600, fB: 700, vol: 0.18 }); cry(420, 380, 0.8, { delay: 0.14, mid: 760, vib: 6, vibDepth: 14, fA: 2600, fB: 650, q: 1.6, vol: 0.26 }); }, // mrr... mee-OWWW
+    riot: () => { cluck(720, 0); cluck(640, 0.24); cluck(560, 0.48); cry(620, 300, 0.55, { delay: 0.74, type: "square", fA: 1300, fB: 800, q: 1.3, vol: 0.18 }); }, // bawk bawk bawk BAWWWK
+    beyonce: () => { cry(540, 450, 0.1, { type: "square", fA: 1400, q: 1.4, vol: 0.18 }); cry(620, 430, 0.55, { delay: 0.12, mid: 1050, fA: 1600, fB: 1100, q: 2, vol: 0.24 }); }, // buh-GAWWK!
+    snow: () => { [1600, 1400, 1200].forEach((f, i) => cry(f, f * 1.18, 0.08, { delay: i * 0.18, type: "triangle", fA: 3000, q: 0.7, vol: 0.14 - i * 0.03 })); cry(1000, 680, 0.45, { delay: 0.6, type: "triangle", fA: 1800, fB: 1300, q: 0.7, vol: 0.1 }); }, // peep, peep... peep
+  };
   const bawk = () => { tone(620, 480, 0.09, "square", 0.06); tone(520, 820, 0.14, "square", 0.06, 0.1); };
   const VOICES = {
     peaches: () => { tone(560, 360, 0.08, "square", 0.06); tone(600, 380, 0.09, "square", 0.06, 0.12); },
@@ -972,7 +1026,7 @@
     jump: () => tone(300, 520, 0.1, "square", 0.03),
     round: () => [523, 659].forEach((f, i) => tone(f, 0, 0.14, "square", 0.05, i * 0.12)),
     fight: () => { tone(880, 0, 0.09, "square", 0.08); tone(1320, 0, 0.2, "square", 0.07, 0.08); },
-    ko: () => { tone(700, 90, 0.7, "sawtooth", 0.06); noise(0.4, 0.2, 700); },
+    ko: () => { tone(150, 32, 0.6, "sine", 0.4); tone(95, 30, 0.45, "square", 0.08); noise(0.45, 0.45, 900); noise(0.14, 0.3, 5200); }, // the big K.O. crunch
     fanfare: () => [523, 659, 784, 1046, 784, 1046].forEach((f, i) => tone(f, 0, 0.14, "square", 0.05, i * 0.11)),
     champ: () => [523, 659, 784, 1046, 1318, 1046, 1318, 1568].forEach((f, i) => tone(f, 0, 0.16, "square", 0.05, i * 0.12)),
     sad: () => [392, 370, 349, 294].forEach((f, i) => tone(f, i === 3 ? 200 : 0, i === 3 ? 0.5 : 0.18, "triangle", 0.07, i * 0.2)),
@@ -1184,6 +1238,7 @@
     stopMusic(700);           // the music stops when someone wins
     roundResult = { winner, how, perfect: !!winner && winner.hp >= MAX_HP, at: slow ? KO_FREEZE + KO_SLOW : 900, celebrated: false, done: false };
     if (winner) wins[winner === p1 ? "p1" : "p2"]++;
+    if (how === "double") { wins.p1++; wins.p2++; }      // both fighters get the round
     // Points for winning a round: health left, time left, and a big bonus for a perfect
     if (winner === p1) {
       roundResult.points = 100 + Math.round(p1.hp) * 10 + Math.ceil(timeLeft / 1000) * 10 + (roundResult.perfect ? 1000 : 0);
@@ -1202,11 +1257,14 @@
     emitFx("🎉", w.x, w.y - w.height, 4, "pop");
     cheerT = 1500;
     VOICES[w.id]();
+    // "YOU WIN!" when this round takes the match (after any "PERFECT!" has finished)
+    if (w === p1 && wins.p1 >= WINS_NEEDED && wins.p1 > wins.p2) announce("win", roundResult.perfect ? 1.0 : 0.3);
   }
 
   function finishRound() {
     roundResult.done = true;
-    const champ = wins.p1 >= WINS_NEEDED ? "p1" : wins.p2 >= WINS_NEEDED ? "p2" : null;
+    // First to 2 takes it; if a Double K.O. ties it up at 2-2, there's one more round
+    const champ = wins.p1 >= WINS_NEEDED && wins.p1 > wins.p2 ? "p1" : wins.p2 >= WINS_NEEDED && wins.p2 > wins.p1 ? "p2" : null;
     if (!champ && round < 5) { transition(nextRound); return; }
     matchWon = champ ? champ === "p1" : wins.p1 >= wins.p2;
     transition(startTalk);
@@ -1342,8 +1400,36 @@
   }
 
   // m: { dmg, stun, block, push, heavy, status, statusFx, unblockable }
+  // While the fighters move, their hits wait in hitQueue and then all land together at the end of
+  // the frame, so two fighters who hit each other at the same instant both get hit (a trade).
+  // K.O.s from those hits are collected in koQueue to spot a Double K.O.
+  let hitQueue = null, koQueue = null;
+  function flushHits() {
+    const q = hitQueue;
+    hitQueue = null;
+    if (!q || !q.length) return;
+    koQueue = [];
+    q.forEach((args) => applyHit(...args));
+    const kos = koQueue;
+    koQueue = null;
+    if (kos.length === 2) doubleKO(kos[0].x, kos[0].y);
+    else if (kos.length === 1) { announceKO(kos[0].att); endRound(kos[0].att, "ko"); }
+  }
+
+  // "K.O.!" and, if the winner never got touched, "PERFECT!"
+  function announceKO(winner) {
+    announce("ko", 0.5);
+    if (winner && winner.hp >= MAX_HP) announce("perfect", 1.7);
+  }
+
+  function doubleKO() {
+    announce("double", 0.5);
+    endRound(null, "double");
+  }
+
   // face: which way the hit pushes (projectiles push the way they fly)
   function applyHit(att, def, m, word, x, y, face) {
+    if (hitQueue) { hitQueue.push([att, def, m, word, x, y, face]); return true; }
     face = face || att.face;
     if (def.state === "ko" || state !== "fight") return false;
     if (def.hideT > 0) { popup("MISS", x, y - 8, "#fff8e4", 7); return false; }
@@ -1384,8 +1470,9 @@
       if (!reduceMotion) shakeT = 350;
       cheerT = 2000;
       SFX.ko();
-      playKO();
-      endRound(att, "ko");
+      KO_CRIES[def.id]();
+      if (koQueue) koQueue.push({ att, def, x, y });     // decided once every hit this frame has landed
+      else { announceKO(att); endRound(att, "ko"); }
     }
     return true;
   }
@@ -1783,8 +1870,10 @@
           if (ai.next <= 0 && (free(p2) || p2.state === "jump")) cpuThink();
         }
         if (state !== "fight") { cin.left = cin.right = cin.up = false; }
+        hitQueue = [];
         updateFighter(p1, p2, dt);
         updateFighter(p2, p1, dt);
+        flushHits();
         separate();
         updateShots(dt);
       }
@@ -2404,8 +2493,12 @@
       else text("FIGHT!", W / 2, 84, { font: "logo", size: 46, color: "#ff5a3c", outline: "#2b1a52", ow: 7 });
     } else if (state === "ko" && roundResult) {
       const r = roundResult;
-      if (!r.celebrated) {
+      if (r.how === "double") {
+        text("Double K.O.!", W / 2, 84, { font: "logo", size: 40, color: "#ff4d6d", outline: "#2b1a52", ow: 7 });
+        if (r.celebrated) text("BOTH GET THE ROUND", W / 2, 110, { size: 8, color: "#fff8e4" });
+      } else if (!r.celebrated) {
         text(r.how === "ko" ? "K.O.!" : "TIME!", W / 2, 84, { font: "logo", size: 50, color: "#ff4d6d", outline: "#2b1a52", ow: 7 });
+        if (r.perfect && r.how === "ko" && stateT > 1700) text("PERFECT!", W / 2, 116, { font: "logo", size: 22, color: "#ff8cc6", outline: "#2b1a52", ow: 5 });
       } else if (r.winner) {
         text(`${r.winner.C.name} wins!`, W / 2, 80, { font: "logo", size: 30, color: "#ffd23f", outline: "#2b1a52", ow: 6 });
         if (r.perfect) text("PERFECT!", W / 2, 104, { size: 10, color: "#ff8cc6" });
