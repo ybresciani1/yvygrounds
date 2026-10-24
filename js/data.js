@@ -72,6 +72,7 @@ window.YVY = {
   arcadeScores: [
     { game: "tomato-tussle", title: "Tomato Tussle", unit: "pts" },
     { game: "bowl-brawl", title: "Bowl Brawl", low: true, unit: "s" },
+    { game: "street-fluffers", title: "Street Fluffers", unit: "pts" },
   ],
 
   // Rabbit & Frog hall of fame: students who finished the game. Yvy adds students (and photos,
@@ -486,6 +487,8 @@ window.YVY = {
       blurb: "Doze off in compost class, wake up in a dream world, and follow Wallace the worm through soil-science challenges." },
     { title: "Bowl Brawl", type: "silly", date: "2026-10-18", play: "arcade/bowl-brawl/", icon: "bowl",
       blurb: "Peaches vs. Lychee: a quick-draw duel over the food bowl. Wait for Bojjii's flag, then pounce! 1 or 2 players." },
+    { title: "Street Fluffers", type: "silly", date: "2026-10-24", play: "arcade/street-fluffers/", icon: "peaches",
+      blurb: "Pick a critter and brawl up the backyard ladder for the Critter of the Month Crown! Trading-card specials, slow-mo K.O.s and party hats." },
     { title: "Who is my wife cheating with!?", type: ["silly", "story"], date: "2026-10-18",
       rated: "PG-13", ratedFor: "drinking and grown-up jokes",
       url: "https://who-is-my-wife-cheating-with.vercel.app/", thumb: "images/games/who-is-my-wife-cheating-with.jpg",

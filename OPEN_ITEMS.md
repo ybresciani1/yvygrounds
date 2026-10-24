@@ -66,6 +66,7 @@ so a game can be built and pushed early. (The files are still reachable by direc
 |---|---|---|
 | Oct 18, 2026 | ✅ Tomato Tussle | Splat garden pests with tomatoes, don't splat the chickens |
 | Oct 18, 2026 | ✅ Bowl Brawl | Peaches vs. Lychee quick-draw duel over the food bowl (1 or 2 players) |
+| Oct 24, 2026 | ✅ Street Fluffers (bonus) | Pick any critter and fight up the ladder, Street Fighter style; released early, outside the monthly schedule |
 | Nov 18, 2026 | Egg Catch | Riot and Beyonce lay eggs from the coop roof; catch them in a basket (teaser already listed) |
 | Dec 18, 2026 | Bojjii's Pancake Catch | Holiday pancakes flip off the pan; Bojjii jumps for the tiny ones |
 | Jan 18, 2027 | Handstand Hero | New Year's resolution: hold Yvy's handstand longer than one hiccup |
