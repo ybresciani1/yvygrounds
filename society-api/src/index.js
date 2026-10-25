@@ -6,8 +6,8 @@
  *   GET  /api/projects                                                     active + done projects
  *   GET  /api/compost                                                      compost temperature log (approved)
  *   GET  /api/photo/<key>                                                  photo of an approved post
- *   POST /api/submit   (multipart, needs SOCIETY_PASSCODE)                 new post, compost temp or feeding, waits for approval
- *   GET  /api/garden                                                       garden map: feedings and crossed-off to-dos
+ *   POST /api/submit   (multipart, needs SOCIETY_PASSCODE)                 new post, compost temp, feeding or done to-dos, waits for approval
+ *   GET  /api/garden                                                       garden map: feedings, crossed-off to-dos and to-dos waiting for OK
  *   GET  /api/guestbook                                                    approved guestbook entries
  *   POST /api/guestbook  { name, role?, avatar?, message, website, ms }    sign it (no passcode), waits for approval
  *   POST /api/visit                                                         count a visit, returns { visitor: N } (total visits)
@@ -29,11 +29,12 @@
  *   POST   /api/admin/compost           { logged_on, temp_f, pile?, turned?, moisture?, notes? }
  *   PATCH  /api/admin/compost/<id>      { status }                     approve/reject a member's reading
  *   DELETE /api/admin/compost/<id>
- *   GET    /api/admin/garden-pending   member temps and feedings waiting for review
+ *   GET    /api/admin/garden-pending   member temps, feedings and done to-dos waiting for review
  *   POST   /api/admin/feed             { bed, plan_ids[], fed_on, notes? }  log a feeding
  *   PATCH  /api/admin/feed/<id>        { status }                     approve/reject a member's feeding
  *   DELETE /api/admin/feed/<id>
  *   POST   /api/admin/todo             { bed, item, done }            cross a to-do off (or back on)
+ *   PATCH  /api/admin/todo-report/<id> { status }                     approve (crosses its to-dos off) or reject a member's report
  *   GET    /api/admin/guestbook?status=pending|approved|rejected
  *   PATCH  /api/admin/guestbook/<id>    { status?, name?, role?, avatar?, message? }
  *   DELETE /api/admin/guestbook/<id>
@@ -46,8 +47,8 @@
 const MAX_PHOTOS = 3;
 const MAX_PHOTO_BYTES = 6 * 1024 * 1024;
 const KINDS = ["journal", "project", "compost"];
-// "Submit an entry" can also send a compost temperature or a feeding (garden map); they wait for review too
-const LOG_KINDS = ["temp", "feed"];
+// "Submit an entry" can also send a compost temperature, a feeding or done to-dos (garden map); they wait for review too
+const LOG_KINDS = ["temp", "feed", "todo"];
 // Spot, feedPlan and to-do ids from data.js → gardenMap (bed5, greens, a to-do's text hash...)
 const SLUG = /^[a-z0-9-]{1,30}$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -160,6 +161,7 @@ async function route(request, env) {
     if (what === "feed" && m === "PATCH" && id) return adminReviewLog(request, env, "feed_logs", id);
     if (what === "feed" && m === "DELETE" && id) return adminDeleteFeed(env, id);
     if (what === "todo" && m === "POST" && !id) return adminSetTodo(request, env);
+    if (what === "todo-report" && m === "PATCH" && id) return adminReviewTodo(request, env, id);
     if (what === "guestbook" && m === "GET" && !id) return adminListGuestbook(url, env);
     if (what === "guestbook" && m === "PATCH" && id) return adminUpdateGuestbook(request, env, id);
     if (what === "guestbook" && m === "DELETE" && id) return adminDeleteGuestbook(env, id);
@@ -684,6 +686,11 @@ function checkPlanIds(list) {
   if (!ids.length || ids.length > 6 || !ids.every((x) => SLUG.test(x))) throw new HttpError(400, "Pick what you fed.");
   return ids;
 }
+function checkItems(list) {
+  const ids = [].concat(list || []).map((x) => clean(x, 30)).filter(Boolean);
+  if (!ids.length || ids.length > 12 || !ids.every((x) => SLUG.test(x))) throw new HttpError(400, "Check off what you did.");
+  return [...new Set(ids)];
+}
 function checkBed(value) {
   const bed = clean(value, 30);
   if (!SLUG.test(bed)) throw new HttpError(400, "Pick a bed.");
@@ -691,17 +698,22 @@ function checkBed(value) {
 }
 
 async function getGarden(env) {
-  const [feeds, done] = await Promise.all([
+  const [feeds, done, reports] = await Promise.all([
     env.DB.prepare("SELECT id, bed, plan_ids, fed_on, notes FROM feed_logs WHERE status = 'approved' ORDER BY fed_on, created_at").all(),
     env.DB.prepare("SELECT bed, item, done_on FROM todo_done").all(),
+    env.DB.prepare("SELECT bed, items FROM todo_reports WHERE status = 'pending'").all(),
   ]);
+  // To-dos members say they did, still waiting for Yvy (just which ones, not who sent them)
+  const pending = [];
+  reports.results.forEach((r) => JSON.parse(r.items || "[]").forEach((item) => pending.push({ bed: r.bed, item })));
   return json({
     feeds: feeds.results.map((f) => ({ ...f, plan_ids: JSON.parse(f.plan_ids || "[]") })),
     done: done.results,
+    pending,
   });
 }
 
-// A compost temperature or a feeding sent through "Submit an entry" (passcode already checked)
+// A compost temperature, a feeding or done to-dos sent through "Submit an entry" (passcode already checked)
 async function submitLog(form, kind, env) {
   const author = clean(form.get("author"), LIMITS.author);
   if (!author) throw new HttpError(400, "Add your first name or initials.");
@@ -713,6 +725,14 @@ async function submitLog(form, kind, env) {
       id, checkDate(form.get("logged_on")), clean(form.get("pile"), LIMITS.pile) || "Main pile", checkTemp(form.get("temp_f")),
       form.get("turned") ? 1 : 0, clean(form.get("body"), LIMITS.notes), now(), author
     ).run();
+  } else if (kind === "todo") {
+    await env.DB.prepare(
+      "INSERT INTO todo_reports (id, bed, items, done_on, notes, author, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)"
+    ).bind(
+      id, checkBed(form.get("bed")), JSON.stringify(checkItems(form.getAll("items"))), checkDate(form.get("done_on")),
+      clean(form.get("body"), LIMITS.notes), author, now()
+    ).run();
+    return json({ ok: true, message: "Thanks! It shows with a ? on the map until Yvy checks it." }, 201);
   } else {
     await env.DB.prepare(
       "INSERT INTO feed_logs (id, bed, plan_ids, fed_on, notes, author, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)"
@@ -725,14 +745,31 @@ async function submitLog(form, kind, env) {
 }
 
 async function adminGardenPending(env) {
-  const [temps, feeds] = await Promise.all([
+  const [temps, feeds, todos] = await Promise.all([
     env.DB.prepare("SELECT id, logged_on, pile, temp_f, turned, notes, author, created_at FROM compost_logs WHERE status = 'pending' ORDER BY created_at").all(),
     env.DB.prepare("SELECT id, bed, plan_ids, fed_on, notes, author, created_at FROM feed_logs WHERE status = 'pending' ORDER BY created_at").all(),
+    env.DB.prepare("SELECT id, bed, items, done_on, notes, author, created_at FROM todo_reports WHERE status = 'pending' ORDER BY created_at").all(),
   ]);
   return json({
     temps: temps.results,
     feeds: feeds.results.map((f) => ({ ...f, plan_ids: JSON.parse(f.plan_ids || "[]") })),
+    todos: todos.results.map((t) => ({ ...t, items: JSON.parse(t.items || "[]") })),
   });
+}
+
+// Approving a member's to-do report crosses its to-dos off; rejecting just closes it
+async function adminReviewTodo(request, env, id) {
+  const { status } = await readJson(request);
+  if (!["approved", "rejected"].includes(status)) throw new HttpError(400, "Approve or reject it.");
+  const r = await env.DB.prepare("SELECT bed, items, done_on FROM todo_reports WHERE id = ? AND status = 'pending'").bind(id).first();
+  if (!r) throw new HttpError(404, "That report was already handled.");
+  const steps = [env.DB.prepare("UPDATE todo_reports SET status = ? WHERE id = ?").bind(status, id)];
+  if (status === "approved") {
+    JSON.parse(r.items || "[]").forEach((item) => steps.push(
+      env.DB.prepare("INSERT OR REPLACE INTO todo_done (bed, item, done_on) VALUES (?, ?, ?)").bind(r.bed, item, r.done_on)));
+  }
+  await env.DB.batch(steps);
+  return json({ ok: true });
 }
 
 // Approve or reject a member's temperature or feeding (table is fixed by the route, never from the request)

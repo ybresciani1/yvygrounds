@@ -361,17 +361,67 @@
     };
     form.elements.bed.addEventListener("change", showPlan);
     showPlan();
-    // Temps and feedings need the garden log in the API; keep those two choices hidden until it answers
+
+    // Done to-dos: pick a garden (Central or Middle School), then a spot, then check off its to-dos.
+    // Ones already crossed off or waiting for Yvy's OK show but can't be checked again.
+    const maps = [GM].concat(GM.otherMaps || []);
+    let garden = { done: new Set(), pending: new Set() };
+    $("#sfTodoMaps").innerHTML = maps.map((m, k) =>
+      `<label class="sf-check"><input type="radio" name="todo_map" value="${k}"${k ? "" : " checked"}> ${esc(m.button || m.title)}</label>`).join("");
+    const todoSpots = () => ((maps[+form.elements.todo_map.value] || {}).spots || []).filter((sp) => sp.id && sp.todo && sp.todo.length);
+    const showTodoList = () => {
+      const sp = todoSpots().find((s) => s.id === form.elements.todo_bed.value);
+      const key = window.YvyGarden && window.YvyGarden.todoKey;
+      $("#sfTodoList").innerHTML = sp && key ? sp.todo.map((t) => {
+        const id = key(t), tag = `${sp.id}:${id}`;
+        if (garden.done.has(tag)) return `<label class="sf-check sf-todo-done"><input type="checkbox" checked disabled> <span>${esc(t)} <em>(done ✓)</em></span></label>`;
+        if (garden.pending.has(tag)) return `<label class="sf-check sf-todo-pending"><input type="checkbox" disabled> <span>${esc(t)} <em>(? waiting for Yvy)</em></span></label>`;
+        return `<label class="sf-check"><input type="checkbox" name="items" value="${esc(id)}"> <span>${esc(t)}</span></label>`;
+      }).join("") : '<p class="sf-privacy">Pick a spot first.</p>';
+    };
+    const showTodoSpots = () => {
+      // Spots that share a name (the three Fig Trees) get numbered in map order, like their abouts
+      const all = ((maps[+form.elements.todo_map.value] || {}).spots || []).filter((sp) => sp.name);
+      const label = (sp) => {
+        const same = all.filter((x) => x.name === sp.name);
+        return same.length > 1 ? `${sp.name} #${same.indexOf(sp) + 1}` : sp.name;
+      };
+      $("#sfTodoSpots").innerHTML = '<option value="">Pick a spot…</option>' +
+        todoSpots().map((sp) => `<option value="${esc(sp.id)}">${esc(label(sp))}</option>`).join("");
+      showTodoList();
+    };
+    form.addEventListener("change", (e) => {
+      if (e.target.name === "todo_map") showTodoSpots();
+      if (e.target.name === "todo_bed") showTodoList();
+    });
+    showTodoSpots();
+
+    // Temps, feedings and to-dos need the garden log in the API; keep those choices hidden until it answers
+    // (to-dos also need the newer API that sends "pending")
     const logKinds = [...form.querySelectorAll("[name=kind][value=temp], [name=kind][value=feed]")].map((r) => r.closest("label"));
-    logKinds.forEach((l) => { l.hidden = true; });
-    api("/api/garden").then(() => logKinds.forEach((l) => { l.hidden = false; })).catch(() => { /* not deployed yet */ });
+    const todoKind = form.querySelector("[name=kind][value=todo]").closest("label");
+    logKinds.concat(todoKind).forEach((l) => { l.hidden = true; });
+    let canReport = false;
+    const loadGarden = () => api("/api/garden").then((g) => {
+      logKinds.forEach((l) => { l.hidden = false; });
+      canReport = Array.isArray(g.pending);
+      todoKind.hidden = !canReport;
+      garden = {
+        done: new Set((g.done || []).map((d) => `${d.bed}:${d.item}`)),
+        pending: new Set((g.pending || []).map((d) => `${d.bed}:${d.item}`)),
+      };
+      showTodoList();
+    }).catch(() => { /* not deployed yet */ });
+    loadGarden();
 
     const syncKind = async () => {
       const kind = form.elements.kind.value;
-      const isLog = kind === "temp" || kind === "feed";
+      const isLog = ["temp", "feed", "todo"].includes(kind);
       projectRow.hidden = kind !== "project";
       $("#sfTempRow").hidden = kind !== "temp";
       $("#sfFeedRow").hidden = kind !== "feed";
+      $("#sfTodoRow").hidden = kind !== "todo";
+      if (kind === "todo" && !form.elements.done_on.value) form.elements.done_on.value = today();
       $("#sfTitleRow").hidden = $("#sfPhotoRow").hidden = isLog;
       if (kind === "temp" && !form.elements.logged_on.value) form.elements.logged_on.value = today();
       if (kind === "feed" && !form.elements.fed_on.value) form.elements.fed_on.value = today();
@@ -385,14 +435,28 @@
       }
     };
 
-    $("#societySubmitBtn").addEventListener("click", () => {
+    const open = () => {
       lastFocus = document.activeElement;
       status.textContent = "";
       status.className = "sf-status";
       box.hidden = false;
       syncKind();
       $("#sfClose").focus();
-    });
+    };
+    $("#societySubmitBtn").addEventListener("click", open);
+    // The garden map's "I did one!" button opens the form at that garden and spot (js/garden-map.js)
+    window.YvySociety = {
+      canReport: () => canReport,
+      reportTodo(mapIndex, spotId) {
+        form.querySelector("[name=kind][value=todo]").checked = true;
+        const radio = form.querySelector(`[name=todo_map][value="${mapIndex}"]`);
+        if (radio) radio.checked = true;
+        showTodoSpots();
+        form.elements.todo_bed.value = spotId;
+        showTodoList();
+        open();
+      },
+    };
     $("#sfClose").addEventListener("click", close);
     box.addEventListener("click", (e) => { if (e.target === box) close(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !box.hidden) close(); });
@@ -402,7 +466,7 @@
       e.preventDefault();
       const btn = $("button[type=submit]", form);
       const kind = form.elements.kind.value;
-      const isLog = kind === "temp" || kind === "feed";
+      const isLog = ["temp", "feed", "todo"].includes(kind);
       const files = isLog ? [] : [...form.elements.photos.files];
       if (files.length > 3) { status.textContent = "Up to 3 photos, please."; status.className = "sf-status is-error"; return; }
       btn.disabled = true;
@@ -419,6 +483,11 @@
           ["fed_on", "bed"].forEach((k) => fd.append(k, form.elements[k].value));
           form.querySelectorAll("[name=plan_ids]:checked").forEach((c) => fd.append("plan_ids", c.value));
         }
+        if (kind === "todo") {
+          fd.append("done_on", form.elements.done_on.value);
+          fd.append("bed", form.elements.todo_bed.value);
+          form.querySelectorAll("[name=items]:checked").forEach((c) => fd.append("items", c.value));
+        }
         for (const f of files) fd.append("photos", await shrinkPhoto(f), f.name.replace(/\.\w+$/, "") + ".jpg");
         status.textContent = "Sending…";
         const res = await api("/api/submit", { method: "POST", body: fd });
@@ -428,6 +497,10 @@
         form.elements.photos.value = "";
         form.elements.turned.checked = false;
         form.querySelectorAll("[name=plan_ids]:checked").forEach((c) => { c.checked = false; });
+        if (kind === "todo") {
+          loadGarden(); // the ones just sent now show "waiting for Yvy"
+          if (window.YvyGarden && window.YvyGarden.reload) window.YvyGarden.reload(); // and get a ? on the map
+        }
       } catch (err) {
         status.textContent = err.message;
         status.className = "sf-status is-error";

@@ -19,6 +19,14 @@
       "runtimeArgs": ["-m", "http.server", "8093"],
       "port": 8093,
       "autoPort": false
+    },
+    {
+      "name": "society-api-local",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["society-api/node_modules/wrangler/bin/wrangler.js", "dev", "--config", "society-api/wrangler.jsonc",
+        "--persist-to", "society-api/.wrangler/state", "--port", "8787", "--var", "ALLOWED_ORIGINS:http://localhost:8093"],
+      "port": 8787,
+      "autoPort": false
     }
   ]
 }

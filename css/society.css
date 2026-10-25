@@ -170,6 +170,7 @@
 .adm-bed-fix { margin: 0 0 8px; font-size: 13px; color: #c2410c; }
 .adm-todo { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; }
 .adm-todo .sf-check { font: 400 13px/1.4 var(--f-body); }
+.adm-waiting { color: #a0670a; font-size: 12px; }
 .adm-todo input:checked + span { color: #8a8299; text-decoration: line-through; }
 .adm-bed-next { margin: 0 0 8px; padding: 6px 10px; background: #fffaf0; border-left: 5px solid #8f5d2a; font-size: 13px; line-height: 1.6; }
 .adm-feeds { font-size: 12px; }
@@ -593,6 +594,15 @@ button.gm-spot:focus-visible { outline: 3px dashed var(--pink); outline-offset: 
 /* To-dos Yvy crossed off on the admin page */
 .gm-todo li.is-done { color: #8a8299; text-decoration: line-through; }
 .gm-todo li.is-done::before { content: "✓"; background: var(--green); color: #fff; font: 700 11px/12px var(--f-round); text-align: center; }
+/* A member says it's done, but Yvy hasn't OK'd it yet */
+.gm-todo li.is-pending { color: #8a8299; }
+.gm-todo li.is-pending::before { content: "?"; background: var(--yellow); border-color: var(--ink); color: var(--ink); font: 8px/12px var(--f-pixel); text-align: center; }
+.gm-waiting { font-size: 12px; color: #a0670a; }
+.gm-report { margin: 0 0 10px; }
+/* Submit an entry → Did a to-do: ones already done or waiting can't be checked again */
+.sf-todo-done span, .sf-todo-pending span { color: #8a8299; }
+.sf-todo-done span { text-decoration: line-through; }
+.sf-todo-done em, .sf-todo-pending em { font-size: 12px; }
 .gm-fix li::before { content: "!"; background: var(--yellow); border-color: var(--ink); font: 8px/12px var(--f-pixel); text-align: center; color: var(--ink); }
 /* The "!" quest marker on spots that need fixing */
 .gm-alert {

@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-24q">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-24q">
-  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-24q">
-  <link rel="stylesheet" href="css/extras.css?v=2026-10-24q">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-25a">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-25a">
+  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-25a">
+  <link rel="stylesheet" href="css/extras.css?v=2026-10-25a">
 </head>
 <body>
 
@@ -366,6 +366,7 @@
           <label><input type="radio" name="kind" value="compost"> 🪱 Compost photo</label>
           <label><input type="radio" name="kind" value="temp"> 🌡️ Compost temp</label>
           <label><input type="radio" name="kind" value="feed"> 🌱 Fertilized a bed</label>
+          <label><input type="radio" name="kind" value="todo"> ✅ Did a to-do</label>
         </fieldset>
         <label class="sf-row" id="sfProjectRow" hidden>Which project?
           <select name="project_id"><option value="">Pick a project…</option></select>
@@ -385,6 +386,13 @@
           <label class="sf-row">Date <input name="fed_on" type="date"></label>
           <label class="sf-row">Which bed? <select name="bed" id="sfBeds"></select></label>
           <fieldset class="sf-plan"><legend>What did you feed?</legend><div id="sfPlan"></div></fieldset>
+        </div>
+        <!-- Did a to-do (kind "todo"): pick a garden, then a spot, then check off its to-dos (data.js → gardenMap) -->
+        <div class="sf-group" id="sfTodoRow" hidden>
+          <label class="sf-row">Date <input name="done_on" type="date"></label>
+          <fieldset class="sf-plan"><legend>Which garden?</legend><div id="sfTodoMaps"></div></fieldset>
+          <label class="sf-row">Where? <select name="todo_bed" id="sfTodoSpots"></select></label>
+          <fieldset class="sf-plan"><legend>What did you do?</legend><div id="sfTodoList"></div></fieldset>
         </div>
         <label class="sf-row" id="sfTitleRow">Title
           <input name="title" maxlength="120" placeholder="e.g. The peas are up!">
@@ -548,15 +556,15 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=2026-10-24q"></script>
-  <script src="js/pixels.js?v=2026-10-24q"></script>
-  <script src="js/veg-icons.js?v=2026-10-24q"></script>
-  <script src="js/main.js?v=2026-10-24q"></script>
-  <script src="js/society.js?v=2026-10-24q"></script>
-  <script src="js/garden-map.js?v=2026-10-24q"></script>
-  <script src="js/portfolio.js?v=2026-10-24q"></script>
-  <script src="js/extras.js?v=2026-10-24q"></script>
-  <script src="js/emoji-sprites.js?v=2026-10-24q"></script>
-  <script src="js/pixel-emoji.js?v=2026-10-24q"></script>
+  <script src="js/data.js?v=2026-10-25a"></script>
+  <script src="js/pixels.js?v=2026-10-25a"></script>
+  <script src="js/veg-icons.js?v=2026-10-25a"></script>
+  <script src="js/main.js?v=2026-10-25a"></script>
+  <script src="js/society.js?v=2026-10-25a"></script>
+  <script src="js/garden-map.js?v=2026-10-25a"></script>
+  <script src="js/portfolio.js?v=2026-10-25a"></script>
+  <script src="js/extras.js?v=2026-10-25a"></script>
+  <script src="js/emoji-sprites.js?v=2026-10-25a"></script>
+  <script src="js/pixel-emoji.js?v=2026-10-25a"></script>
 </body>
 </html>

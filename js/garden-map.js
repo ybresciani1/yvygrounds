@@ -30,17 +30,21 @@
   const alert = (s) => `<span class="gm-alert" style="left:calc(var(--c) * ${s.x + s.w});top:calc(var(--c) * ${s.y})" aria-hidden="true">!</span>`;
   const list = (items, cls) => `<ul class="${cls}">${items.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>`;
 
-  /* Live garden log from the Garden Society API: feedings and to-dos Yvy crossed off on the admin page */
+  /* Live garden log from the Garden Society API: feedings, to-dos Yvy crossed off on the admin page,
+     and to-dos members say they did (through "Submit an entry"), which show a "?" until Yvy OKs them */
   const S = window.YVY.society || {};
   const API = ["localhost", "127.0.0.1"].includes(location.hostname) ? "http://localhost:8787" : S.api;
-  const live = { feeds: {}, done: new Set() };
+  const live = { feeds: {}, done: new Set(), pending: new Set() };
   const lessonNow = (window.YVY.lessons || {}).now; // what garden class is learning (shown on the Garden Classroom)
   // A to-do's id is a short hash of its text (the admin page makes the same one), so a rewritten
   // to-do starts out unchecked
   const todoKey = (text) => { let h = 5381; for (const ch of text) h = ((h * 33) ^ ch.codePointAt(0)) >>> 0; return h.toString(36); };
   const fedOf = (s) => (s.fed || []).concat(live.feeds[s.id] || []);
   const todoList = (s) => `<ul class="gm-todo">${s.todo.map((t) => {
-    const done = s.id && live.done.has(`${s.id}:${todoKey(t)}`);
+    const tag = `${s.id}:${todoKey(t)}`;
+    const done = s.id && live.done.has(tag);
+    const waiting = !done && s.id && live.pending.has(tag);
+    if (waiting) return `<li class="is-pending">${esc(t)} <em class="gm-waiting">(waiting for Yvy's OK)</em></li>`;
     return `<li${done ? ' class="is-done"' : ""}>${esc(t)}${done ? ' <span class="sr-only">(done)</span>' : ""}</li>`;
   }).join("")}</ul>`;
 
@@ -188,7 +192,8 @@
       (s.lesson && lessonNow ? `<p class="gm-what">Now learning:</p><p>📚 Unit ${esc(lessonNow.unit)} · Lesson ${esc(lessonNow.lesson)}: <b>${esc(lessonNow.title)}</b>
         (${esc(lessonNow.island)} in Gardenbound)</p>` : "") +
       (s.fix ? `<p class="gm-what gm-what-fix">Needs fixing:</p>${list(s.fix, "gm-fix")}` : "") +
-      (s.todo ? `<p class="gm-what">${esc(M.todoTitle || "To-do")}:</p>${todoList(s)}` : "") +
+      (s.todo ? `<p class="gm-what">${esc(M.todoTitle || "To-do")}:</p>${todoList(s)}`
+        + (s.id && window.YvySociety && window.YvySociety.canReport() ? '<button type="button" class="gm-go gm-report">✅ I did one! Tell Yvy</button>' : "") : "") +
       (s.feed ? `<p class="gm-what gm-what-feed">${esc(M.feedTitle || "Feeding")}:</p>${s.feedPlan ? feedLog(s) : ""}${list(s.feed, "gm-feed")}`
         + (M.feedNote ? `<p class="gm-feed-note">${esc(M.feedNote)}</p>` : "") : "") +
       (s.tab ? `<button type="button" class="gm-go" data-tab-go="${esc(s.tab)}">See the compost log ▶</button>` : "") +
@@ -227,6 +232,11 @@
         </figure>`).join("")}</div>` : "";
       return;
     }
+    // "I did one!" opens Submit an entry at this garden and spot (js/society.js)
+    if (e.target.closest(".gm-report") && window.YvySociety) {
+      window.YvySociety.reportTodo(maps.indexOf(cur), spots[shown].id);
+      return;
+    }
     const b = e.target.closest("[data-tab-go]");
     const tab = b && document.querySelector(`.society-tabs [data-tab="${b.dataset.tabGo}"]`);
     if (tab) { tab.click(); tab.focus(); }
@@ -251,11 +261,15 @@
   });
   draw(0);
 
-  // Load the live log, then redraw whatever is showing
-  fetch(`${API}/api/garden`).then((r) => (r.ok ? r.json() : null)).then((data) => {
+  // Load the live log, then redraw whatever is showing (Submit an entry calls this again after a to-do report)
+  const loadLive = () => fetch(`${API}/api/garden`).then((r) => (r.ok ? r.json() : null)).then((data) => {
     if (!data) return;
+    live.feeds = {};
     (data.feeds || []).forEach((f) => { (live.feeds[f.bed] = live.feeds[f.bed] || []).push({ date: f.fed_on, id: f.plan_ids }); });
-    (data.done || []).forEach((d) => live.done.add(`${d.bed}:${d.item}`));
+    live.done = new Set((data.done || []).map((d) => `${d.bed}:${d.item}`));
+    live.pending = new Set((data.pending || []).map((d) => `${d.bed}:${d.item}`));
     show(shown);
   }).catch(() => { /* no log yet: the map still works */ });
+  window.YvyGarden.reload = loadLive;
+  loadLive();
 })();
