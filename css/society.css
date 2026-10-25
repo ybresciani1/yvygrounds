@@ -167,7 +167,8 @@
 #admBeds { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; align-items: start; }
 #admBeds .adm-card { margin: 0; }
 .adm-bed h2 { margin-bottom: 8px; }
-.adm-bed-fix { margin: 0 0 8px; font-size: 13px; color: #c2410c; }
+.adm-bed-fix { margin: 0 0 4px; font-weight: 700; font-size: 13px; color: #c2410c; }
+.adm-bed-todo { margin: 8px 0 4px; font-size: 13px; font-weight: 700; }
 .adm-todo { list-style: none; margin: 0 0 10px; padding: 0; display: grid; gap: 6px; }
 .adm-todo .sf-check { font: 400 13px/1.4 var(--f-body); }
 .adm-waiting { color: #a0670a; font-size: 12px; }
@@ -592,11 +593,11 @@ button.gm-spot:focus-visible { outline: 3px dashed var(--pink); outline-offset: 
   border: 2px solid var(--green-dark);
 }
 /* To-dos Yvy crossed off on the admin page */
-.gm-todo li.is-done { color: #8a8299; text-decoration: line-through; }
-.gm-todo li.is-done::before { content: "✓"; background: var(--green); color: #fff; font: 700 11px/12px var(--f-round); text-align: center; }
+.gm-todo li.is-done, .gm-fix li.is-done { color: #8a8299; text-decoration: line-through; }
+.gm-todo li.is-done::before, .gm-fix li.is-done::before { content: "✓"; background: var(--green); border-color: transparent; color: #fff; font: 700 11px/12px var(--f-round); text-align: center; }
 /* A member says it's done, but Yvy hasn't OK'd it yet */
-.gm-todo li.is-pending { color: #8a8299; }
-.gm-todo li.is-pending::before { content: "?"; background: var(--yellow); border-color: var(--ink); color: var(--ink); font: 8px/12px var(--f-pixel); text-align: center; }
+.gm-todo li.is-pending, .gm-fix li.is-pending { color: #8a8299; }
+.gm-todo li.is-pending::before, .gm-fix li.is-pending::before { content: "?"; background: var(--yellow); border-color: var(--ink); color: var(--ink); font: 8px/12px var(--f-pixel); text-align: center; }
 .gm-waiting { font-size: 12px; color: #a0670a; }
 .gm-report { margin: 0 0 10px; }
 /* Submit an entry → Did a to-do: ones already done or waiting can't be checked again */
@@ -620,6 +621,7 @@ button.gm-spot:focus-visible { outline: 3px dashed var(--pink); outline-offset: 
   pointer-events: none;
   animation: gm-bounce 1.2s steps(2) infinite;
 }
+.gm-alert[hidden] { display: none; } /* every repair crossed off */
 @keyframes gm-bounce { 50% { transform: translateY(-2px); } }
 .gm-go {
   display: inline-block;

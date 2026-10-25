@@ -1040,7 +1040,8 @@ window.YVY = {
    * succulents, grass, building, shed, box, sign, bucket, shelf, table, cart, balls.
    * A spot with a name can be hovered/tapped; it shows name, planted (list), about, fix and todo.
    * planted items are "emoji name" or { icon: "kale", name: "kale" } for a js/veg-icons.js icon.
-   * fix: repairs it needs (puts a yellow "!" on the map). todo: garden jobs for this season,
+   * fix: repairs it needs (puts a yellow "!" on the map). Repairs get crossed off like to-dos; the "!" goes away
+   *      once they're all done. todo: garden jobs for this season,
    * written for San Diego weather and crop rotation. Update todo (and todoTitle) each season.
    * more: [[x, y, w, h], ...] adds extra pieces of the same spot (an L-shaped vine).
    * clip: a CSS polygon for a spot that isn't a rectangle (the L-shaped YMCA Room); textAt: [x, y, w, h]

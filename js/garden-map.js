@@ -27,7 +27,7 @@
   const runner = (s) => `<span class="gm-runner" style="${place([s.x, s.y, s.w, s.h])}" aria-hidden="true"><span class="gm-runner-sprite">${window.Pixel ? window.Pixel.svg(s.runner, 2) : ""}</span></span>`;
   // Spots with repairs to do get a little yellow "!" at their top-right corner (like a quest marker),
   // drawn after everything else so neighbors can't cover it
-  const alert = (s) => `<span class="gm-alert" style="left:calc(var(--c) * ${s.x + s.w});top:calc(var(--c) * ${s.y})" aria-hidden="true">!</span>`;
+  const alert = (s, i) => `<span class="gm-alert" data-alert="${i}" style="left:calc(var(--c) * ${s.x + s.w});top:calc(var(--c) * ${s.y})" aria-hidden="true">!</span>`;
   const list = (items, cls) => `<ul class="${cls}">${items.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>`;
 
   /* Live garden log from the Garden Society API: feedings, to-dos Yvy crossed off on the admin page,
@@ -40,13 +40,16 @@
   // to-do starts out unchecked
   const todoKey = (text) => { let h = 5381; for (const ch of text) h = ((h * 33) ^ ch.codePointAt(0)) >>> 0; return h.toString(36); };
   const fedOf = (s) => (s.fed || []).concat(live.feeds[s.id] || []);
-  const todoList = (s) => `<ul class="gm-todo">${s.todo.map((t) => {
-    const tag = `${s.id}:${todoKey(t)}`;
-    const done = s.id && live.done.has(tag);
-    const waiting = !done && s.id && live.pending.has(tag);
+  // To-dos and repairs (fix) can both be crossed off; each item's id is the hash of its text
+  const isDone = (s, t) => s.id && live.done.has(`${s.id}:${todoKey(t)}`);
+  const checkList = (s, items, cls) => `<ul class="${cls}">${items.map((t) => {
+    const done = isDone(s, t);
+    const waiting = !done && s.id && live.pending.has(`${s.id}:${todoKey(t)}`);
     if (waiting) return `<li class="is-pending">${esc(t)} <em class="gm-waiting">(waiting for Yvy's OK)</em></li>`;
     return `<li${done ? ' class="is-done"' : ""}>${esc(t)}${done ? ' <span class="sr-only">(done)</span>' : ""}</li>`;
   }).join("")}</ul>`;
+  // Repairs not crossed off yet (the yellow "!" stays on the map until there are none)
+  const fixLeft = (s) => (s.fix || []).filter((t) => !isDone(s, t));
 
   // A planted item is "🥕 carrots" or { icon: "kale", name: "kale" } (js/veg-icons.js)
   function plant(p) {
@@ -124,11 +127,18 @@
             return pieces.map((r, n) => `<div class="${classes(s)}" style="${place(r)}" aria-hidden="true">${shape(s)}${n ? "" : label(s)}</div>`).join("");
           }
           // The first piece is the real button; extra pieces (the other arm of an L) just point to it
-          return `<button type="button" class="${classes(s)}" style="${place(pieces[0])}" data-i="${i}" aria-label="${esc(s.name)}${s.fix ? ", needs fixing" : ""}">${shape(s)}${label(s)}</button>`
+          return `<button type="button" class="${classes(s)}" style="${place(pieces[0])}" data-i="${i}" aria-label="${esc(s.name)}${fixLeft(s).length ? ", needs fixing" : ""}">${shape(s)}${label(s)}</button>`
             + pieces.slice(1).map((r) => `<div class="${classes(s)} gm-more" style="${place(r)}" data-i="${i}" aria-hidden="true"><span class="gm-shape"></span></div>`).join("");
         }).join("")}
         ${spots.filter((s) => s.runner).map(runner).join("")}
-        ${spots.filter((s) => s.fix).map(alert).join("")}`;
+        ${spots.map((s, i) => (s.fix ? alert(s, i) : "")).join("")}`;
+  // Once every repair on a spot is crossed off, its "!" goes away (called again when the live log loads)
+  const syncAlerts = () => map.querySelectorAll("[data-alert]").forEach((el) => {
+    const s = spots[+el.dataset.alert];
+    el.hidden = !fixLeft(s).length;
+    const btn = map.querySelector(`button[data-i="${el.dataset.alert}"]`);
+    if (btn) btn.setAttribute("aria-label", `${s.name}${el.hidden ? "" : ", needs fixing"}`);
+  });
   box.innerHTML = `
     ${maps.length > 1 ? `<div class="gm-switch" role="group" aria-label="Pick a garden">${maps.map((m, k) =>
       `<button type="button" data-map="${k}" aria-pressed="${k ? "false" : "true"}">${esc(m.button || m.title)}</button>`).join("")}</div>` : ""}
@@ -191,9 +201,9 @@
       (s.keep ? '<div class="gm-keep-photo" hidden></div>' : "") +
       (s.lesson && lessonNow ? `<p class="gm-what">Now learning:</p><p>📚 Unit ${esc(lessonNow.unit)} · Lesson ${esc(lessonNow.lesson)}: <b>${esc(lessonNow.title)}</b>
         (${esc(lessonNow.island)} in Gardenbound)</p>` : "") +
-      (s.fix ? `<p class="gm-what gm-what-fix">Needs fixing:</p>${list(s.fix, "gm-fix")}` : "") +
-      (s.todo ? `<p class="gm-what">${esc(M.todoTitle || "To-do")}:</p>${todoList(s)}`
-        + (s.id && window.YvySociety && window.YvySociety.canReport() ? '<button type="button" class="gm-go gm-report">✅ I did one! Tell Yvy</button>' : "") : "") +
+      (s.fix ? `<p class="gm-what gm-what-fix">Needs fixing:</p>${checkList(s, s.fix, "gm-fix")}` : "") +
+      (s.todo ? `<p class="gm-what">${esc(M.todoTitle || "To-do")}:</p>${checkList(s, s.todo, "gm-todo")}` : "") +
+      ((s.todo || s.fix) && s.id && window.YvySociety && window.YvySociety.canReport() ? '<button type="button" class="gm-go gm-report">✅ I did one! Tell Yvy</button>' : "") +
       (s.feed ? `<p class="gm-what gm-what-feed">${esc(M.feedTitle || "Feeding")}:</p>${s.feedPlan ? feedLog(s) : ""}${list(s.feed, "gm-feed")}`
         + (M.feedNote ? `<p class="gm-feed-note">${esc(M.feedNote)}</p>` : "") : "") +
       (s.tab ? `<button type="button" class="gm-go" data-tab-go="${esc(s.tab)}">See the compost log ▶</button>` : "") +
@@ -251,6 +261,7 @@
     box.querySelector(".gm-season").textContent = `🗺️ ${cur.season || ""}`;
     map.setAttribute("aria-label", `Map of ${cur.title}`);
     map.innerHTML = mapHtml();
+    syncAlerts();
     box.querySelectorAll("[data-map]").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.map === k)));
     fit();
     show(null);
@@ -268,6 +279,7 @@
     (data.feeds || []).forEach((f) => { (live.feeds[f.bed] = live.feeds[f.bed] || []).push({ date: f.fed_on, id: f.plan_ids }); });
     live.done = new Set((data.done || []).map((d) => `${d.bed}:${d.item}`));
     live.pending = new Set((data.pending || []).map((d) => `${d.bed}:${d.item}`));
+    syncAlerts();
     show(shown);
   }).catch(() => { /* no log yet: the map still works */ });
   window.YvyGarden.reload = loadLive;
