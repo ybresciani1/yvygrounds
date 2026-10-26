@@ -21,6 +21,14 @@ window.YVY_CARDS = {
     host:   { power: 140, stats: 19, rarity: 4, banner: "★ Island Host ★" },
     crop:   { power: 110, stats: 15, rarity: 2, banner: "★ Garden Crop ★" },
   },
+  // Critter Corner photos (the critters' cards come from data.js). The binder's picture window is wider than
+  // the main page's (16:10), so a close-up can lose the top of a head. src: a wider copy of the photo just for
+  // the binder (cards/photos/; Riot's and Bojjii's had their backgrounds extended with AI, the critter itself
+  // untouched); focus: "50% 20%" picks a different crop; fit: "whole" shows the whole photo with blurred sides.
+  critterPhotos: {
+    Riot: { src: "photos/riot-wide.jpg" },
+    Bojjii: { src: "photos/bojjii-wide.jpg" },
+  },
   cards: [
     // ---------- Rabbit and Frog ----------
     { name: "Rabbit", tier: "hero", art: "hero-rabbit", hp: 80, type: "Gardener", kind: "Hero · Harvest Haven",

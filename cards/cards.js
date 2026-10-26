@@ -22,8 +22,9 @@
   const critters = [...(D.flock || []), ...(D.pets || [])].filter((c) => c.card).map((c) => {
     const k = c.card;
     const p = (k.photos || [])[0] || { src: c.photo, focus: c.focus };
+    const tweak = Object.entries(C.critterPhotos || {}).find(([n]) => c.name.startsWith(n))?.[1] || {};
     return {
-      name: c.name, tier: "critter", photo: p.src ? "../" + p.src : "", focus: p.focus, hp: k.hp, type: k.type,
+      name: c.name, tier: "critter", photo: tweak.src || (p.src ? "../" + p.src : ""), focus: tweak.focus || (tweak.src ? "50% 50%" : p.focus), fit: tweak.fit, hp: k.hp, type: k.type,
       kind: c.breed || c.kind, moves: k.moves, stats: k.stats, weakness: k.weakness, resist: k.resist,
       rarity: k.rarity, memorial: k.memorial,
     };
@@ -51,7 +52,9 @@
       : `GB ${String(i + 1).padStart(3, "0")}/${String(gardenbound).padStart(3, "0")}`;
     const pic = c.art
       ? `<img src="art/${esc(c.art)}.webp" alt="${esc(c.name)}" width="720" height="480">`
-      : `<img src="${esc(c.photo)}" alt="${esc(c.name)}" style="object-position:${esc(c.focus || "50% 30%")}">`;
+      : c.fit === "whole"
+        ? `<span class="tc-blur" style="background-image:url('${esc(c.photo)}')" aria-hidden="true"></span><img class="is-whole" src="${esc(c.photo)}" alt="${esc(c.name)}">`
+        : `<img src="${esc(c.photo)}" alt="${esc(c.name)}" style="object-position:${esc(c.focus || "50% 30%")}">`;
     return `<article class="tc tc-${c.tier}${c.memorial ? " is-memorial" : ""}">
       <p class="tc-banner">${esc(banner(c))}</p>
       <header class="tc-top">
