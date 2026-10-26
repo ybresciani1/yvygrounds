@@ -287,13 +287,13 @@
   text-align: left;
 }
 .gm-frame { width: 100%; }
-/* js/garden-map.js sets the size: 40 × 52 squares of --c pixels (other maps set their own), plus the 6px frame */
+/* js/garden-map.js sets the size: 40 × 53 squares of --c pixels (other maps set their own), plus the 6px frame */
 .gm-map {
   --c: 10px;
   position: relative;
   container-type: inline-size;
   width: calc(var(--c) * 40 + 12px);
-  height: calc(var(--c) * 52 + 12px);
+  height: calc(var(--c) * 53 + 12px);
   margin: 0 auto;
   background: var(--t-pave) 0 0 / 8px 8px;
   image-rendering: pixelated;

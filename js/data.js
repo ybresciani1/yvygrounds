@@ -1034,7 +1034,7 @@ window.YVY = {
 
   /*
    * GARDEN MAP: the Central Garden as a pixel map (🗺️ Map tab in the Garden Society, js/garden-map.js).
-   * Traced from Yvy's map on a grid 40 squares wide × 52 tall: x, y = top-left corner, w, h = size,
+   * Traced from Yvy's map on a grid 40 squares wide × 53 tall (cols, rows): x, y = top-left corner, w, h = size,
    * all in whole squares (so every edge lines up straight).
    * kind picks the look: bed, coop, run, tree, vine, hedge, compost, sink, drain, mushrooms,
    * succulents, grass, building, shed, box, sign, bucket, shelf, table, cart, balls.
@@ -1053,6 +1053,7 @@ window.YVY = {
    */
   gardenMap: {
     title: "The Central Garden",
+    cols: 40, rows: 53,
     season: "Fall 2026",
     hint: "Hover or tap a bed, tree or vine to see what's growing! A yellow ! means it needs fixing.",
     todoTitle: "To-do this fall",
@@ -1065,7 +1066,8 @@ window.YVY = {
     feedNote: "Organic and kid-safe: compost, fish emulsion, blood meal, bone meal. Water before and after feeding, and never feed dry soil.",
     // Things buried in a bed, on any map: give the bed has: ["olla"], ["wormbin"] or ["olla", "olla", "wormbin"]
     // (list one per olla). Each gets a little marker in a corner of the bed (emoji: drawn as that pixel emoji,
-    // otherwise a colored dot), and its name in the speech box opens about.
+    // otherwise a colored dot), and its name in the speech box opens about. hasLayout: "stacked" on a bed puts
+    // its markers top-center and bottom-center instead, with the bed's number between them (Bed #4's ollas).
     // chore: a job that comes back every so many days (every), listed under the bed's Chores. Crossing it off
     // counts for that many days, then it's due again. Changing a chore's text starts it fresh.
     features: {
@@ -1079,7 +1081,7 @@ window.YVY = {
     spots: [
       // Ground first (drawn underneath everything else)
       { kind: "grass", x: 1, y: 1, w: 18, h: 8 },
-      { kind: "grass", x: 2, y: 18, w: 17, h: 33 },
+      { kind: "grass", x: 2, y: 18, w: 17, h: 34 },
       { kind: "grass", x: 32, y: 11, w: 4, h: 7 },
       { kind: "hedge", x: 1, y: 0, w: 18, h: 1 },
       { kind: "hedge", x: 23, y: 0, w: 15, h: 1 },
@@ -1095,7 +1097,7 @@ window.YVY = {
             "2027-01-29", "2027-02-04", "2027-02-05", "2027-02-11", "2027-02-18", "2027-02-19", "2027-02-25", "2027-02-26",
             "2027-04-08", "2027-04-09", "2027-04-15", "2027-04-16", "2027-04-22", "2027-04-23", "2027-04-29", "2027-04-30"],
         }] },
-      { kind: "building", tone: "lav", text: "LIBRARY", x: 24, y: 31, w: 16, h: 20 },
+      { kind: "building", tone: "lav", text: "LIBRARY", x: 24, y: 31, w: 16, h: 21 },
       { kind: "sign", text: "◀ IN", x: 19, y: 48, w: 4, h: 2 },
 
       // The places you can look at
@@ -1213,7 +1215,7 @@ window.YVY = {
         todo: ["Fig trees drop their leaves in winter. Do any big pruning while they're bare (December to February)."] },
       { kind: "tree", tone: "apple", x: 0, y: 17, w: 3, h: 3,
         name: "Apple Tree", about: "A low-chill apple, made for San Diego winters." },
-      { kind: "vine", tone: "grape", x: 3, y: 17, w: 16, h: 1, more: [[18, 18, 1, 28]],
+      { kind: "vine", tone: "grape", x: 10, y: 17, w: 9, h: 1, more: [[18, 18, 1, 28]],
         name: "Grape Vines", about: "Shade in summer, grapes in fall, bare twisty branches in winter." },
       { kind: "drain", x: 3, y: 19, w: 4, h: 31,
         name: "Rock Drainage", about: "A river of rocks that keeps the garden from turning into a pond when it rains." },
@@ -1242,7 +1244,7 @@ window.YVY = {
         id: "trellis", name: "Grapevine Trellis", about: "A trellis for the grapevines to climb, right between beds #4 and #5 🍇",
         fix: ["Needs more support."],
         todo: ["Grapes go dormant in winter, and January is the time to prune them, so add the extra support before then."] },
-      { kind: "bed", text: "#4", x: 10, y: 25, w: 6, h: 3, id: "bed4", name: "Bed #4", has: ["olla", "olla"],
+      { kind: "bed", text: "#4", x: 10, y: 25, w: 6, h: 4, id: "bed4", name: "Bed #4", has: ["olla", "olla"], hasLayout: "stacked",
         planted: ["🌺 nasturtiums"],
         todo: [
           "Nasturtiums love our cool season and reseed themselves. Thin them out so they don't smother everything.",
@@ -1261,13 +1263,13 @@ window.YVY = {
         ],
         fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
       },
-      { kind: "tree", tone: "citrus", x: 12, y: 28, w: 3, h: 3,
+      { kind: "tree", tone: "citrus", x: 12, y: 29, w: 3, h: 3,
         name: "Citrus Tree", about: "A little citrus tree, tucked between beds #4 and #3 🍊" },
       { kind: "tree", tone: "fig", x: 4, y: 23, w: 3, h: 3,
         id: "fig3", name: "Fig Tree", about: "Fig tree number three, on the rock drainage right across from the grapevine trellis. We may have a fig problem (it's a good problem).",
         fix: ["Vines (passionfruit or grape) are climbing on it. Untangle them and cut them back so the tree gets its light back."],
         todo: ["Fig trees drop their leaves in winter. Do any big pruning while they're bare (December to February)."] },
-      { kind: "bed", text: "#3", x: 10, y: 31, w: 6, h: 6, id: "bed3", name: "Bed #3",
+      { kind: "bed", text: "#3", x: 10, y: 32, w: 6, h: 5, id: "bed3", name: "Bed #3",
         planted: ["🦋 narrowleaf milkweed", "🌿 oregano", "🌿 black sage", "🌿 basil", "🌾 lemongrass"],
         todo: [
           "Narrowleaf milkweed is a California native and food for monarch caterpillars 🦋 Leave it standing, then cut it back to about 6 inches in January or February so fresh leaves grow in.",
@@ -1290,13 +1292,13 @@ window.YVY = {
         ],
         fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
       },
-      { kind: "box", text: "⚡", x: 11, y: 42, w: 5, h: 2,
+      { kind: "box", text: "⚡", x: 11, y: 41, w: 4, h: 4,
         id: "ebox", name: "Electric Box", about: "There's a mason bee treehouse hanging from it 🐝 Mason bees are gentle, hardly ever sting, and are amazing pollinators.",
         todo: [
           "Mason bees come out in spring (about Feb to May), so keep the bee house facing the morning sun and out of the rain.",
           "Fall is the time to check the nesting tubes: clean or swap out any that are moldy or full of mites.",
         ] },
-      { kind: "bed", text: "#2", x: 11, y: 38, w: 5, h: 3, id: "bed2", name: "Bed #2",
+      { kind: "bed", text: "#2", x: 11, y: 38, w: 4, h: 2, id: "bed2", name: "Bed #2",
         planted: ["🍓 strawberries", "🥬 lettuce", { icon: "scallions", name: "chives" }],
         todo: [
           "Fall is lettuce season in San Diego! Sow a little more every 2 to 3 weeks through February.",
@@ -1318,7 +1320,7 @@ window.YVY = {
         ],
         fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
       },
-      { kind: "bed", text: "#1", x: 11, y: 45, w: 5, h: 5, id: "bed1", name: "Bed #1",
+      { kind: "bed", text: "#1", x: 10, y: 46, w: 6, h: 5, id: "bed1", name: "Bed #1",
         planted: ["🌿 oregano", "🌿 basil", "🍆 eggplants", "🍅 tomatoes"],
         todo: [
           "Pull the tomatoes and eggplants once they stop making fruit (usually by mid-November). Compost the healthy ones and bag any with spotted leaves.",
@@ -1342,7 +1344,7 @@ window.YVY = {
       },
       { kind: "tree", tone: "lemon", x: 6, y: 48, w: 3, h: 3,
         name: "Lemon Tree", about: "Lemons pretty much all year. Lemonade days are the best days 🍋" },
-      { kind: "vine", tone: "berry", x: 2, y: 51, w: 17, h: 1,
+      { kind: "vine", tone: "berry", x: 2, y: 52, w: 17, h: 1,
         name: "Blackberry Vines", about: "Sweet berries, sharp thorns. Pick carefully!" },
     ],
 

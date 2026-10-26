@@ -2,7 +2,7 @@
  * Garden Map: the Central Garden drawn as a pixel map (🗺️ Map tab in the Garden Society).
  * Spots come from data.js → gardenMap. Hover, tap or Tab to a bed to see what's planted.
  * gardenMap.otherMaps adds more maps (the Middle School Garden), picked with buttons above the map.
- * Positions are whole grid squares (40 × 52 for the Central Garden; other maps set cols and rows).
+ * Positions are whole grid squares (40 × 53 for the Central Garden; each map sets its cols and rows).
  * Each square is a whole number of pixels (--c, set from the space available), so every edge
  * lands on a pixel and stays straight.
  */
@@ -28,9 +28,11 @@
   // A feature with an emoji (the worm bin's 🪱) shows that emoji, which js/pixel-emoji.js turns into its pixel sprite.
   const FEATURES = M.features || {};
   const icon = (k) => (FEATURES[k] && FEATURES[k].emoji ? esc(FEATURES[k].emoji) : "");
+  // hasLayout "stacked": top-center, then bottom-center, with the bed's number between them
   const marks = (s) => s.has.map((k, n) => {
-    const x = n % 2 ? s.x + s.w - 1.1 : s.x + 0.1;
-    const y = n % 4 < 2 ? s.y + s.h - 1.1 : s.y + 0.1;
+    const stacked = s.hasLayout === "stacked" && n < 2;
+    const x = stacked ? s.x + s.w / 2 - 0.5 : n % 2 ? s.x + s.w - 1.1 : s.x + 0.1;
+    const y = stacked ? (n ? s.y + s.h - 1.1 : s.y + 0.1) : n % 4 < 2 ? s.y + s.h - 1.1 : s.y + 0.1;
     return `<span class="gm-feature gm-f-${esc(k)}" style="left:calc(var(--c) * ${x});top:calc(var(--c) * ${y})" aria-hidden="true">${icon(k)}</span>`;
   }).join("");
   // In the speech box each one is a button; tapping it opens what it is (about), so the box stays short
@@ -205,7 +207,7 @@
   const BORDER = 12; // the map's wooden frame, both sides
   function fit() {
     if (!frame.clientWidth) return; // tab hidden
-    const cols = cur.cols || 40, rows = cur.rows || 52;
+    const cols = cur.cols || 40, rows = cur.rows || 53;
     const c = Math.max(5, Math.min(13, Math.floor((frame.clientWidth - BORDER) / cols)));
     map.style.setProperty("--c", c + "px");
     map.style.width = c * cols + BORDER + "px";
