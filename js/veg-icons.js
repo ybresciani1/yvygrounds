@@ -172,6 +172,38 @@ window.VegIcons = (function () {
       <path d="M8 9.5l4 1.5 4-5 4 5 4-1.5-3 3.5H11z" fill="#4f9e3a"/>
       <path d="M16 6V2" stroke="#3f8f2e" stroke-width="1.6" stroke-linecap="round"/>`,
 
+    // Same berry as the raspberry, in blackberry purple-black (there's no blackberry emoji; 🫐 is a blueberry)
+    blackberry: `
+      <g fill="#3a1f5c" stroke="#1f0d36" stroke-width=".7">
+        ${[[16, 27], [12.5, 24], [19.5, 24], [9.5, 20], [16, 21], [22.5, 20], [8.5, 15.5], [13, 17], [19, 17], [23.5, 15.5], [11, 12], [16, 13], [21, 12]]
+          .map(([x, y]) => `<circle cx="${x}" cy="${y}" r="3.2"/>`).join("")}
+      </g>
+      <g fill="#9a7bd1">${[[15, 19.5], [11, 15], [19, 15], [14, 25]].map(([x, y]) => `<circle cx="${x}" cy="${y}" r=".9"/>`).join("")}</g>
+      <path d="M8 9.5l4 1.5 4-5 4 5 4-1.5-3 3.5H11z" fill="#4f9e3a"/>
+      <path d="M16 6V2" stroke="#3f8f2e" stroke-width="1.6" stroke-linecap="round"/>`,
+
+    // Pale green stalks with a leafy top
+    celery: `
+      <path d="M11 30c-1-7-1-14 1-20M16 30V9M21 30c1-7 1-14-1-20" stroke="#9ccf6a" stroke-width="3.4" stroke-linecap="round" fill="none"/>
+      <path d="M11 30c-1-7-1-14 1-20M16 30V9M21 30c1-7 1-14-1-20" stroke="#d4eea8" stroke-width="1.1" stroke-linecap="round" fill="none"/>
+      <g fill="#4f9e3a"><circle cx="11" cy="8" r="3.4"/><circle cx="16" cy="6" r="3.8"/><circle cx="21" cy="8" r="3.4"/><circle cx="13.5" cy="4.5" r="2.6"/><circle cx="18.5" cy="4.5" r="2.6"/></g>
+      <g fill="#7cc85a"><circle cx="15" cy="5" r="1.4"/><circle cx="20" cy="7.5" r="1.2"/><circle cx="11" cy="7" r="1.1"/></g>`,
+
+    // A globe of layered green bracts with a purple tip
+    artichoke: `
+      <path d="M16 31v-5" stroke="#4f8a3a" stroke-width="2" stroke-linecap="round"/>
+      <path d="M16 27c-7 0-10-5-9-11 3 2 6 2 9 0 3 2 6 2 9 0 1 6-2 11-9 11z" fill="#5f9e5a"/>
+      <path d="M16 22c-5 0-8-4-7.5-9 2.5 1.6 5 1.6 7.5 0 2.5 1.6 5 1.6 7.5 0 .5 5-2.5 9-7.5 9z" fill="#7cb86a"/>
+      <path d="M16 17c-3.5 0-6-3-5.5-7 2 1.2 3.7 1.2 5.5 0 1.8 1.2 3.5 1.2 5.5 0 .5 4-2 7-5.5 7z" fill="#97c97f"/>
+      <path d="M16 11c-2 0-3.2-2-2.8-4.5 1 .6 1.8.6 2.8 0 1 .6 1.8.6 2.8 0 .4 2.5-.8 4.5-2.8 4.5z" fill="#b48ad1"/>
+      <path d="M10.5 18.5l2-2M21.5 18.5l-2-2M12 24l2-2M20 24l-2-2" stroke="#3f7a35" stroke-width=".8" stroke-linecap="round"/>`,
+
+    // Pale, fan-shaped oyster mushrooms (🍄 is a red toadstool)
+    "oyster-mushroom": `
+      <path d="M5 16c0-6 6-10 13-9 6 1 9 5 8 9-4-1-8 0-11 3-3-2-7-3-10-3z" fill="#e9dcc3" stroke="#a89474" stroke-width=".8"/>
+      <path d="M9 25c0-5 5-8 10-7 5 1 7 4 6 7-3-.8-6 0-8 2-2-1.5-5-2-8-2z" fill="#f3e9d6" stroke="#a89474" stroke-width=".8"/>
+      <path d="M12 12l5 4M16 10l2 5M21 10l-1 5M13 21l4 3M18 20l1 4M22 20l-1 4" stroke="#c9b48f" stroke-width=".7" stroke-linecap="round"/>`,
+
     /* ---- Flowers ---- */
     "sweet-pea": `
       <path d="M16 31V20" stroke="#4f9e3a" stroke-width="1.6" stroke-linecap="round"/>

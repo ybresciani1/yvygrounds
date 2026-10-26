@@ -353,6 +353,11 @@ div.gm-spot:not(.gm-more) { pointer-events: none; }
 .gm-run .gm-shape { background-image: var(--t-run); }
 .gm-coop .gm-shape { background-image: var(--t-wood); }
 .gm-succulents .gm-shape { background-image: var(--t-succ); }
+/* The aloe: a clump of spiky leaves pointing up */
+.gm-aloe .gm-shape {
+  background: linear-gradient(#a8d8a0, #5f9e5a);
+  clip-path: polygon(0 100%, 8% 35%, 18% 100%, 28% 0, 40% 100%, 50% 15%, 60% 100%, 72% 0, 82% 100%, 92% 35%, 100% 100%);
+}
 .gm-sink .gm-shape { background-image: var(--t-water); }
 .gm-sink .gm-text { font-size: 2.6cqw; }
 .gm-vine .gm-shape { background-image: var(--t-grape); }
@@ -505,7 +510,6 @@ button.gm-tree, button.gm-compost, button.gm-faucet, button.gm-mushrooms { point
 .gm-tree .gm-shape, .gm-compost .gm-shape, .gm-faucet .gm-shape, .gm-mushrooms .gm-shape { pointer-events: auto; }
 /* Trees are drawn a little inside their squares; the small citrus tree even more */
 .gm-tree .gm-shape { inset: 3px; }
-.gm-tree.gm-citrus .gm-shape { inset: 7px; }
 .gm-mushrooms .gm-shape { background-image: var(--t-mush); }
 .gm-short .gm-shape { inset: 4px; } /* the shorter mushroom table is drawn a bit smaller */
 .gm-drain .gm-shape { background-image: var(--t-drain); }
@@ -670,7 +674,6 @@ button.gm-spot:focus-visible { outline: 3px dashed var(--pink); outline-offset: 
   /* Give the map most of the phone's width */
   .garden-map { padding: 18px 6px 12px; margin-inline: -12px; }
   .gm-tree .gm-shape { inset: 2px; }
-  .gm-tree.gm-citrus .gm-shape { inset: 4px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .gm-spot.is-on .gm-shape { animation: none; }

@@ -28,10 +28,12 @@
   // A feature with an emoji (the worm bin's 🪱) shows that emoji, which js/pixel-emoji.js turns into its pixel sprite.
   const FEATURES = M.features || {};
   const icon = (k) => (FEATURES[k] && FEATURES[k].emoji ? esc(FEATURES[k].emoji) : "");
-  // hasLayout "stacked": top-center, then bottom-center, with the bed's number between them
+  // hasLayout "stacked": top-center, then bottom-center, with the bed's number between them.
+  // hasLayout "right": start on the right side (bottom-right first) instead of the left.
   const marks = (s) => s.has.map((k, n) => {
     const stacked = s.hasLayout === "stacked" && n < 2;
-    const x = stacked ? s.x + s.w / 2 - 0.5 : n % 2 ? s.x + s.w - 1.1 : s.x + 0.1;
+    const right = (n % 2 === 1) !== (s.hasLayout === "right");
+    const x = stacked ? s.x + s.w / 2 - 0.5 : right ? s.x + s.w - 1.1 : s.x + 0.1;
     const y = stacked ? (n ? s.y + s.h - 1.1 : s.y + 0.1) : n % 4 < 2 ? s.y + s.h - 1.1 : s.y + 0.1;
     return `<span class="gm-feature gm-f-${esc(k)}" style="left:calc(var(--c) * ${x});top:calc(var(--c) * ${y})" aria-hidden="true">${icon(k)}</span>`;
   }).join("");
