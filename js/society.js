@@ -365,24 +365,31 @@
     // Done to-dos: pick a garden (Central or Middle School), then a spot, then check off its to-dos and repairs.
     // Ones already crossed off or waiting for Yvy's OK show but can't be checked again.
     const maps = [GM].concat(GM.otherMaps || []);
-    let garden = { done: new Set(), pending: new Set() };
+    let garden = { done: new Set(), doneOn: new Map(), pending: new Set() };
+    const G = () => window.YvyGarden || {}; // js/garden-map.js loads after this file
+    const spotChores = (sp) => (G().chores ? G().chores(sp) : []);
     $("#sfTodoMaps").innerHTML = maps.map((m, k) =>
       `<label class="sf-check"><input type="radio" name="todo_map" value="${k}"${k ? "" : " checked"}> ${esc(m.button || m.title)}</label>`).join("");
     const todoSpots = () => ((maps[+form.elements.todo_map.value] || {}).spots || [])
-      .filter((sp) => sp.id && ((sp.todo && sp.todo.length) || (sp.fix && sp.fix.length)));
-    // Repairs (fix) first, marked "Fix:", then the to-dos; the same text twice is only listed once
+      .filter((sp) => sp.id && ((sp.todo && sp.todo.length) || (sp.fix && sp.fix.length) || spotChores(sp).length));
+    // Repairs (fix) first, marked "Fix:", then the to-dos, then chores (they come back every few days);
+    // the same text twice is only listed once
     const todoItems = (sp) => (sp.fix || []).map((t) => ({ t, fix: true })).concat((sp.todo || []).map((t) => ({ t })))
+      .concat(spotChores(sp).map((c) => ({ t: c.text, chore: c })))
       .filter((x, i, all) => all.findIndex((y) => y.t === x.t) === i);
     const showTodoList = () => {
       const sp = todoSpots().find((s) => s.id === form.elements.todo_bed.value);
       const key = window.YvyGarden && window.YvyGarden.todoKey;
-      $("#sfTodoList").innerHTML = sp && key ? todoItems(sp).map(({ t, fix }) => {
+      $("#sfTodoList").innerHTML = sp && key ? todoItems(sp).map(({ t, fix, chore }) => {
         const id = key(t), tag = `${sp.id}:${id}`;
-        const text = `${fix ? "<b>Fix:</b> " : ""}${esc(t)}`;
-        if (garden.done.has(tag)) return `<label class="sf-check sf-todo-done"><input type="checkbox" checked disabled> <span>${text} <em>(done ✓)</em></span></label>`;
+        const text = `${fix ? "<b>Fix:</b> " : chore ? "<b>Chore:</b> " : ""}${esc(t)}`;
+        const last = garden.doneOn.get(tag);
+        if (chore && G().choreDone(last, chore.every)) return `<label class="sf-check sf-todo-done"><input type="checkbox" checked disabled> <span>${text} <em>(done ✓ ${esc(G().parse(last).toLocaleDateString("en-US", { month: "short", day: "numeric" }))})</em></span></label>`;
+        if (!chore && garden.done.has(tag)) return `<label class="sf-check sf-todo-done"><input type="checkbox" checked disabled> <span>${text} <em>(done ✓)</em></span></label>`;
         if (garden.pending.has(tag)) return `<label class="sf-check sf-todo-pending"><input type="checkbox" disabled> <span>${text} <em>(? waiting for Yvy)</em></span></label>`;
         return `<label class="sf-check"><input type="checkbox" name="items" value="${esc(id)}"> <span>${text}</span></label>`;
       }).join("") : '<p class="sf-privacy">Pick a spot first.</p>';
+      $("#sfOtherRow").hidden = !sp; // "Other": a job that's not on the list, written in
     };
     const showTodoSpots = () => {
       // Spots that share a name (the three Fig Trees) get numbered in map order, like their abouts
@@ -398,6 +405,10 @@
     form.addEventListener("change", (e) => {
       if (e.target.name === "todo_map") showTodoSpots();
       if (e.target.name === "todo_bed") showTodoList();
+      if (e.target.id === "sfOtherOn") {
+        form.elements.other.hidden = !e.target.checked;
+        if (e.target.checked) form.elements.other.focus();
+      }
     });
     showTodoSpots();
 
@@ -413,6 +424,7 @@
       todoKind.hidden = !canReport;
       garden = {
         done: new Set((g.done || []).map((d) => `${d.bed}:${d.item}`)),
+        doneOn: new Map((g.done || []).map((d) => [`${d.bed}:${d.item}`, d.done_on])),
         pending: new Set((g.pending || []).map((d) => `${d.bed}:${d.item}`)),
       };
       showTodoList();
@@ -492,6 +504,10 @@
           fd.append("done_on", form.elements.done_on.value);
           fd.append("bed", form.elements.todo_bed.value);
           form.querySelectorAll("[name=items]:checked").forEach((c) => fd.append("items", c.value));
+          if ($("#sfOtherOn").checked) {
+            if (!form.elements.other.value.trim()) throw new Error("Write what you did next to Other.");
+            fd.append("other", form.elements.other.value);
+          }
         }
         for (const f of files) fd.append("photos", await shrinkPhoto(f), f.name.replace(/\.\w+$/, "") + ".jpg");
         status.textContent = "Sending…";
@@ -503,6 +519,9 @@
         form.elements.turned.checked = false;
         form.querySelectorAll("[name=plan_ids]:checked").forEach((c) => { c.checked = false; });
         if (kind === "todo") {
+          form.elements.other.value = "";
+          form.elements.other.hidden = true;
+          $("#sfOtherOn").checked = false;
           loadGarden(); // the ones just sent now show "waiting for Yvy"
           if (window.YvyGarden && window.YvyGarden.reload) window.YvyGarden.reload(); // and get a ? on the map
         }

@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-25b">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-25b">
-  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-25b">
-  <link rel="stylesheet" href="css/extras.css?v=2026-10-25b">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-25f">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-25f">
+  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-25f">
+  <link rel="stylesheet" href="css/extras.css?v=2026-10-25f">
 </head>
 <body>
 
@@ -392,7 +392,12 @@
           <label class="sf-row">Date <input name="done_on" type="date"></label>
           <fieldset class="sf-plan"><legend>Which garden?</legend><div id="sfTodoMaps"></div></fieldset>
           <label class="sf-row">Where? <select name="todo_bed" id="sfTodoSpots"></select></label>
-          <fieldset class="sf-plan"><legend>What did you do?</legend><div id="sfTodoList"></div></fieldset>
+          <fieldset class="sf-plan"><legend>What did you do?</legend><div id="sfTodoList"></div>
+            <div class="sf-other" id="sfOtherRow" hidden>
+              <label class="sf-check"><input type="checkbox" id="sfOtherOn"> <span>Other (something that's not on the list)</span></label>
+              <input name="other" maxlength="120" placeholder="e.g. Pulled the weeds around the bed" aria-label="What else did you do?" hidden>
+            </div>
+          </fieldset>
         </div>
         <label class="sf-row" id="sfTitleRow">Title
           <input name="title" maxlength="120" placeholder="e.g. The peas are up!">
@@ -556,15 +561,15 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=2026-10-25b"></script>
-  <script src="js/pixels.js?v=2026-10-25b"></script>
-  <script src="js/veg-icons.js?v=2026-10-25b"></script>
-  <script src="js/main.js?v=2026-10-25b"></script>
-  <script src="js/society.js?v=2026-10-25b"></script>
-  <script src="js/garden-map.js?v=2026-10-25b"></script>
-  <script src="js/portfolio.js?v=2026-10-25b"></script>
-  <script src="js/extras.js?v=2026-10-25b"></script>
-  <script src="js/emoji-sprites.js?v=2026-10-25b"></script>
-  <script src="js/pixel-emoji.js?v=2026-10-25b"></script>
+  <script src="js/data.js?v=2026-10-25f"></script>
+  <script src="js/pixels.js?v=2026-10-25f"></script>
+  <script src="js/veg-icons.js?v=2026-10-25f"></script>
+  <script src="js/main.js?v=2026-10-25f"></script>
+  <script src="js/society.js?v=2026-10-25f"></script>
+  <script src="js/garden-map.js?v=2026-10-25f"></script>
+  <script src="js/portfolio.js?v=2026-10-25f"></script>
+  <script src="js/extras.js?v=2026-10-25f"></script>
+  <script src="js/emoji-sprites.js?v=2026-10-25f"></script>
+  <script src="js/pixel-emoji.js?v=2026-10-25f"></script>
 </body>
 </html>

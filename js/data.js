@@ -1063,6 +1063,19 @@ window.YVY = {
     // (🌱 Garden tab) or sent by members through "Submit an entry"; fed here can hold extra ones,
     // as { date: "YYYY-MM-DD", id: "greens" } (id can also be a list). Last fed and next feeding come from these.
     feedNote: "Organic and kid-safe: compost, fish emulsion, blood meal, bone meal. Water before and after feeding, and never feed dry soil.",
+    // Things buried in a bed, on any map: give the bed has: ["olla"], ["wormbin"] or ["olla", "olla", "wormbin"]
+    // (list one per olla). Each gets a little marker in a corner of the bed (emoji: drawn as that pixel emoji,
+    // otherwise a colored dot), and its name in the speech box opens about.
+    // chore: a job that comes back every so many days (every), listed under the bed's Chores. Crossing it off
+    // counts for that many days, then it's due again. Changing a chore's text starts it fresh.
+    features: {
+      olla: { name: "Olla", plural: "Ollas",
+        about: "An unglazed clay pot buried in the soil and filled with water. The water seeps out slowly, right to the roots, so the bed needs less watering. Keep the lid on and top it up when it's low 💧",
+        chore: { text: "Fill up the olla with water (twice a week)", plural: "Fill up the ollas with water (twice a week)", every: 3 } },
+      wormbin: { name: "In-ground worm bin", plural: "In-ground worm bins", emoji: "🪱",
+        about: "A bin buried in the bed with holes in its sides. Worms eat the scraps we drop in, then wander out and leave castings around the roots 🪱 Fruit and veggie scraps only (no citrus, onions, meat or dairy), and keep the lid on.",
+        chore: { text: "Feed the worms a handful of fruit and veggie scraps (once a week)", every: 7 } },
+    },
     spots: [
       // Ground first (drawn underneath everything else)
       { kind: "grass", x: 1, y: 1, w: 18, h: 8 },
@@ -1102,7 +1115,7 @@ window.YVY = {
         name: "Short Mushroom Table", about: "The shorter of our two mushroom tables, also turquoise with yellow spots 🍄" },
       { kind: "mushrooms", x: 2, y: 5, w: 3, h: 3,
         name: "Tall Mushroom Table", about: "The taller of our two mushroom tables: turquoise with yellow spots 🍄" },
-      { kind: "bed", text: "#8", x: 6, y: 2, w: 5, h: 2, id: "bed8", name: "Bed #8",
+      { kind: "bed", text: "#8", x: 6, y: 2, w: 5, h: 2, id: "bed8", name: "Bed #8", has: ["olla"],
         planted: ["🌿 rosemary", "🌿 basil", "🌾 lemongrass", "🥀 dead tomato plant"],
         todo: [
           "Pull out the dead tomato plant, roots and all. If its leaves had spots or it wilted, bag it for the trash instead of the compost.",
@@ -1229,7 +1242,7 @@ window.YVY = {
         id: "trellis", name: "Grapevine Trellis", about: "A trellis for the grapevines to climb, right between beds #4 and #5 🍇",
         fix: ["Needs more support."],
         todo: ["Grapes go dormant in winter, and January is the time to prune them, so add the extra support before then."] },
-      { kind: "bed", text: "#4", x: 10, y: 25, w: 6, h: 3, id: "bed4", name: "Bed #4",
+      { kind: "bed", text: "#4", x: 10, y: 25, w: 6, h: 3, id: "bed4", name: "Bed #4", has: ["olla", "olla"],
         planted: ["🌺 nasturtiums"],
         todo: [
           "Nasturtiums love our cool season and reseed themselves. Thin them out so they don't smother everything.",
@@ -1406,7 +1419,7 @@ window.YVY = {
             about: "Middle school garden bed #4, up top by the tree (still the first floor)." },
           { kind: "bed", text: "#5", x: 12, y: 7, w: 5, h: 2, id: "ms5", name: "MS Bed #5",
             about: "Middle school garden bed #5, up top by the tree (still the first floor)." },
-          { kind: "bed", text: "#6", x: 18, y: 7, w: 5, h: 2, id: "ms6", name: "MS Bed #6",
+          { kind: "bed", text: "#6", x: 18, y: 7, w: 5, h: 2, id: "ms6", name: "MS Bed #6", has: ["olla", "wormbin"],
             about: "Middle school garden bed #6, up top by the tree (still the first floor).",
             fix: ["Needs new irrigation hoses."] },
           { kind: "bed", text: "#7", x: 20, y: 1, w: 3, h: 5, id: "ms7", name: "MS Bed #7",

@@ -7,7 +7,7 @@
  *   GET  /api/compost                                                      compost temperature log (approved)
  *   GET  /api/photo/<key>                                                  photo of an approved post
  *   POST /api/submit   (multipart, needs SOCIETY_PASSCODE)                 new post, compost temp, feeding or done to-dos, waits for approval
- *   GET  /api/garden                                                       garden map: feedings, crossed-off to-dos and to-dos waiting for OK
+ *   GET  /api/garden                                                       garden map: feedings, crossed-off to-dos, to-dos waiting for OK, "Other" jobs
  *   GET  /api/guestbook                                                    approved guestbook entries
  *   POST /api/guestbook  { name, role?, avatar?, message, website, ms }    sign it (no passcode), waits for approval
  *   POST /api/visit                                                         count a visit, returns { visitor: N } (total visits)
@@ -52,7 +52,7 @@ const LOG_KINDS = ["temp", "feed", "todo"];
 // Spot, feedPlan and to-do ids from data.js → gardenMap (bed5, greens, a to-do's text hash...)
 const SLUG = /^[a-z0-9-]{1,30}$/;
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
-const LIMITS = { author: 40, title: 120, body: 4000, name: 80, emoji: 8, description: 400, pile: 40, moisture: 40, notes: 600 };
+const LIMITS = { author: 40, title: 120, body: 4000, name: 80, emoji: 8, description: 400, pile: 40, moisture: 40, notes: 600, other: 120 };
 const AUTH_WINDOW_MS = 15 * 60 * 1000;
 const AUTH_MAX_FAILURES = 8;
 // Guestbook: anyone can sign, so keep spam down
@@ -686,9 +686,11 @@ function checkPlanIds(list) {
   if (!ids.length || ids.length > 6 || !ids.every((x) => SLUG.test(x))) throw new HttpError(400, "Pick what you fed.");
   return ids;
 }
-function checkItems(list) {
+// To-dos checked off in a report (can be none when the member wrote something under "Other")
+function checkItems(list, other) {
   const ids = [].concat(list || []).map((x) => clean(x, 30)).filter(Boolean);
-  if (!ids.length || ids.length > 12 || !ids.every((x) => SLUG.test(x))) throw new HttpError(400, "Check off what you did.");
+  if (!ids.length && !other) throw new HttpError(400, "Check off what you did, or write it under Other.");
+  if (ids.length > 12 || !ids.every((x) => SLUG.test(x))) throw new HttpError(400, "Check off what you did.");
   return [...new Set(ids)];
 }
 function checkBed(value) {
@@ -698,10 +700,12 @@ function checkBed(value) {
 }
 
 async function getGarden(env) {
-  const [feeds, done, reports] = await Promise.all([
+  const [feeds, done, reports, others] = await Promise.all([
     env.DB.prepare("SELECT id, bed, plan_ids, fed_on, notes FROM feed_logs WHERE status = 'approved' ORDER BY fed_on, created_at").all(),
     env.DB.prepare("SELECT bed, item, done_on FROM todo_done").all(),
     env.DB.prepare("SELECT bed, items FROM todo_reports WHERE status = 'pending'").all(),
+    // "Other" jobs Yvy approved (newest first; the map shows a spot's latest few under "Also done")
+    env.DB.prepare("SELECT bed, other, done_on FROM todo_reports WHERE status = 'approved' AND other != '' ORDER BY done_on DESC, created_at DESC LIMIT 100").all(),
   ]);
   // To-dos members say they did, still waiting for Yvy (just which ones, not who sent them)
   const pending = [];
@@ -710,6 +714,7 @@ async function getGarden(env) {
     feeds: feeds.results.map((f) => ({ ...f, plan_ids: JSON.parse(f.plan_ids || "[]") })),
     done: done.results,
     pending,
+    others: others.results,
   });
 }
 
@@ -726,13 +731,17 @@ async function submitLog(form, kind, env) {
       form.get("turned") ? 1 : 0, clean(form.get("body"), LIMITS.notes), now(), author
     ).run();
   } else if (kind === "todo") {
+    const other = clean(form.get("other"), LIMITS.other);
+    const items = checkItems(form.getAll("items"), other);
     await env.DB.prepare(
-      "INSERT INTO todo_reports (id, bed, items, done_on, notes, author, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)"
+      "INSERT INTO todo_reports (id, bed, items, other, done_on, notes, author, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 'pending', ?)"
     ).bind(
-      id, checkBed(form.get("bed")), JSON.stringify(checkItems(form.getAll("items"))), checkDate(form.get("done_on")),
+      id, checkBed(form.get("bed")), JSON.stringify(items), other, checkDate(form.get("done_on")),
       clean(form.get("body"), LIMITS.notes), author, now()
     ).run();
-    return json({ ok: true, message: "Thanks! It shows with a ? on the map until Yvy checks it." }, 201);
+    return json({ ok: true, message: items.length
+      ? "Thanks! It shows with a ? on the map until Yvy checks it."
+      : "Thanks! Yvy will check it, then it shows on the map under Also done." }, 201);
   } else {
     await env.DB.prepare(
       "INSERT INTO feed_logs (id, bed, plan_ids, fed_on, notes, author, status, created_at) VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)"
@@ -748,7 +757,7 @@ async function adminGardenPending(env) {
   const [temps, feeds, todos] = await Promise.all([
     env.DB.prepare("SELECT id, logged_on, pile, temp_f, turned, notes, author, created_at FROM compost_logs WHERE status = 'pending' ORDER BY created_at").all(),
     env.DB.prepare("SELECT id, bed, plan_ids, fed_on, notes, author, created_at FROM feed_logs WHERE status = 'pending' ORDER BY created_at").all(),
-    env.DB.prepare("SELECT id, bed, items, done_on, notes, author, created_at FROM todo_reports WHERE status = 'pending' ORDER BY created_at").all(),
+    env.DB.prepare("SELECT id, bed, items, other, done_on, notes, author, created_at FROM todo_reports WHERE status = 'pending' ORDER BY created_at").all(),
   ]);
   return json({
     temps: temps.results,
@@ -757,7 +766,7 @@ async function adminGardenPending(env) {
   });
 }
 
-// Approving a member's to-do report crosses its to-dos off; rejecting just closes it
+// Approving a member's to-do report crosses its to-dos off (and its "Other" job shows on the map); rejecting just closes it
 async function adminReviewTodo(request, env, id) {
   const { status } = await readJson(request);
   if (!["approved", "rejected"].includes(status)) throw new HttpError(400, "Approve or reject it.");
@@ -765,8 +774,10 @@ async function adminReviewTodo(request, env, id) {
   if (!r) throw new HttpError(404, "That report was already handled.");
   const steps = [env.DB.prepare("UPDATE todo_reports SET status = ? WHERE id = ?").bind(status, id)];
   if (status === "approved") {
+    // Keep the newest date, so approving an older report late can't push a repeating chore's "last done" back
     JSON.parse(r.items || "[]").forEach((item) => steps.push(
-      env.DB.prepare("INSERT OR REPLACE INTO todo_done (bed, item, done_on) VALUES (?, ?, ?)").bind(r.bed, item, r.done_on)));
+      env.DB.prepare("INSERT INTO todo_done (bed, item, done_on) VALUES (?, ?, ?) ON CONFLICT (bed, item) DO UPDATE SET done_on = max(done_on, excluded.done_on)")
+        .bind(r.bed, item, r.done_on)));
   }
   await env.DB.batch(steps);
   return json({ ok: true });

@@ -239,7 +239,7 @@
   const G = window.YvyGarden;
   const GM = window.YVY.gardenMap || {};
   const gardenSpots = [].concat(GM.spots || [], ...(GM.otherMaps || []).map((m) => m.spots || []))
-    .filter((sp) => sp.id && (sp.todo || sp.fix || sp.feedPlan));
+    .filter((sp) => sp.id && (sp.todo || sp.fix || sp.feedPlan || G.chores(sp).length));
   const feedBeds = gardenSpots.filter((sp) => sp.feedPlan && sp.feedPlan.length);
   const spotById = (id) => gardenSpots.find((sp) => sp.id === id);
   const planName = (spot, id) => ((spot && spot.feedPlan || []).find((p) => p.id === id) || { what: id }).what;
@@ -247,7 +247,8 @@
   // A to-do id is a hash of its text; a reworded to-do no longer matches, so say so instead of guessing
   const todoText = (bed, item) => {
     const sp = spotById(bed) || {};
-    return [].concat(sp.fix || [], sp.todo || []).find((t) => G.todoKey(t) === item) || "(a to-do that has since changed)";
+    return [].concat(sp.fix || [], sp.todo || [], sp.id ? G.chores(sp).map((c) => c.text) : [])
+      .find((t) => G.todoKey(t) === item) || "(a to-do that has since changed)";
   };
 
   $("#admFeedBed").innerHTML = '<option value="">Pick a bed…</option>' +
@@ -283,15 +284,19 @@
       const [garden, pending] = await Promise.all([fetch(`${API}/api/garden`).then((r) => r.json()), countGarden()]);
       renderPending(pending);
       const done = new Set(garden.done.map((d) => `${d.bed}:${d.item}`));
+      const doneOn = new Map(garden.done.map((d) => [`${d.bed}:${d.item}`, d.done_on]));
       const waiting = new Set((garden.pending || []).map((d) => `${d.bed}:${d.item}`));
       const feeds = {};
       garden.feeds.forEach((f) => { (feeds[f.bed] = feeds[f.bed] || []).push(f); });
       const today = G.midnight(new Date());
       box.innerHTML = gardenSpots.map((sp) => {
         // A repair or to-do: tick it to cross it off (the map's "!" goes away when all repairs are done)
-        const checkItem = (t) => {
+        // A chore (feed the worms...) counts as done for a few days, then comes back unchecked; ticking it logs today
+        const checkItem = (t, chore) => {
           const key = G.todoKey(t);
-          const isDone = done.has(`${sp.id}:${key}`);
+          const last = doneOn.get(`${sp.id}:${key}`);
+          const isDone = chore ? G.choreDone(last, chore.every) : done.has(`${sp.id}:${key}`);
+          if (chore && last) t += ` (last done ${fmt(last)})`;
           return `<li><label class="sf-check"><input type="checkbox" data-bed="${esc(sp.id)}" data-item="${esc(key)}"${isDone ? " checked" : ""}> <span>${esc(t)}${!isDone && waiting.has(`${sp.id}:${key}`) ? ' <em class="adm-waiting">❓ a member says it\'s done (see Waiting for you)</em>' : ""}</span></label></li>`;
         };
         const log = (feeds[sp.id] || []).slice().reverse();
@@ -302,8 +307,9 @@
           : "None needed";
         return `<article class="adm-card adm-bed">
           <h2>${esc(sp.name)}</h2>
-          ${sp.fix ? `<p class="adm-bed-fix">⚠️ Needs fixing:</p><ul class="adm-todo">${sp.fix.map(checkItem).join("")}</ul>` : ""}
-          ${sp.todo ? `${sp.fix ? '<p class="adm-bed-todo">To-do:</p>' : ""}<ul class="adm-todo">${sp.todo.map(checkItem).join("")}</ul>` : ""}
+          ${sp.fix ? `<p class="adm-bed-fix">⚠️ Needs fixing:</p><ul class="adm-todo">${sp.fix.map((t) => checkItem(t)).join("")}</ul>` : ""}
+          ${sp.todo ? `${sp.fix ? '<p class="adm-bed-todo">To-do:</p>' : ""}<ul class="adm-todo">${sp.todo.map((t) => checkItem(t)).join("")}</ul>` : ""}
+          ${G.chores(sp).length ? `<p class="adm-bed-todo">Chores:</p><ul class="adm-todo">${G.chores(sp).map((c) => checkItem(c.text, c)).join("")}</ul>` : ""}
           ${sp.feedPlan ? `<p class="adm-bed-next"><b>Last fed:</b> ${log.length ? `${esc(fmt(log[0].fed_on))}: ${esc(planNames(sp.id, log[0].plan_ids))}` : "Not yet"}<br>
             <b>Next feeding:</b> ${esc(nextText)}</p>` : ""}
           ${log.length ? `<table class="adm-table adm-feeds"><tbody>${log.map((f) => `<tr><td>${esc(fmt(f.fed_on))}</td><td>${esc(planNames(sp.id, f.plan_ids))}${f.notes ? ` <em>(${esc(f.notes)})</em>` : ""}</td>
@@ -323,7 +329,8 @@
     box.innerHTML = `<div class="adm-card"><h2>Waiting for you</h2><ul class="adm-pending">
       ${temps.map((t) => row("compost", t.id, `🌡️ <b>${esc(t.temp_f)}°F</b> in the ${esc(t.pile)} on ${esc(fmt(t.logged_on))}${t.turned ? " (turned ↻)" : ""}, from ${esc(t.author)}${t.notes ? `: <em>${esc(t.notes)}</em>` : ""}`)).join("")}
       ${feeds.map((f) => row("feed", f.id, `🌱 <b>${esc((spotById(f.bed) || { name: f.bed }).name)}</b>: ${esc(planNames(f.bed, f.plan_ids))} on ${esc(fmt(f.fed_on))}, from ${esc(f.author)}${f.notes ? `: <em>${esc(f.notes)}</em>` : ""}`)).join("")}
-      ${todos.map((t) => row("todo-report", t.id, `✅ <b>${esc((spotById(t.bed) || { name: t.bed }).name)}</b>: did ${t.items.map((i) => `“${esc(todoText(t.bed, i))}”`).join(", ")} on ${esc(fmt(t.done_on))}, from ${esc(t.author)}${t.notes ? `: <em>${esc(t.notes)}</em>` : ""}`)).join("")}
+      ${todos.map((t) => row("todo-report", t.id, `✅ <b>${esc((spotById(t.bed) || { name: t.bed }).name)}</b>: did ${t.items.map((i) => `“${esc(todoText(t.bed, i))}”`)
+        .concat(t.other ? [`<b>Other:</b> “${esc(t.other)}”`] : []).join(", ")} on ${esc(fmt(t.done_on))}, from ${esc(t.author)}${t.notes ? `: <em>${esc(t.notes)}</em>` : ""}`)).join("")}
     </ul></div>`;
   }
 

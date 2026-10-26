@@ -23,6 +23,32 @@
   const label = (s) => (s.text ? `<span class="gm-text"${s.textAt ? ` style="inset:auto;${place(s.textAt)}"` : ""}>${esc(s.text)}</span>` : "");
   // clip: a CSS polygon for spots that aren't rectangles (the L-shaped YMCA Room). Only the shape itself is clickable.
   const shape = (s) => `<span class="gm-shape"${s.clip ? ` style="clip-path:${esc(s.clip)}"` : ""}></span>${s.kind === "bucket" ? '<span class="gm-handle" aria-hidden="true"></span>' : ""}`;
+  // has: things buried in a bed (ollas, worm bins; data.js → gardenMap.features), drawn small in the bed's corners
+  // (bottom-left, bottom-right, top-left, top-right) so they stay clear of the bed's number in the middle.
+  // A feature with an emoji (the worm bin's 🪱) shows that emoji, which js/pixel-emoji.js turns into its pixel sprite.
+  const FEATURES = M.features || {};
+  const icon = (k) => (FEATURES[k] && FEATURES[k].emoji ? esc(FEATURES[k].emoji) : "");
+  const marks = (s) => s.has.map((k, n) => {
+    const x = n % 2 ? s.x + s.w - 1.1 : s.x + 0.1;
+    const y = n % 4 < 2 ? s.y + s.h - 1.1 : s.y + 0.1;
+    return `<span class="gm-feature gm-f-${esc(k)}" style="left:calc(var(--c) * ${x});top:calc(var(--c) * ${y})" aria-hidden="true">${icon(k)}</span>`;
+  }).join("");
+  // In the speech box each one is a button; tapping it opens what it is (about), so the box stays short
+  const hasList = (s) => {
+    const keys = [...new Set(s.has)].filter((k) => FEATURES[k]);
+    return keys.length ? `<p class="gm-what">In this bed:</p><p class="gm-has">${keys.map((k) => {
+      const f = FEATURES[k], n = s.has.filter((x) => x === k).length;
+      return `<button type="button" class="gm-def-btn" data-def="${esc(k)}" aria-expanded="false"><span class="gm-has-icon gm-f-${esc(k)}" aria-hidden="true">${icon(k)}</span>${esc(n > 1 ? `${n} ${f.plural || f.name}` : f.name)} <span aria-hidden="true">ⓘ</span></button>`;
+    }).join(" ")}</p><div class="gm-def" hidden></div>` : "";
+  };
+  // Chores: jobs that come back every few days (feed the worm bin, fill the ollas), one per kind of thing in the bed.
+  // A chore counts as done for `every` days after it was last done.
+  const chores = (s) => [...new Set(s.has || [])].filter((k) => FEATURES[k] && FEATURES[k].chore).map((k) => {
+    const c = FEATURES[k].chore;
+    return { text: s.has.filter((x) => x === k).length > 1 && c.plural ? c.plural : c.text, every: c.every };
+  });
+  const choreNext = (last, every) => { const d = parse(last); return new Date(d.getFullYear(), d.getMonth(), d.getDate() + every); };
+  const choreDone = (last, every, today = midnight(new Date())) => !!last && choreNext(last, every) > today;
   // runner: a critter's pixel sprite running laps inside the spot (Beyonce in the chicken run)
   const runner = (s) => `<span class="gm-runner" style="${place([s.x, s.y, s.w, s.h])}" aria-hidden="true"><span class="gm-runner-sprite">${window.Pixel ? window.Pixel.svg(s.runner, 2) : ""}</span></span>`;
   // Spots with repairs to do get a little yellow "!" at their top-right corner (like a quest marker),
@@ -34,7 +60,7 @@
      and to-dos members say they did (through "Submit an entry"), which show a "?" until Yvy OKs them */
   const S = window.YVY.society || {};
   const API = ["localhost", "127.0.0.1"].includes(location.hostname) ? "http://localhost:8787" : S.api;
-  const live = { feeds: {}, done: new Set(), pending: new Set() };
+  const live = { feeds: {}, done: new Set(), doneOn: new Map(), pending: new Set(), others: {} };
   const lessonNow = (window.YVY.lessons || {}).now; // what garden class is learning (shown on the Garden Classroom)
   // A to-do's id is a short hash of its text (the admin page makes the same one), so a rewritten
   // to-do starts out unchecked
@@ -47,6 +73,20 @@
     const waiting = !done && s.id && live.pending.has(`${s.id}:${todoKey(t)}`);
     if (waiting) return `<li class="is-pending">${esc(t)} <em class="gm-waiting">(waiting for Yvy's OK)</em></li>`;
     return `<li${done ? ' class="is-done"' : ""}>${esc(t)}${done ? ' <span class="sr-only">(done)</span>' : ""}</li>`;
+  }).join("")}</ul>`;
+  // "Other" jobs members did that weren't on the list (after Yvy's OK): a spot's latest three, newest first
+  const alsoDone = (s) => {
+    const jobs = (live.others[s.id] || []).slice(0, 3);
+    return jobs.length ? `<p class="gm-what">Also done:</p><ul class="gm-todo">${jobs.map((j) =>
+      `<li class="is-done">${esc(j.other)} <span class="gm-when">(${esc(parse(j.done_on).toLocaleDateString("en-US", { month: "short", day: "numeric" }))})</span></li>`).join("")}</ul>` : "";
+  };
+  // Chores show when they were last done and when they're due next
+  const short = (d) => d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  const choreList = (s) => `<ul class="gm-todo">${chores(s).map((c) => {
+    const tag = `${s.id}:${todoKey(c.text)}`, last = live.doneOn.get(tag);
+    if (choreDone(last, c.every)) return `<li class="is-done">${esc(c.text)} <span class="gm-when">(done ${short(parse(last))}, next ${short(choreNext(last, c.every))})</span></li>`;
+    if (live.pending.has(tag)) return `<li class="is-pending">${esc(c.text)} <em class="gm-waiting">(waiting for Yvy's OK)</em></li>`;
+    return `<li>${esc(c.text)} <span class="gm-when gm-due">(${last ? `last done ${short(parse(last))}, ` : ""}due now)</span></li>`;
   }).join("")}</ul>`;
   // Repairs not crossed off yet (the yellow "!" stays on the map until there are none)
   const fixLeft = (s) => (s.fix || []).filter((t) => !isDone(s, t));
@@ -115,7 +155,7 @@
   }
 
   // The admin page (society-admin.js) uses these too, so to-do ids and feeding dates always match the map
-  window.YvyGarden = { todoKey, nextFeeding, parse, midnight };
+  window.YvyGarden = { todoKey, nextFeeding, parse, midnight, chores, choreDone, choreNext };
   if (!box) return;
 
   const maps = [M].concat(M.otherMaps || []);
@@ -130,6 +170,7 @@
           return `<button type="button" class="${classes(s)}" style="${place(pieces[0])}" data-i="${i}" aria-label="${esc(s.name)}${fixLeft(s).length ? ", needs fixing" : ""}">${shape(s)}${label(s)}</button>`
             + pieces.slice(1).map((r) => `<div class="${classes(s)} gm-more" style="${place(r)}" data-i="${i}" aria-hidden="true"><span class="gm-shape"></span></div>`).join("");
         }).join("")}
+        ${spots.filter((s) => s.has).map(marks).join("")}
         ${spots.filter((s) => s.runner).map(runner).join("")}
         ${spots.map((s, i) => (s.fix ? alert(s, i) : "")).join("")}`;
   // Once every repair on a spot is crossed off, its "!" goes away (called again when the live log loads)
@@ -198,12 +239,15 @@
     body.innerHTML =
       (s.planted ? `<p class="gm-what">Growing now:</p><ul class="gm-plants">${s.planted.map(plant).join("")}</ul>` : "") +
       (aboutToday(s) ? `<p>${aboutHtml(s, aboutToday(s))}</p>` : "") +
+      (s.has ? hasList(s) : "") +
       (s.keep ? '<div class="gm-keep-photo" hidden></div>' : "") +
       (s.lesson && lessonNow ? `<p class="gm-what">Now learning:</p><p>📚 Unit ${esc(lessonNow.unit)} · Lesson ${esc(lessonNow.lesson)}: <b>${esc(lessonNow.title)}</b>
         (${esc(lessonNow.island)} in Gardenbound)</p>` : "") +
       (s.fix ? `<p class="gm-what gm-what-fix">Needs fixing:</p>${checkList(s, s.fix, "gm-fix")}` : "") +
       (s.todo ? `<p class="gm-what">${esc(M.todoTitle || "To-do")}:</p>${checkList(s, s.todo, "gm-todo")}` : "") +
-      ((s.todo || s.fix) && s.id && window.YvySociety && window.YvySociety.canReport() ? '<button type="button" class="gm-go gm-report">✅ I did one! Tell Yvy</button>' : "") +
+      (s.id && chores(s).length ? `<p class="gm-what">Chores:</p>${choreList(s)}` : "") +
+      (s.id ? alsoDone(s) : "") +
+      ((s.todo || s.fix || chores(s).length) && s.id && window.YvySociety && window.YvySociety.canReport() ? '<button type="button" class="gm-go gm-report">✅ I did one! Tell Yvy</button>' : "") +
       (s.feed ? `<p class="gm-what gm-what-feed">${esc(M.feedTitle || "Feeding")}:</p>${s.feedPlan ? feedLog(s) : ""}${list(s.feed, "gm-feed")}`
         + (M.feedNote ? `<p class="gm-feed-note">${esc(M.feedNote)}</p>` : "") : "") +
       (s.tab ? `<button type="button" class="gm-go" data-tab-go="${esc(s.tab)}">See the compost log ▶</button>` : "") +
@@ -226,6 +270,18 @@
   map.addEventListener("focusin", (e) => { const el = spotOf(e); if (el) { pinned = +el.dataset.i; show(pinned); } });
   // "See the compost log" opens that Garden Society tab; a plant name (keep) shows or hides its photo
   body.addEventListener("click", (e) => {
+    // "Olla" / "In-ground worm bin": show or hide what it is
+    const d = e.target.closest("[data-def]");
+    if (d) {
+      const f = FEATURES[d.dataset.def];
+      const box = body.querySelector(".gm-def");
+      const open = d.getAttribute("aria-expanded") !== "true";
+      body.querySelectorAll("[data-def]").forEach((el) => el.setAttribute("aria-expanded", "false"));
+      d.setAttribute("aria-expanded", String(open));
+      box.hidden = !open;
+      box.innerHTML = open ? `<b>${esc(f.name)}:</b> ${esc(f.about)}` : "";
+      return;
+    }
     const k = e.target.closest("[data-keep]");
     if (k) {
       const plant = spots[shown].keep[+k.dataset.keep];
@@ -278,7 +334,10 @@
     live.feeds = {};
     (data.feeds || []).forEach((f) => { (live.feeds[f.bed] = live.feeds[f.bed] || []).push({ date: f.fed_on, id: f.plan_ids }); });
     live.done = new Set((data.done || []).map((d) => `${d.bed}:${d.item}`));
+    live.doneOn = new Map((data.done || []).map((d) => [`${d.bed}:${d.item}`, d.done_on]));
     live.pending = new Set((data.pending || []).map((d) => `${d.bed}:${d.item}`));
+    live.others = {};
+    (data.others || []).forEach((o) => { (live.others[o.bed] = live.others[o.bed] || []).push(o); });
     syncAlerts();
     show(shown);
   }).catch(() => { /* no log yet: the map still works */ });

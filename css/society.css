@@ -142,7 +142,7 @@
 .sf-kinds label { font: 600 14px var(--f-round); cursor: pointer; }
 .sf-row { display: grid; gap: 4px; font: 700 14px var(--f-round); color: var(--ink); }
 .sf-row[hidden] { display: none; }
-.sf-row input, .sf-row textarea, .sf-row select {
+.sf-row input, .sf-row textarea, .sf-row select, .sf-other input[name=other] {
   font: 400 15px var(--f-body); padding: 8px 10px; border: 2px solid #c9b8f2; border-radius: 10px; background: #fff; width: 100%;
 }
 .sf-row textarea { resize: vertical; }
@@ -462,6 +462,25 @@ button.gm-clip { pointer-events: none; }
 
 /* Beyonce doing laps in the chicken run (her sprite faces left, so it flips when she runs right) */
 .gm-runner { position: absolute; z-index: 2; pointer-events: none; }
+/* Things buried in a bed (has in data.js): an olla (clay pot with water showing) and an in-ground worm bin (lid with a worm) */
+.gm-feature { position: absolute; z-index: 2; width: var(--c); height: var(--c); pointer-events: none; }
+.gm-f-olla { border-radius: 50%; box-shadow: 0 0 0 1px var(--ink); background: radial-gradient(circle, #5aa8f0 0 32%, #c8693a 34% 100%); }
+/* The worm bin is its pixel 🪱 (js/pixel-emoji.js swaps the emoji for the sprite) */
+.gm-f-wormbin { display: grid; place-items: center; font-size: var(--c); line-height: 1; }
+.gm-has-icon.gm-f-wormbin { font-size: 13px; }
+.gm-f-wormbin img.px-emoji { width: 100% !important; height: 100% !important; margin: 0 !important; }
+.gm-has { margin: 0 0 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.gm-has-icon { flex: none; display: inline-block; width: 13px; height: 13px; }
+/* "Olla" / "In-ground worm bin": tap to open what it is */
+.gm-def-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 2px solid #e2bf88; border-radius: 999px; background: #fff7e8; color: #6b4a1f;
+  font: 700 14px var(--f-round); padding: 2px 10px; cursor: pointer;
+}
+.gm-def-btn:hover, .gm-def-btn[aria-expanded="true"] { background: #ffe6bd; border-color: #c48a4a; }
+.gm-def-btn:focus-visible { outline: 3px dashed var(--pink); outline-offset: 2px; }
+.gm-def { margin: 0 0 10px; padding: 8px 10px; background: #fff7e8; border: 2px dashed #c48a4a; border-radius: 10px; font-size: 14px; line-height: 1.4; }
+.gm-due { color: #a0670a; font-weight: 700; }
 .gm-runner-sprite {
   position: absolute;
   bottom: 0;
@@ -604,6 +623,10 @@ button.gm-spot:focus-visible { outline: 3px dashed var(--pink); outline-offset: 
 .sf-todo-done span, .sf-todo-pending span { color: #8a8299; }
 .sf-todo-done span { text-decoration: line-through; }
 .sf-todo-done em, .sf-todo-pending em { font-size: 12px; }
+.sf-other { margin-top: 4px; display: grid; gap: 6px; }
+.sf-other input[name=other] { margin-left: 24px; width: calc(100% - 24px); }
+.sf-other input[name=other][hidden] { display: none; }
+.gm-when { font-size: 12px; color: #8a8299; text-decoration: none; display: inline-block; }
 .gm-fix li::before { content: "!"; background: var(--yellow); border-color: var(--ink); font: 8px/12px var(--f-pixel); text-align: center; color: var(--ink); }
 /* The "!" quest marker on spots that need fixing */
 .gm-alert {
