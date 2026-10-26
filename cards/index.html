@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Gardenbound Cards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="cards.css?v=2026-10-25f">
+</head>
+<body>
+  <header class="binder-head">
+    <h1 class="binder-logo" id="logo" aria-label="YvyGrounds">YvyGrounds</h1>
+    <p class="binder-title">Trading Card Binder</p>
+    <p class="binder-note">Rabbit &amp; Frog: Gardenbound cards, plus the critters. Secret: this page isn't on the site.</p>
+  </header>
+
+  <nav class="binder-tools" aria-label="Card tools">
+    <div class="binder-filters" role="group" aria-label="Show">
+      <button type="button" data-filter="all" aria-pressed="true">All</button>
+      <button type="button" data-filter="legend" aria-pressed="false">Heroes &amp; Legends</button>
+      <button type="button" data-filter="host" aria-pressed="false">Hosts</button>
+      <button type="button" data-filter="crop" aria-pressed="false">Crops</button>
+      <button type="button" data-filter="critter" aria-pressed="false">Critters</button>
+    </div>
+    <div class="binder-actions">
+      <button type="button" id="flipAll">↻ Flip them all</button>
+      <button type="button" id="printFronts">🖨️ Print cards</button>
+      <button type="button" id="printBacks">🖨️ Print 9 backs</button>
+    </div>
+  </nav>
+
+  <main id="binder"></main>
+
+  <section class="balance" aria-labelledby="balanceTitle">
+    <h2 id="balanceTitle">⚖️ Balance sheet</h2>
+    <p>Power = HP + every move's damage + 10 for each move with an extra effect. Every card in a tier has the same power and the same stat total. The critters are here to compare (they were made before the rules, so they're all over the place).</p>
+    <div id="balance"></div>
+  </section>
+
+  <div id="backSheet" class="back-sheet" aria-hidden="true"></div>
+
+  <script src="../js/data.js"></script>
+  <script src="../js/pixels.js"></script>
+  <script src="cards-data.js?v=2026-10-25f"></script>
+  <script src="cards.js?v=2026-10-25f"></script>
+</body>
+</html>

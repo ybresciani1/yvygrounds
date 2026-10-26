@@ -3,6 +3,7 @@ exclude:
   - AGENTS.md
   - OPEN_ITEMS.md
   - README.md
+  - cards
   - images/yvy-feelings
   - society-api
   - tools
