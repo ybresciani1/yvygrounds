@@ -1040,6 +1040,8 @@ window.YVY = {
    * succulents, grass, building, shed, box, sign, bucket, shelf, table, cart, balls.
    * A spot with a name can be hovered/tapped; it shows name, planted (list), about, fix and todo.
    * planted items are "emoji name" or { icon: "kale", name: "kale" } for a js/veg-icons.js icon.
+   * chores: [{ text, every }] jobs that come back every so many days (Chicken Run: food and water every day).
+   *         Crossing one off counts for that many days, then it's due again. Changing its text starts it fresh.
    * fix: repairs it needs (puts a yellow "!" on the map). Repairs get crossed off like to-dos; the "!" goes away
    *      once they're all done. todo: garden jobs for this season,
    * written for San Diego weather and crop rotation. Update todo (and todoTitle) each season.
@@ -1160,9 +1162,11 @@ window.YVY = {
         fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
       },
       { kind: "coop", text: "🐔", x: 6, y: 4, w: 3, h: 2,
-        name: "Chicken Coop", about: "Bedtime and egg-laying HQ. The chickens eat our weeds and bugs and pay us back in eggs and compost.", link: "#critters" },
+        id: "coop", name: "Chicken Coop", about: "Bedtime and egg-laying HQ. The chickens eat our weeds and bugs and pay us back in eggs and compost.", link: "#critters",
+        chores: [{ text: "Clean the coop (once a week)", every: 7 }] },
       { kind: "run", x: 9, y: 4, w: 9, h: 2,
-        name: "Chicken Run", runner: "beyonce", about: "Scratch, peck, dust bath, repeat. That's Beyonce doing her laps! Garden class sometimes gets a special guest speaker from in here 🎤" },
+        id: "run", name: "Chicken Run", runner: "beyonce", about: "Scratch, peck, dust bath, repeat. That's Beyonce doing her laps! Garden class sometimes gets a special guest speaker from in here 🎤",
+        chores: [{ text: "Refill the chickens' food (every day)", every: 1 }, { text: "Refill the chickens' water (every day)", every: 1 }] },
       { kind: "bed", text: "#7", x: 6, y: 6, w: 5, h: 2, id: "bed7", name: "Bed #7",
         planted: ["🌿 rosemary", "🌿 thyme"],
         todo: [

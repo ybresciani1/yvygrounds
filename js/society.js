@@ -398,8 +398,10 @@
         const same = all.filter((x) => x.name === sp.name);
         return same.length > 1 ? `${sp.name} #${same.indexOf(sp) + 1}` : sp.name;
       };
+      const keep = form.elements.todo_bed.value; // stays picked if it's still in the list
       $("#sfTodoSpots").innerHTML = '<option value="">Pick a spot…</option>' +
         todoSpots().map((sp) => `<option value="${esc(sp.id)}">${esc(label(sp))}</option>`).join("");
+      if (todoSpots().some((sp) => sp.id === keep)) form.elements.todo_bed.value = keep;
       showTodoList();
     };
     form.addEventListener("change", (e) => {
@@ -439,6 +441,8 @@
       $("#sfFeedRow").hidden = kind !== "feed";
       $("#sfTodoRow").hidden = kind !== "todo";
       if (kind === "todo" && !form.elements.done_on.value) form.elements.done_on.value = today();
+      // Spots with only chores (the chicken run) need js/garden-map.js, which loads after this file: rebuild the list now
+      if (kind === "todo") showTodoSpots();
       $("#sfTitleRow").hidden = $("#sfPhotoRow").hidden = isLog;
       if (kind === "temp" && !form.elements.logged_on.value) form.elements.logged_on.value = today();
       if (kind === "feed" && !form.elements.fed_on.value) form.elements.fed_on.value = today();

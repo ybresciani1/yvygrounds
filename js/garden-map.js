@@ -43,12 +43,13 @@
       return `<button type="button" class="gm-def-btn" data-def="${esc(k)}" aria-expanded="false"><span class="gm-has-icon gm-f-${esc(k)}" aria-hidden="true">${icon(k)}</span>${esc(n > 1 ? `${n} ${f.plural || f.name}` : f.name)} <span aria-hidden="true">ⓘ</span></button>`;
     }).join(" ")}</p><div class="gm-def" hidden></div>` : "";
   };
-  // Chores: jobs that come back every few days (feed the worm bin, fill the ollas), one per kind of thing in the bed.
-  // A chore counts as done for `every` days after it was last done.
-  const chores = (s) => [...new Set(s.has || [])].filter((k) => FEATURES[k] && FEATURES[k].chore).map((k) => {
+  // Chores: jobs that come back every few days. A spot's own (chores: the chicken run's food and water), then one per
+  // kind of thing buried in the bed (feed the worm bin, fill the ollas). A chore counts as done for `every` days
+  // after it was last done.
+  const chores = (s) => (s.chores || []).concat([...new Set(s.has || [])].filter((k) => FEATURES[k] && FEATURES[k].chore).map((k) => {
     const c = FEATURES[k].chore;
     return { text: s.has.filter((x) => x === k).length > 1 && c.plural ? c.plural : c.text, every: c.every };
-  });
+  }));
   const choreNext = (last, every) => { const d = parse(last); return new Date(d.getFullYear(), d.getMonth(), d.getDate() + every); };
   const choreDone = (last, every, today = midnight(new Date())) => !!last && choreNext(last, every) > today;
   // runner: a critter's pixel sprite running laps inside the spot (Beyonce in the chicken run)

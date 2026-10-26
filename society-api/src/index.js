@@ -176,6 +176,9 @@ async function route(request, env) {
 /* ---------- helpers ---------- */
 
 const now = () => new Date().toISOString();
+// Today's date in San Diego (YYYY-MM-DD), where the gardens are. UTC would already be tomorrow on weekday evenings,
+// which would make a daily chore look done a day early.
+const gardenToday = () => new Date().toLocaleDateString("en-CA", { timeZone: "America/Los_Angeles" });
 const newId = () => crypto.randomUUID();
 
 function clean(value, max) {
@@ -811,7 +814,7 @@ async function adminSetTodo(request, env) {
   const item = clean(data.item, 30);
   if (!SLUG.test(item)) throw new HttpError(400, "Which to-do?");
   if (data.done) {
-    await env.DB.prepare("INSERT OR REPLACE INTO todo_done (bed, item, done_on) VALUES (?, ?, ?)").bind(bed, item, now().slice(0, 10)).run();
+    await env.DB.prepare("INSERT OR REPLACE INTO todo_done (bed, item, done_on) VALUES (?, ?, ?)").bind(bed, item, gardenToday()).run();
   } else {
     await env.DB.prepare("DELETE FROM todo_done WHERE bed = ? AND item = ?").bind(bed, item).run();
   }
