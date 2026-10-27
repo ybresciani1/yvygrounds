@@ -18,7 +18,8 @@
   ));
   const place = ([x, y, w, h]) =>
     `left:calc(var(--c) * ${x});top:calc(var(--c) * ${y});width:calc(var(--c) * ${w});height:calc(var(--c) * ${h})`;
-  const classes = (s) => `gm-spot gm-${s.kind}${s.tone ? " gm-" + s.tone : ""}${s.clip ? " gm-clip" : ""}`;
+  // hang: "down" / "left" (a fence vine hanging off the fence above it / on its right) adds gm-hang-down / gm-hang-left
+  const classes = (s) => `gm-spot gm-${s.kind}${s.tone ? " gm-" + s.tone : ""}${s.clip ? " gm-clip" : ""}${s.hang ? " gm-hang-" + esc(s.hang) : ""}`;
   // textAt: [x, y, w, h] inside the spot (grid squares) puts the label there instead of the middle
   const label = (s) => (s.text ? `<span class="gm-text"${s.textAt ? ` style="inset:auto;${place(s.textAt)}"` : ""}>${esc(s.text)}</span>` : "");
   // clip: a CSS polygon for spots that aren't rectangles (the L-shaped YMCA Room). Only the shape itself is clickable.
@@ -171,10 +172,9 @@
           if (!s.name) {
             return pieces.map((r, n) => `<div class="${classes(s)}" style="${place(r)}" aria-hidden="true">${shape(s)}${n ? "" : label(s)}</div>`).join("");
           }
-          // The first piece is the real button; extra pieces (the other arm of an L) just point to it.
-          // A piece's 5th value adds a class (gm-hang-left: a morning glory half circle on a fence to its right).
+          // The first piece is the real button; extra pieces (the other arm of an L) just point to it
           return `<button type="button" class="${classes(s)}" style="${place(pieces[0])}" data-i="${i}" aria-label="${esc(s.name)}${fixLeft(s).length ? ", needs fixing" : ""}">${shape(s)}${label(s)}</button>`
-            + pieces.slice(1).map((r) => `<div class="${classes(s)} gm-more${r[4] ? " gm-hang-" + esc(r[4]) : ""}" style="${place(r)}" data-i="${i}" aria-hidden="true"><span class="gm-shape"></span></div>`).join("");
+            + pieces.slice(1).map((r) => `<div class="${classes(s)} gm-more" style="${place(r)}" data-i="${i}" aria-hidden="true"><span class="gm-shape"></span></div>`).join("");
         }).join("")}
         ${spots.filter((s) => s.has).map(marks).join("")}
         ${spots.filter((s) => s.runner).map(runner).join("")}

@@ -1108,13 +1108,21 @@ window.YVY = {
         name: "Garden Classroom", lesson: true, about: "Where garden class meets. Seeds get sorted, worms get named and questions get asked (so many questions)." },
       { kind: "compost", x: 34, y: 1, w: 3, h: 3,
         name: "Main Compost", about: "Our main compost pile. Lunch scraps go in, garden gold comes out. Temps are on the 🌡️ Compost tab.", tab: "compost" },
-      // Vines climbing the fence: little half circles hanging off it. Morning glory in the top-left corner and
-      // on the right side; the ones above the classroom aren't identified yet (plain leaves, tone "climber").
-      // A 5th value "left" on a piece makes it hang off a fence on its right.
-      { kind: "vine", tone: "glory", x: 2.5, y: 1, w: 2, h: 1, more: [[36, 3.5, 1, 2, "left"]],
-        name: "Morning Glory", about: "Morning glory climbing the fence, in the top-left corner and on the right side by the classroom. Its trumpet-shaped flowers open in the morning and close up by the afternoon. Pretty to look at, but never eat the seeds: they're poisonous." },
-      { kind: "vine", tone: "climber", x: 23.2, y: 1, w: 2, h: 1, more: [[26.2, 1, 2, 1], [29.2, 1, 2, 1], [32, 1, 2, 1]],
-        name: "Climbing Vines", about: "Vines climbing the fence above the Garden Classroom. We're not sure yet what they are. Know? Tell Yvy!" },
+      // Vines climbing the fence, numbered #1 to #6 from the top-left corner along the fence: little half circles
+      // hanging off it. Morning glory is #1 and #6, grapes are #5; #2 to #4 aren't identified yet (plain leaves,
+      // tone "climber"). hang: "down" hangs off the fence above it, "left" off a fence on its right.
+      { kind: "vine", tone: "glory", text: "#1", x: 2.5, y: 1, w: 2, h: 1, hang: "down",
+        name: "Morning Glory (Vine #1)", about: "Morning glory climbing the fence in the top-left corner. Its trumpet-shaped flowers open in the morning and close up by the afternoon. Pretty to look at, but never eat the seeds: they're poisonous." },
+      { kind: "vine", tone: "climber", text: "#2", x: 23.2, y: 1, w: 2, h: 1, hang: "down",
+        name: "Climbing Vine #2", about: "A vine climbing the fence above the Garden Classroom. We're not sure yet what it is. Know? Tell Yvy!" },
+      { kind: "vine", tone: "climber", text: "#3", x: 26.2, y: 1, w: 2, h: 1, hang: "down",
+        name: "Climbing Vine #3", about: "A vine climbing the fence above the Garden Classroom. We're not sure yet what it is. Know? Tell Yvy!" },
+      { kind: "vine", tone: "climber", text: "#4", x: 29.2, y: 1, w: 2, h: 1, hang: "down",
+        name: "Climbing Vine #4", about: "A vine climbing the fence above the Garden Classroom. We're not sure yet what it is. Know? Tell Yvy!" },
+      { kind: "vine", tone: "grape", text: "#5", x: 32, y: 1, w: 2, h: 1, hang: "down",
+        name: "Grape Vine (Vine #5)", about: "Grape vines climbing the fence above the Garden Classroom, by the main compost. Shade in summer, light green grapes in fall." },
+      { kind: "vine", tone: "glory", text: "#6", x: 36, y: 3.5, w: 1, h: 2, hang: "left",
+        name: "Morning Glory (Vine #6)", about: "Morning glory climbing the fence on the right side of the Garden Classroom. Its trumpet-shaped flowers open in the morning and close up by the afternoon. Pretty to look at, but never eat the seeds: they're poisonous." },
       { kind: "bucket", x: 33, y: 14, w: 2, h: 2,
         name: "Compost Bucket", about: "Our green compost bucket! The Garden Society fills it at the cafeteria salad bar for SDUSD's Café to Compost Program. Lettuce, cucumbers and carrots go to the chickens in the Grub Tub; tomatoes, pickles and extras go in the Main Compost ♻️" },
       { kind: "building", tone: "storage", text: "📦", x: 37, y: 24, w: 3, h: 3,
@@ -1239,7 +1247,7 @@ window.YVY = {
       { kind: "tree", tone: "apple", x: 10.5, y: 0.5, w: 2, h: 2,
         name: "Apple Tree", about: "Apple tree number two, up by the fence between beds #8 and #9. Another low-chill apple for San Diego winters." },
       { kind: "vine", tone: "grape", x: 10, y: 17, w: 9, h: 1, more: [[18, 18, 1, 28]],
-        name: "Grape Vines", about: "Shade in summer, grapes in fall, bare twisty branches in winter." },
+        name: "Grape Vines", about: "Shade in summer, light green grapes in fall, bare twisty branches in winter." },
       { kind: "drain", x: 3, y: 19, w: 4, h: 31,
         name: "Rock Drainage", about: "A river of rocks that keeps the garden from turning into a pond when it rains." },
       { kind: "bed", text: "#5", x: 10, y: 19, w: 6, h: 5, id: "bed5", name: "Bed #5",
