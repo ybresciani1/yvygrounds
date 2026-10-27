@@ -171,9 +171,10 @@
           if (!s.name) {
             return pieces.map((r, n) => `<div class="${classes(s)}" style="${place(r)}" aria-hidden="true">${shape(s)}${n ? "" : label(s)}</div>`).join("");
           }
-          // The first piece is the real button; extra pieces (the other arm of an L) just point to it
+          // The first piece is the real button; extra pieces (the other arm of an L) just point to it.
+          // A piece's 5th value adds a class (gm-hang-left: a morning glory half circle on a fence to its right).
           return `<button type="button" class="${classes(s)}" style="${place(pieces[0])}" data-i="${i}" aria-label="${esc(s.name)}${fixLeft(s).length ? ", needs fixing" : ""}">${shape(s)}${label(s)}</button>`
-            + pieces.slice(1).map((r) => `<div class="${classes(s)} gm-more" style="${place(r)}" data-i="${i}" aria-hidden="true"><span class="gm-shape"></span></div>`).join("");
+            + pieces.slice(1).map((r) => `<div class="${classes(s)} gm-more${r[4] ? " gm-hang-" + esc(r[4]) : ""}" style="${place(r)}" data-i="${i}" aria-hidden="true"><span class="gm-shape"></span></div>`).join("");
         }).join("")}
         ${spots.filter((s) => s.has).map(marks).join("")}
         ${spots.filter((s) => s.runner).map(runner).join("")}

@@ -1108,6 +1108,13 @@ window.YVY = {
         name: "Garden Classroom", lesson: true, about: "Where garden class meets. Seeds get sorted, worms get named and questions get asked (so many questions)." },
       { kind: "compost", x: 34, y: 1, w: 3, h: 3,
         name: "Main Compost", about: "Our main compost pile. Lunch scraps go in, garden gold comes out. Temps are on the 🌡️ Compost tab.", tab: "compost" },
+      // Vines climbing the fence: little half circles hanging off it. Morning glory in the top-left corner and
+      // on the right side; the ones above the classroom aren't identified yet (plain leaves, tone "climber").
+      // A 5th value "left" on a piece makes it hang off a fence on its right.
+      { kind: "vine", tone: "glory", x: 2.5, y: 1, w: 2, h: 1, more: [[36, 3.5, 1, 2, "left"]],
+        name: "Morning Glory", about: "Morning glory climbing the fence, in the top-left corner and on the right side by the classroom. Its trumpet-shaped flowers open in the morning and close up by the afternoon. Pretty to look at, but never eat the seeds: they're poisonous." },
+      { kind: "vine", tone: "climber", x: 23.2, y: 1, w: 2, h: 1, more: [[26.2, 1, 2, 1], [29.2, 1, 2, 1], [32, 1, 2, 1]],
+        name: "Climbing Vines", about: "Vines climbing the fence above the Garden Classroom. We're not sure yet what they are. Know? Tell Yvy!" },
       { kind: "bucket", x: 33, y: 14, w: 2, h: 2,
         name: "Compost Bucket", about: "Our green compost bucket! The Garden Society fills it at the cafeteria salad bar for SDUSD's Café to Compost Program. Lettuce, cucumbers and carrots go to the chickens in the Grub Tub; tomatoes, pickles and extras go in the Main Compost ♻️" },
       { kind: "building", tone: "storage", text: "📦", x: 37, y: 24, w: 3, h: 3,
@@ -1229,6 +1236,8 @@ window.YVY = {
         todo: ["Fig trees drop their leaves in winter. Do any big pruning while they're bare (December to February)."] },
       { kind: "tree", tone: "apple", x: 0.5, y: 17.5, w: 2, h: 2,
         name: "Apple Tree", about: "A low-chill apple, made for San Diego winters." },
+      { kind: "tree", tone: "apple", x: 10.5, y: 0.5, w: 2, h: 2,
+        name: "Apple Tree", about: "Apple tree number two, up by the fence between beds #8 and #9. Another low-chill apple for San Diego winters." },
       { kind: "vine", tone: "grape", x: 10, y: 17, w: 9, h: 1, more: [[18, 18, 1, 28]],
         name: "Grape Vines", about: "Shade in summer, grapes in fall, bare twisty branches in winter." },
       { kind: "drain", x: 3, y: 19, w: 4, h: 31,
