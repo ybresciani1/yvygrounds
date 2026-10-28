@@ -328,6 +328,14 @@
 .gm-day-jobs > li { position: relative; padding: 4px 0 6px 22px; }
 .gm-day-jobs > li::before { content: ""; position: absolute; left: 0; top: 7px; width: 10px; height: 10px; border: 2px solid var(--ink); border-radius: 3px; background: #fff; }
 .gm-day-jobs ul { margin: 2px 0 2px; padding-left: 18px; }
+/* Done (✓, crossed off), waiting for Yvy's OK (?), and tips (no checkbox) */
+.gm-day-jobs > li.is-done::before { content: "✓"; background: var(--green); border-color: transparent; color: #fff; font: 700 10px/10px var(--f-round); text-align: center; }
+.gm-day-jobs > li.is-done > b { text-decoration: line-through; color: #8a8299; }
+.gm-day-jobs > li.is-pending::before { content: "?"; background: var(--yellow); color: var(--ink); font: 7px/10px var(--f-pixel); text-align: center; }
+.gm-day-jobs > li.gm-day-tip::before { content: "i"; border-radius: 50%; background: #dfe8f7; color: var(--ink); font: 700 9px/10px var(--f-round); text-align: center; }
+.gm-day-state { font-size: 12px; color: #8a8299; }
+.gm-day-go { margin: 4px 0 0; padding: 3px 12px; font-size: 13px; }
+.gm-day .gm-report { margin-top: 8px; }
 .gm-day-at { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
 .gm-day-spot {
   border: 2px solid var(--pink);
@@ -408,6 +416,7 @@ div.gm-spot:not(.gm-more) { pointer-events: none; }
 .gm-shade .gm-text { font-size: 1.6cqw; padding: 0 4px; }
 .gm-fence { filter: none; }
 .gm-fence .gm-shape { left: 35%; right: 35%; background: repeating-linear-gradient(var(--ink) 0 8px, transparent 8px 14px); }
+.gm-fence.gm-across .gm-shape { inset: 35% 0; background: repeating-linear-gradient(90deg, var(--ink) 0 8px, transparent 8px 14px); } /* a fence running left to right */
 .gm-bed .gm-shape { background-image: var(--t-soil); box-shadow: inset 0 0 0 2px #c48a4a, inset 0 0 0 3px #8f5d2a; }
 .gm-native .gm-shape { background-image: var(--t-succ); }
 .gm-native .gm-text { font-size: 1.6cqw; }

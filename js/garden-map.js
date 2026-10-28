@@ -48,12 +48,17 @@
   };
   // Chores: jobs that come back every few days. A spot's own (chores: the chicken run's food and water), then one per
   // kind of thing buried in the bed (feed the worm bin, fill the ollas). A chore counts as done for `every` days
-  // after it was last done.
+  // after it was last done. every can also be a list of weekdays ([1, 5]: it comes back every Monday and Friday).
   const chores = (s) => (s.chores || []).concat([...new Set(s.has || [])].filter((k) => FEATURES[k] && FEATURES[k].chore).map((k) => {
     const c = FEATURES[k].chore;
     return { text: s.has.filter((x) => x === k).length > 1 && c.plural ? c.plural : c.text, every: c.every };
   }));
-  const choreNext = (last, every) => { const d = parse(last); return new Date(d.getFullYear(), d.getMonth(), d.getDate() + every); };
+  const choreNext = (last, every) => {
+    const d = parse(last);
+    let n = Array.isArray(every) ? 1 : every;
+    while (Array.isArray(every) && n < 7 && !every.includes(new Date(d.getFullYear(), d.getMonth(), d.getDate() + n).getDay())) n++;
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate() + n);
+  };
   const choreDone = (last, every, today = midnight(new Date())) => !!last && choreNext(last, every) > today;
   // runner: a critter's pixel sprite running laps inside the spot (Beyonce in the chicken run)
   const runner = (s) => `<span class="gm-runner" style="${place([s.x, s.y, s.w, s.h])}" aria-hidden="true"><span class="gm-runner-sprite">${window.Pixel ? window.Pixel.svg(s.runner, 2) : ""}</span></span>`;
@@ -160,11 +165,54 @@
     </div>`;
   }
 
-  // The admin page (society-admin.js) uses these too, so to-do ids and feeding dates always match the map
-  window.YvyGarden = { todoKey, nextFeeding, parse, midnight, chores, choreDone, choreNext };
+  /* Volunteer Days (data.js → gardenMap.volunteerDays). Each day's own jobs act like a spot of their own
+     (id "vd-mf"), so they're reported, approved and crossed off like any other to-do: weekly jobs are chores that
+     come back on the day's resets, once jobs are to-dos. A shared job is already a chore or to-do on its spots,
+     so it stands for those instead (links). */
+  const VD = M.volunteerDays;
+  const maps = [M].concat(M.otherMaps || []);
+  // Find a spot by id (or name) on any map: [map number, spot number]
+  const findSpot = (ref) => {
+    for (let k = 0; k < maps.length; k++) {
+      const i = maps[k].spots.findIndex((s) => s.id === ref || (!s.id && s.name === ref));
+      if (i >= 0) return [k, i];
+    }
+    return null;
+  };
+  const ownJob = (j) => !j.share && !j.tip && !j.feed;
+  const volunteerSpots = (VD ? VD.days : []).map((d) => {
+    const weekly = d.jobs.filter((j) => ownJob(j) && !j.once), once = d.jobs.filter((j) => ownJob(j) && j.once);
+    return { id: `vd-${d.key}`, name: `📋 ${d.title}`, day: d,
+      chores: weekly.map((j) => ({ text: j.what, every: d.resets || [1] })), todo: once.length ? once.map((j) => j.what) : undefined };
+  });
+  // What checking a job off means: [{ s: spot, text, chore }], its spots' chores with the share words in them
+  // (or their to-dos and repairs, on a spot with no such chore), or the job itself on its day's spot
+  const jobItems = (d, j) => {
+    if (j.share) {
+      const w = j.share.toLowerCase();
+      return (j.at || []).map(findSpot).filter(Boolean).flatMap(([k, i]) => {
+        const s = maps[k].spots[i];
+        const own = chores(s).filter((c) => c.text.toLowerCase().includes(w)).map((c) => ({ s, text: c.text, chore: c }));
+        return own.length ? own : [].concat(s.fix || [], s.todo || []).filter((t) => t.toLowerCase().includes(w)).map((t) => ({ s, text: t }));
+      });
+    }
+    if (!ownJob(j)) return [];
+    const s = volunteerSpots.find((v) => v.day === d);
+    return [{ s, text: j.what, chore: chores(s).find((c) => c.text === j.what) }];
+  };
+  // done (✓), wait (? until Yvy OKs it) or open, from a garden log { done, doneOn, pending } (the map's or the form's)
+  const itemState = (log, { s, text, chore }) => {
+    const tag = `${s.id}:${todoKey(text)}`;
+    if (chore ? choreDone(log.doneOn.get(tag), chore.every) : log.done.has(tag)) return "done";
+    return log.pending.has(tag) ? "wait" : "open";
+  };
+
+  // The admin page (society-admin.js) and Submit an entry (society.js) use these too, so to-do ids, feeding dates
+  // and volunteer jobs always match the map
+  window.YvyGarden = { todoKey, nextFeeding, parse, midnight, chores, choreDone, choreNext,
+    volunteer: { spots: volunteerSpots, items: jobItems, state: itemState } };
   if (!box) return;
 
-  const maps = [M].concat(M.otherMaps || []);
   let cur = M, spots = M.spots;
   const mapHtml = () => `
         ${spots.map((s, i) => {
@@ -186,8 +234,7 @@
     const btn = map.querySelector(`button[data-i="${el.dataset.alert}"]`);
     if (btn) btn.setAttribute("aria-label", `${s.name}${el.hidden ? "" : ", needs fixing"}`);
   });
-  // Volunteer Days (data.js → gardenMap.volunteerDays). day -1 is General: the plain map, no day picked
-  const VD = M.volunteerDays;
+  // The picked volunteer day. -1 is General: the plain map, no day picked
   let day = -1;
   box.innerHTML = `
     ${maps.length > 1 ? `<div class="gm-switch" role="group" aria-label="Pick a garden">${maps.map((m, k) =>
@@ -324,16 +371,9 @@
     if (tab) { tab.click(); tab.focus(); }
   });
 
-  // Find a spot by id (or name) on any map: [map number, spot number]
-  const findSpot = (ref) => {
-    for (let k = 0; k < maps.length; k++) {
-      const i = maps[k].spots.findIndex((s) => s.id === ref || (!s.id && s.name === ref));
-      if (i >= 0) return [k, i];
-    }
-    return null;
-  };
-  // The picked day: its spots get a pink outline on the map, and its jobs show beside the map.
-  // A job's spot names are buttons that show that spot (switching gardens if it's on the other map).
+  // The picked day: its spots get a pink outline on the map, and its jobs show beside the map with their
+  // checkboxes (✓ done, ? waiting for Yvy's OK). A job's spot names are buttons that show that spot
+  // (switching gardens if it's on another map).
   function showDay() {
     if (!VD) return;
     box.querySelectorAll("[data-day]").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.day === day)));
@@ -347,20 +387,41 @@
       const f = findSpot(ref);
       if (f && f[0] === here) map.querySelectorAll(`[data-i="${f[1]}"]`).forEach((el) => el.classList.add("gm-day-on"));
     }));
+    // A spot on another map starts with that map's emoji (🏫, 🧒); spots that share a name get numbered (Fig Tree #2)
     const chip = (ref) => {
       const f = findSpot(ref);
       if (!f) return "";
-      const s = maps[f[0]].spots[f[1]];
-      return `<button type="button" class="gm-day-spot${f[0] ? " gm-day-other" : ""}" data-go="${f[0]}:${f[1]}">${f[0] ? "🏫 " : ""}${esc(s.name)}</button>`;
+      const all = maps[f[0]].spots, s = all[f[1]], same = all.filter((o) => o.name === s.name);
+      const label = same.length > 1 ? `${s.name} #${same.indexOf(s) + 1}` : s.name;
+      const mark = f[0] ? `${(maps[f[0]].button || "").split(" ")[0]} ` : "";
+      return `<button type="button" class="gm-day-spot${f[0] ? " gm-day-other" : ""}" data-go="${f[0]}:${f[1]}">${esc(mark + label)}</button>`;
+    };
+    const canReport = window.YvySociety && window.YvySociety.canReport();
+    const job = (j) => {
+      const items = jobItems(d, j), st = items.map((x) => itemState(live, x));
+      // A shared job is ✓ once every chore it stands for is done, ? while the rest are waiting for Yvy's OK,
+      // and says how far along it is in between ("2 of 4 done, 1 waiting for Yvy's OK")
+      const done = st.filter((x) => x === "done").length, wait = st.filter((x) => x === "wait").length;
+      const state = j.tip || j.feed || !items.length ? "" : done === items.length ? "is-done" : done + wait === items.length ? "is-pending" : "";
+      const note = state === "is-done" ? "" : [done ? `${done} of ${items.length} done` : "",
+        wait ? `${items.length > 1 ? `${wait} ` : ""}waiting for Yvy's OK` : ""].filter(Boolean).join(", ");
+      return `<li class="${j.tip ? "gm-day-tip" : state}"><b>${esc(j.what)}</b>${j.how ? `: ${esc(j.how)}` : ""}
+        ${note ? `<em class="gm-day-state">(${esc(note)})</em>` : ""}${state === "is-done" ? ' <span class="sr-only">(done)</span>' : ""}
+        ${j.list ? `<ul>${j.list.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+        ${j.at && j.at.length < 8 ? `<span class="gm-day-at">${j.at.map(chip).join("")}</span>` : ""}
+        ${j.feed && canReport ? '<button type="button" class="gm-go gm-day-go" data-feed-go>🌱 Log a feeding</button>' : ""}</li>`;
     };
     card.innerHTML = `<h4 class="gm-day-title">${esc(d.title)}</h4>
-      <ul class="gm-day-jobs">${d.jobs.map((j) => `<li><b>${esc(j.what)}</b>${j.how ? `: ${esc(j.how)}` : ""}
-        ${j.list ? `<ul>${j.list.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
-        ${j.at && j.at.length < 8 ? `<span class="gm-day-at">${j.at.map(chip).join("")}</span>` : ""}</li>`).join("")}</ul>`;
+      <ul class="gm-day-jobs">${d.jobs.map(job).join("")}</ul>
+      ${canReport ? `<button type="button" class="gm-go gm-report" data-vd-report="vd-${esc(d.key)}">✅ I did some! Tell Yvy</button>` : ""}`;
   }
   box.addEventListener("click", (e) => {
     const b = e.target.closest("[data-day]");
     if (b) { day = +b.dataset.day; showDay(); return; }
+    // "I did some!" opens Submit an entry at that day's jobs; "Log a feeding" opens it at "Fertilized a bed" (js/society.js)
+    const vd = e.target.closest("[data-vd-report]");
+    if (vd && window.YvySociety) { window.YvySociety.reportTodo("vd", vd.dataset.vdReport); return; }
+    if (e.target.closest("[data-feed-go]") && window.YvySociety) { window.YvySociety.reportFeed(); return; }
     const go = e.target.closest("[data-go]");
     if (!go) return;
     const [k, i] = go.dataset.go.split(":").map(Number);
@@ -403,6 +464,7 @@
     (data.others || []).forEach((o) => { (live.others[o.bed] = live.others[o.bed] || []).push(o); });
     syncAlerts();
     show(shown);
+    showDay();
   }).catch(() => { /* no log yet: the map still works */ });
   window.YvyGarden.reload = loadLive;
   loadLive();

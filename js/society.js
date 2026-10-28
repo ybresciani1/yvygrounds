@@ -368,10 +368,25 @@
     let garden = { done: new Set(), doneOn: new Map(), pending: new Set() };
     const G = () => window.YvyGarden || {}; // js/garden-map.js loads after this file
     const spotChores = (sp) => (G().chores ? G().chores(sp) : []);
+    // Volunteer Days is one more choice: its "spots" are the days, and their jobs are the list (js/garden-map.js)
     $("#sfTodoMaps").innerHTML = maps.map((m, k) =>
-      `<label class="sf-check"><input type="radio" name="todo_map" value="${k}"${k ? "" : " checked"}> ${esc(m.button || m.title)}</label>`).join("");
-    const todoSpots = () => ((maps[+form.elements.todo_map.value] || {}).spots || [])
-      .filter((sp) => sp.id && ((sp.todo && sp.todo.length) || (sp.fix && sp.fix.length) || spotChores(sp).length));
+      `<label class="sf-check"><input type="radio" name="todo_map" value="${k}"${k ? "" : " checked"}> ${esc(m.button || m.title)}</label>`).join("")
+      + (GM.volunteerDays ? `<label class="sf-check"><input type="radio" name="todo_map" value="vd"> 📋 ${esc(GM.volunteerDays.title)}</label>` : "");
+    const volunteer = () => form.elements.todo_map.value === "vd";
+    const todoSpots = () => (volunteer() ? (G().volunteer || { spots: [] }).spots : ((maps[+form.elements.todo_map.value] || {}).spots || [])
+      .filter((sp) => sp.id && ((sp.todo && sp.todo.length) || (sp.fix && sp.fix.length) || spotChores(sp).length)));
+    // A volunteer day's jobs, in order. Each checkbox can stand for chores on several spots (a shared job like
+    // "Fill the ollas"), so its value lists them all as "bed:item bed:item"; ones already done or waiting are left out.
+    const volunteerList = (sp) => sp.day.jobs.map((j) => {
+      if (j.tip) return "";
+      if (j.feed) return `<p class="sf-privacy">🌱 ${esc(j.what)}: log these with “Fertilized a bed” instead.</p>`;
+      const V = G().volunteer, items = V.items(sp.day, j), st = items.map((x) => V.state(garden, x));
+      const open = items.filter((x, n) => st[n] === "open");
+      const where = j.share && open.length ? ` <em>(${esc(open.map((x) => x.s.name).join(", "))})</em>` : "";
+      if (open.length) return `<label class="sf-check"><input type="checkbox" name="items" value="${esc(open.map((x) => `${x.s.id}:${G().todoKey(x.text)}`).join(" "))}"> <span>${esc(j.what)}${where}</span></label>`;
+      if (st.includes("wait")) return `<label class="sf-check sf-todo-pending"><input type="checkbox" disabled> <span>${esc(j.what)} <em>(? waiting for Yvy)</em></span></label>`;
+      return items.length ? `<label class="sf-check sf-todo-done"><input type="checkbox" checked disabled> <span>${esc(j.what)} <em>(done ✓)</em></span></label>` : "";
+    }).join("");
     // Repairs (fix) first, marked "Fix:", then the to-dos, then chores (they come back every few days);
     // the same text twice is only listed once
     const todoItems = (sp) => (sp.fix || []).map((t) => ({ t, fix: true })).concat((sp.todo || []).map((t) => ({ t })))
@@ -380,6 +395,11 @@
     const showTodoList = () => {
       const sp = todoSpots().find((s) => s.id === form.elements.todo_bed.value);
       const key = window.YvyGarden && window.YvyGarden.todoKey;
+      if (sp && key && sp.day) {
+        $("#sfTodoList").innerHTML = volunteerList(sp);
+        $("#sfOtherRow").hidden = false;
+        return;
+      }
       $("#sfTodoList").innerHTML = sp && key ? todoItems(sp).map(({ t, fix, chore }) => {
         const id = key(t), tag = `${sp.id}:${id}`;
         const text = `${fix ? "<b>Fix:</b> " : chore ? "<b>Chore:</b> " : ""}${esc(t)}`;
@@ -468,6 +488,10 @@
     // The garden map's "I did one!" button opens the form at that garden and spot (js/garden-map.js)
     window.YvySociety = {
       canReport: () => canReport,
+      reportFeed() {
+        form.querySelector("[name=kind][value=feed]").checked = true;
+        open();
+      },
       reportTodo(mapIndex, spotId) {
         form.querySelector("[name=kind][value=todo]").checked = true;
         const radio = form.querySelector(`[name=todo_map][value="${mapIndex}"]`);
@@ -504,18 +528,38 @@
           ["fed_on", "bed"].forEach((k) => fd.append(k, form.elements[k].value));
           form.querySelectorAll("[name=plan_ids]:checked").forEach((c) => fd.append("plan_ids", c.value));
         }
+        let sends = [fd];
         if (kind === "todo") {
           fd.append("done_on", form.elements.done_on.value);
-          fd.append("bed", form.elements.todo_bed.value);
-          form.querySelectorAll("[name=items]:checked").forEach((c) => fd.append("items", c.value));
-          if ($("#sfOtherOn").checked) {
-            if (!form.elements.other.value.trim()) throw new Error("Write what you did next to Other.");
-            fd.append("other", form.elements.other.value);
+          if ($("#sfOtherOn").checked && !form.elements.other.value.trim()) throw new Error("Write what you did next to Other.");
+          const other = $("#sfOtherOn").checked ? form.elements.other.value : "";
+          if (volunteer()) {
+            // Volunteer Days: a job can stand for chores on several spots, so send one report per spot
+            // (Other goes with the day's own report, the notes with the first one)
+            const own = form.elements.todo_bed.value, byBed = new Map(other ? [[own, []]] : []);
+            form.querySelectorAll("[name=items]:checked").forEach((c) => c.value.split(" ").forEach((pair) => {
+              const [bed, item] = pair.split(":");
+              byBed.set(bed, (byBed.get(bed) || []).concat(item));
+            }));
+            if (!byBed.size) throw new Error("Check off what you did, or write it under Other.");
+            sends = [...byBed].map(([bed, items], n) => {
+              const one = new FormData();
+              for (const [k, v] of fd) if (n === 0 || k !== "body") one.append(k, v);
+              one.append("bed", bed);
+              items.forEach((i) => one.append("items", i));
+              if (bed === own && other) one.append("other", other);
+              return one;
+            });
+          } else {
+            fd.append("bed", form.elements.todo_bed.value);
+            form.querySelectorAll("[name=items]:checked").forEach((c) => fd.append("items", c.value));
+            if (other) fd.append("other", other);
           }
         }
         for (const f of files) fd.append("photos", await shrinkPhoto(f), f.name.replace(/\.\w+$/, "") + ".jpg");
         status.textContent = "Sending…";
-        const res = await api("/api/submit", { method: "POST", body: fd });
+        let res;
+        for (const one of sends) res = await api("/api/submit", { method: "POST", body: one });
         status.textContent = res.message;
         status.className = "sf-status is-ok";
         ["title", "body", "temp_f"].forEach((k) => { form.elements[k].value = ""; });

@@ -238,7 +238,8 @@
   // Spots come from data.js → gardenMap (and its otherMaps); to-do ids and next-feeding dates use js/garden-map.js (window.YvyGarden)
   const G = window.YvyGarden;
   const GM = window.YVY.gardenMap || {};
-  const gardenSpots = [].concat(GM.spots || [], ...(GM.otherMaps || []).map((m) => m.spots || []))
+  // Each volunteer day's own jobs (data.js → gardenMap.volunteerDays) show as a card of their own, after the spots
+  const gardenSpots = [].concat(GM.spots || [], ...(GM.otherMaps || []).map((m) => m.spots || []), G.volunteer ? G.volunteer.spots : [])
     .filter((sp) => sp.id && (sp.todo || sp.fix || sp.feedPlan || G.chores(sp).length));
   const feedBeds = gardenSpots.filter((sp) => sp.feedPlan && sp.feedPlan.length);
   const spotById = (id) => gardenSpots.find((sp) => sp.id === id);
