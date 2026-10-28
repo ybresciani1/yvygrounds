@@ -280,6 +280,67 @@
 .gm-switch button[aria-pressed="true"] { background: var(--green-dark); color: #fff; }
 .gm-switch button:focus-visible { outline: 3px dashed var(--pink); outline-offset: 2px; }
 .gm-season { margin: 4px 0 0; font: 10px var(--f-pixel); color: #6b4a1f; }
+/* Volunteer Days: pick a day above the map; its spots get a dashed outline and its jobs show beside the map */
+.gm-days-pick { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin: 0 0 14px; }
+.gm-days-label { margin-left: 10px; font: 10px var(--f-pixel); color: var(--green-dark); }
+.gm-days-pick button {
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font: 700 14px var(--f-round);
+  padding: 4px 12px;
+  box-shadow: 0 3px 0 var(--ink);
+  cursor: pointer;
+}
+.gm-days-pick button:hover { background: #fff3c4; }
+.gm-days-pick button[aria-pressed="true"] { background: var(--pink); color: #fff; }
+.gm-days-pick button:focus-visible { outline: 3px dashed var(--pink); outline-offset: 2px; }
+.gm-side { display: grid; gap: 18px; }
+.gm-side .gm-info { position: relative; top: auto; }
+/* General (no day picked): just the speech box, which follows you down the map like before */
+.gm-side:has(> .gm-day[hidden]) { position: sticky; top: 24px; }
+.gm-day[hidden] { display: none; }
+/* A clipboard of the day's jobs */
+.gm-day {
+  position: relative;
+  background: #fffdf3 repeating-linear-gradient(transparent 0 25px, #dfe8f7 25px 27px);
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  box-shadow: 0 5px 0 #b07a45;
+  padding: 26px 16px 12px;
+  font: 500 14px/1.45 var(--f-round);
+}
+.gm-day::before {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  width: 70px;
+  height: 18px;
+  margin-left: -35px;
+  background: #b9b3c9;
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+}
+.gm-day-title { margin: 0 0 8px; font: 10px var(--f-pixel); color: #c2410c; }
+.gm-day-jobs { list-style: none; margin: 0; padding: 0; }
+.gm-day-jobs > li { position: relative; padding: 4px 0 6px 22px; }
+.gm-day-jobs > li::before { content: ""; position: absolute; left: 0; top: 7px; width: 10px; height: 10px; border: 2px solid var(--ink); border-radius: 3px; background: #fff; }
+.gm-day-jobs ul { margin: 2px 0 2px; padding-left: 18px; }
+.gm-day-at { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 3px; }
+.gm-day-spot {
+  border: 2px solid var(--pink);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font: 700 12px var(--f-round);
+  padding: 1px 8px;
+  cursor: pointer;
+}
+.gm-day-spot:hover { background: #ffe3f1; }
+.gm-day-spot:focus-visible { outline: 3px dashed var(--pink); outline-offset: 2px; }
+.gm-day-other { border-color: var(--green-dark); }
 .gm-wrap {
   display: grid;
   grid-template-columns: minmax(0, 500px) minmax(0, 1fr);
@@ -537,6 +598,10 @@ button.gm-spot:hover,
   filter: drop-shadow(2px 0 0 var(--yellow)) drop-shadow(-2px 0 0 var(--yellow)) drop-shadow(0 2px 0 var(--yellow)) drop-shadow(0 -2px 0 var(--yellow)) drop-shadow(0 0 1px var(--ink));
 }
 .gm-spot.is-on .gm-shape { animation: gm-blink 1s steps(2) infinite; }
+/* The picked volunteer day's spots: a pink outline (hovering one still turns it yellow) */
+.gm-spot.gm-day-on:not(.is-on):not(:hover) {
+  filter: drop-shadow(2px 0 0 var(--pink)) drop-shadow(-2px 0 0 var(--pink)) drop-shadow(0 2px 0 var(--pink)) drop-shadow(0 -2px 0 var(--pink));
+}
 @keyframes gm-blink { 50% { opacity: .75; } }
 button.gm-spot:focus-visible { outline: 3px dashed var(--pink); outline-offset: 2px; }
 
@@ -685,6 +750,8 @@ button.gm-spot:focus-visible { outline: 3px dashed var(--pink); outline-offset: 
   /* On phones the speech box sits above the map. It keeps its height so the map doesn't jump
      when you tap, and it never covers the map (tapping scrolls it back into view instead) */
   .gm-info { position: relative; order: -1; margin: 18px 0 4px; min-height: 172px; padding: 20px 18px 12px; font-size: 15px; }
+  /* The speech box goes above the map and the day's jobs below it */
+  .gm-side { display: contents; }
 }
 @media (max-width: 520px) {
   /* Give the map most of the phone's width */

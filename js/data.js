@@ -1059,6 +1059,55 @@ window.YVY = {
     season: "Fall 2026",
     hint: "Hover or tap a bed, tree or vine to see what's growing! A yellow ! means it needs fixing.",
     todoTitle: "To-do this fall",
+    // Volunteer Days (Map tab): pick a day above the map and its spots light up, with its jobs listed beside
+    // the map. general is the button the map opens on: the plain map, where tapping a spot shows what's there.
+    // at: the spots a job happens at, on either map (a spot's id, or its name if it has no id); its names
+    // become buttons that show the spot. list: smaller steps under a job.
+    volunteerDays: {
+      title: "Volunteer Days",
+      general: "🗺️ General",
+      days: [
+        { key: "mf", button: "💧 Mon & Fri", title: "Monday & Friday: water", jobs: [
+          { what: "Fill the ollas", how: "Bed #8 (1 olla), Bed #4 (2 ollas) and MS Bed #6 (1 olla).", at: ["bed8", "bed4", "ms6"] },
+          { what: "Water the thirsty beds", how: "Bed #4 first (the celery wants steady water), then the greens in Beds #1, #2, #5 and #9.",
+            at: ["bed4", "bed1", "bed2", "bed5", "bed9"] },
+          { what: "Go easy on Beds #3 and #7", how: "The herbs there need almost no water once the rains start. Skip them if Wednesday found the soil damp.",
+            at: ["bed3", "bed7"] },
+          { what: "Plant feedings", how: "Fish emulsion gets mixed into the watering can, so the feeding calendars fit Mondays and Fridays. Right now that's the greens in Beds #1, #2, #4, #5 and #9 every 3 weeks, plus Bed #8's cilantro monthly.",
+            at: ["bed1", "bed2", "bed4", "bed5", "bed9", "bed8"] },
+          { what: "Sowing", how: "New lettuce and cilantro sowings need watering in, so they fit here too.",
+            at: ["bed1", "bed2", "bed4", "bed8", "bed9"] },
+        ] },
+        { key: "w", button: "🔍 Wed", title: "Wednesday: check the water", jobs: [
+          { what: "Finger test every bed", how: "Write down which ones are dry, so Friday knows where to water.", at: ["bed1", "bed2", "bed3", "bed4", "bed5", "bed7", "bed8", "bed9", "ms1", "ms2", "ms3", "ms4", "ms5", "ms6", "ms7"] },
+          { what: "Check the olla levels", how: "Note any that are already empty. That tells you whether twice a week is enough.", at: ["bed8", "bed4", "ms6"] },
+          { what: "Look for leaks and broken irrigation", how: "The Sink's leaky faucet, MS Bed #5's broken hose and MS Bed #6's hoses. Fix what you can, or report it to Yvy.",
+            at: ["sink", "ms5", "ms6"] },
+          { what: "Check the chickens' water level", at: ["coop", "run"] },
+          { what: "Weekly chores", list: ["Feed the worms in Bed #9, MS Bed #4 and MS Bed #6", "Clean the chicken coop", "Rinse the Grub Tub"],
+            at: ["bed9", "ms4", "ms6", "coop", "bed6"] },
+          { what: "Pest patrol", how: "Aphids under the nasturtium leaves in Bed #4, cabbage worms on the collards in #5, and snails and slugs under the strawberries in #2 after rain.",
+            at: ["bed4", "bed5", "bed2"] },
+          { what: "Harvest", how: "Outer leaves of the lettuce, chard and spinach, cilantro, basil before the cold, and broccoli heads, and give them to Snra Yvy.",
+            at: ["bed1", "bed2", "bed5", "bed8", "bed9"] },
+          { what: "Mason bee house", how: "Check the nesting tubes this fall.", at: ["ebox"] },
+        ] },
+        { key: "all", button: "🌱 Everyone", title: "Everyone, any day", jobs: [
+          { what: "Weed", how: "Both Middle School wood chip areas, plus around all the beds. Leave the basil and milkweed in the top wood chips. Leave the milkweed in Bed #3 and the giant coreopsis in Bed #5. That one looks like a dead stick right now!",
+            at: ["ms-chips-top", "ms-chips-corner", "bed3", "bed5"] },
+          { what: "Chickens", how: "Check their food and water every day.", at: ["coop", "run"] },
+          { what: "Trimming", list: ["Thin the nasturtiums", "Cut back the oregano, the chives and the yarrow's dried flower stems",
+            "Snip the strawberry runners", "Pile soil up around the leeks", "Thin the carrots and beets (easiest the day after watering)"],
+            at: ["bed1", "bed3", "bed4", "bed5", "bed2", "bed9"] },
+          { what: "Compost", how: "Aerate it by stirring it with a pitchfork. Add greens and browns as needed, and keep a layer of browns on top.",
+            at: ["Main Compost", "Rotating Compost"] },
+          { what: "Worm Compost", how: "Give it one scrap of worm-friendly food.", at: ["worm"] },
+          { what: "Seasonal jobs", list: ["Pull the tomatoes, eggplants and peppers in mid-November", "Prune the figs December to February and the grapes in January",
+            "Cut the milkweed and lemongrass back in late winter"],
+            at: ["bed1", "bed2", "fig1", "fig2", "fig3", "Grape Vines", "Grape Vine (Vine #5)", "bed3", "ms-chips-top", "bed8", "bed9"] },
+        ] },
+      ],
+    },
     // feed: each bed's fertilizer calendar (organic, kid-safe), shown under its to-do list
     feedTitle: "Feeding calendar",
     // feedPlan: when each bed gets fed. months: [from, to] (can wrap past December); every: days between

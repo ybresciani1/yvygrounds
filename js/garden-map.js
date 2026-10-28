@@ -186,6 +186,9 @@
     const btn = map.querySelector(`button[data-i="${el.dataset.alert}"]`);
     if (btn) btn.setAttribute("aria-label", `${s.name}${el.hidden ? "" : ", needs fixing"}`);
   });
+  // Volunteer Days (data.js → gardenMap.volunteerDays). day -1 is General: the plain map, no day picked
+  const VD = M.volunteerDays;
+  let day = -1;
   box.innerHTML = `
     ${maps.length > 1 ? `<div class="gm-switch" role="group" aria-label="Pick a garden">${maps.map((m, k) =>
       `<button type="button" data-map="${k}" aria-pressed="${k ? "false" : "true"}">${esc(m.button || m.title)}</button>`).join("")}</div>` : ""}
@@ -193,11 +196,18 @@
       <h3 class="leaf-title"><span class="gm-title"></span></h3>
       <p class="gm-season"></p>
     </div>
+    ${VD ? `<div class="gm-days-pick" role="group" aria-label="${esc(VD.title)}">
+      <button type="button" data-day="-1" aria-pressed="true">${esc(VD.general)}</button>
+      <span class="gm-days-label">📋 ${esc(VD.title)}:</span>${VD.days.map((d, k) =>
+      `<button type="button" data-day="${k}" aria-pressed="false">${esc(d.button)}</button>`).join("")}</div>` : ""}
     <div class="gm-wrap">
       <div class="gm-frame"><div class="gm-map" role="group"></div></div>
-      <div class="gm-info" aria-live="polite">
-        <span class="gm-name"></span>
-        <div class="gm-body"></div>
+      <div class="gm-side">
+        <div class="gm-info" aria-live="polite">
+          <span class="gm-name"></span>
+          <div class="gm-body"></div>
+        </div>
+        ${VD ? '<div class="gm-day" aria-live="polite" hidden></div>' : ""}
       </div>
     </div>`;
 
@@ -314,6 +324,52 @@
     if (tab) { tab.click(); tab.focus(); }
   });
 
+  // Find a spot by id (or name) on any map: [map number, spot number]
+  const findSpot = (ref) => {
+    for (let k = 0; k < maps.length; k++) {
+      const i = maps[k].spots.findIndex((s) => s.id === ref || (!s.id && s.name === ref));
+      if (i >= 0) return [k, i];
+    }
+    return null;
+  };
+  // The picked day: its spots get a pink outline on the map, and its jobs show beside the map.
+  // A job's spot names are buttons that show that spot (switching gardens if it's on the other map).
+  function showDay() {
+    if (!VD) return;
+    box.querySelectorAll("[data-day]").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.day === day)));
+    map.querySelectorAll(".gm-day-on").forEach((el) => el.classList.remove("gm-day-on"));
+    const card = box.querySelector(".gm-day");
+    const d = VD.days[day];
+    card.hidden = !d;
+    if (!d) return;
+    const here = maps.indexOf(cur);
+    d.jobs.forEach((j) => (j.at || []).forEach((ref) => {
+      const f = findSpot(ref);
+      if (f && f[0] === here) map.querySelectorAll(`[data-i="${f[1]}"]`).forEach((el) => el.classList.add("gm-day-on"));
+    }));
+    const chip = (ref) => {
+      const f = findSpot(ref);
+      if (!f) return "";
+      const s = maps[f[0]].spots[f[1]];
+      return `<button type="button" class="gm-day-spot${f[0] ? " gm-day-other" : ""}" data-go="${f[0]}:${f[1]}">${f[0] ? "🏫 " : ""}${esc(s.name)}</button>`;
+    };
+    card.innerHTML = `<h4 class="gm-day-title">${esc(d.title)}</h4>
+      <ul class="gm-day-jobs">${d.jobs.map((j) => `<li><b>${esc(j.what)}</b>${j.how ? `: ${esc(j.how)}` : ""}
+        ${j.list ? `<ul>${j.list.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+        ${j.at && j.at.length < 8 ? `<span class="gm-day-at">${j.at.map(chip).join("")}</span>` : ""}</li>`).join("")}</ul>`;
+  }
+  box.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-day]");
+    if (b) { day = +b.dataset.day; showDay(); return; }
+    const go = e.target.closest("[data-go]");
+    if (!go) return;
+    const [k, i] = go.dataset.go.split(":").map(Number);
+    if (maps[k] !== cur) draw(k);
+    pinned = i;
+    show(i);
+    body.parentElement.scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  });
+
   // Draw one of the maps (0 = the Central Garden, then gardenMap.otherMaps in order)
   function draw(k) {
     cur = maps[k] || M;
@@ -327,6 +383,7 @@
     box.querySelectorAll("[data-map]").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.map === k)));
     fit();
     show(null);
+    showDay();
   }
   box.addEventListener("click", (e) => {
     const b = e.target.closest("[data-map]");
