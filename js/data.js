@@ -1108,7 +1108,7 @@ window.YVY = {
           { what: "Weed", how: "Both Middle School wood chip areas, around all the beds, and around the Kinder Garden beds. Leave the basil and milkweed in the top wood chips. Leave the milkweed in Bed #3 and the giant coreopsis in Bed #5. That one looks like a dead stick right now!",
             at: ["ms-chips-top", "ms-chips-corner", "bed3", "bed5", "kinder-area"] },
           { what: "Chickens", share: "chickens'", how: "Check their food and water every day.", at: ["coop", "run"] },
-          { what: "Trimming", list: ["Thin the nasturtiums", "Cut back the oregano, the chives and the yarrow's dried flower stems",
+          { what: "Trimming", once: true, list: ["Thin the nasturtiums", "Cut back the oregano, the chives and the yarrow's dried flower stems",
             "Snip the strawberry runners", "Pile soil up around the leeks", "Thin the carrots and beets (easiest the day after watering)"],
             at: ["bed1", "bed3", "bed4", "bed5", "bed2", "bed9"] },
           { what: "Compost", how: "Aerate it by stirring it with a pitchfork. Add greens and browns as needed, and keep a layer of browns on top.",
