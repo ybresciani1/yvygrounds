@@ -287,6 +287,8 @@
     const word = new RegExp(`\\b(${esc(k.name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})\\b`, "i");
     return html.replace(word, `<button type="button" class="gm-keep" data-keep="${n}" aria-expanded="false">$1</button>`);
   }, esc(text));
+  // A spot or job with howto opens that guide in the How-to tab (js/howto.js; not on the admin page)
+  const hasHowTo = (key) => !!key && !!window.YvyHowTo && window.YvyHowTo.has(key);
   let shown = null; // the spot in the speech box right now
   function show(i) {
     shown = i;
@@ -313,6 +315,7 @@
       ((s.todo || s.fix || chores(s).length) && s.id && window.YvySociety && window.YvySociety.canReport() ? '<button type="button" class="gm-go gm-report">✅ I did one! Tell Yvy</button>' : "") +
       (s.feed ? `<p class="gm-what gm-what-feed">${esc(M.feedTitle || "Feeding")}:</p>${s.feedPlan ? feedLog(s) : ""}${list(s.feed, "gm-feed")}`
         + (M.feedNote ? `<p class="gm-feed-note">${esc(M.feedNote)}</p>` : "") : "") +
+      (hasHowTo(s.howto) ? `<button type="button" class="gm-go gm-howto" data-howto="${esc(s.howto)}">📖 How-to: ${esc(window.YvyHowTo.title(s.howto))} ▶</button>` : "") +
       (s.tab ? `<button type="button" class="gm-go" data-tab-go="${esc(s.tab)}">See the compost log ▶</button>` : "") +
       (s.link ? `<a class="gm-go" href="${esc(s.link)}">Meet the flock ▶</a>` : "");
   }
@@ -406,6 +409,7 @@
       const note = state === "is-done" ? "" : [done ? `${done} of ${items.length} done` : "",
         wait ? `${items.length > 1 ? `${wait} ` : ""}waiting for Yvy's OK` : ""].filter(Boolean).join(", ");
       return `<li class="${j.tip ? "gm-day-tip" : state}"><b>${esc(j.what)}</b>${j.how ? `: ${esc(j.how)}` : ""}
+        ${hasHowTo(j.howto) ? `<button type="button" class="gm-day-how" data-howto="${esc(j.howto)}">📖 How</button>` : ""}
         ${note ? `<em class="gm-day-state">(${esc(note)})</em>` : ""}${state === "is-done" ? ' <span class="sr-only">(done)</span>' : ""}
         ${j.list ? `<ul>${j.list.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
         ${j.at && j.at.length < 8 ? `<span class="gm-day-at">${j.at.map(chip).join("")}</span>` : ""}
@@ -418,6 +422,8 @@
   box.addEventListener("click", (e) => {
     const b = e.target.closest("[data-day]");
     if (b) { day = +b.dataset.day; showDay(); return; }
+    const how = e.target.closest("[data-howto]");
+    if (how && window.YvyHowTo) { window.YvyHowTo.open(how.dataset.howto); return; }
     // "I did some!" opens Submit an entry at that day's jobs; "Log a feeding" opens it at "Fertilized a bed" (js/society.js)
     const vd = e.target.closest("[data-vd-report]");
     if (vd && window.YvySociety) { window.YvySociety.reportTodo("vd", vd.dataset.vdReport); return; }

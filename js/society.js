@@ -298,10 +298,11 @@
   }
 
   const TABS = { journal: showJournal, projects: showProjects, compost: showCompost };
-  const STATIC = { almanac: "#growing", map: "#gardenMap" };
+  const STATIC = { almanac: "#growing", map: "#gardenMap", howto: "#gardenHowTo" };
   async function openTab(name) {
     root.querySelectorAll(".society-tabs [data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === name)));
-    // The Almanac (#growing, built by main.js) and the Map (#gardenMap, js/garden-map.js) are already
+    // The Almanac (#growing, built by main.js), the Map (#gardenMap, js/garden-map.js) and the How-to
+    // (#gardenHowTo, js/howto.js) are already
     // on the page; the others load from the API
     const panel = $("#societyPanel");
     const isStatic = name in STATIC;
@@ -593,8 +594,8 @@
   });
   buildForm();
   // Links to #growing / #almanac (e.g. the "Garden Almanac" link up top) open the Almanac tab,
-  // and #map / #garden-map open the Map
-  const LINKED = { "#growing": "almanac", "#almanac": "almanac", "#map": "map", "#garden-map": "map" };
+  // #map / #garden-map open the Map, and #howto the How-to
+  const LINKED = { "#growing": "almanac", "#almanac": "almanac", "#map": "map", "#garden-map": "map", "#howto": "howto" };
   const showTabFromLink = () => {
     const tab = LINKED[location.hash];
     if (!tab) return false;

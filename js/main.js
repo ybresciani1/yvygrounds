@@ -1178,6 +1178,7 @@
     $("#lightbox").hidden = false;
     $("#lightboxClose").focus();
   }
+  window.YvyLightbox = openLightbox; // the How-to guides (js/howto.js) show their photos here too
   function closeLightbox() {
     $("#lightbox").hidden = true;
     if (lb.lastFocus) lb.lastFocus.focus();

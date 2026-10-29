@@ -9,10 +9,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Fredoka:wght@400;600;700&family=Gochi+Hand&family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css?v=2026-10-28k">
-  <link rel="stylesheet" href="css/society.css?v=2026-10-28k">
-  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-28k">
-  <link rel="stylesheet" href="css/extras.css?v=2026-10-28k">
+  <link rel="stylesheet" href="css/style.css?v=2026-10-28l">
+  <link rel="stylesheet" href="css/society.css?v=2026-10-28l">
+  <link rel="stylesheet" href="css/portfolio.css?v=2026-10-28l">
+  <link rel="stylesheet" href="css/extras.css?v=2026-10-28l">
 </head>
 <body>
 
@@ -208,6 +208,7 @@
           <button type="button" role="tab" data-tab="compost" aria-selected="false">🌡️ Compost</button>
           <button type="button" role="tab" data-tab="almanac" aria-selected="false">🌱 Almanac</button>
           <button type="button" role="tab" data-tab="map" aria-selected="false">🗺️ Map</button>
+          <button type="button" role="tab" data-tab="howto" aria-selected="false">📖 How-to</button>
         </div>
         <div class="society-panel" id="societyPanel" role="tabpanel" aria-live="polite">
           <p class="society-empty">Opening the notebook… 📓</p>
@@ -230,6 +231,8 @@
         </div>
         <!-- Map tab: pixel map of the Central Garden (data in js/data.js → gardenMap, built by js/garden-map.js) -->
         <div id="gardenMap" class="growing society-almanac garden-map" role="tabpanel" aria-label="Garden map" hidden></div>
+        <!-- How-to tab: step-by-step photo guides for watering and chicken care (data.js → howTo, built by js/howto.js) -->
+        <div id="gardenHowTo" class="growing society-almanac howto" role="tabpanel" aria-label="Volunteer how-to" hidden></div>
         <p class="society-cta"><button type="button" class="society-submit" id="societySubmitBtn">✏️ Submit an entry</button></p>
       </section>
 
@@ -561,15 +564,16 @@
     </div>
   </div>
 
-  <script src="js/data.js?v=2026-10-28k"></script>
-  <script src="js/pixels.js?v=2026-10-28k"></script>
-  <script src="js/veg-icons.js?v=2026-10-28k"></script>
-  <script src="js/main.js?v=2026-10-28k"></script>
-  <script src="js/society.js?v=2026-10-28k"></script>
-  <script src="js/garden-map.js?v=2026-10-28k"></script>
-  <script src="js/portfolio.js?v=2026-10-28k"></script>
-  <script src="js/extras.js?v=2026-10-28k"></script>
-  <script src="js/emoji-sprites.js?v=2026-10-28k"></script>
-  <script src="js/pixel-emoji.js?v=2026-10-28k"></script>
+  <script src="js/data.js?v=2026-10-28l"></script>
+  <script src="js/pixels.js?v=2026-10-28l"></script>
+  <script src="js/veg-icons.js?v=2026-10-28l"></script>
+  <script src="js/main.js?v=2026-10-28l"></script>
+  <script src="js/society.js?v=2026-10-28l"></script>
+  <script src="js/howto.js?v=2026-10-28l"></script>
+  <script src="js/garden-map.js?v=2026-10-28l"></script>
+  <script src="js/portfolio.js?v=2026-10-28l"></script>
+  <script src="js/extras.js?v=2026-10-28l"></script>
+  <script src="js/emoji-sprites.js?v=2026-10-28l"></script>
+  <script src="js/pixel-emoji.js?v=2026-10-28l"></script>
 </body>
 </html>

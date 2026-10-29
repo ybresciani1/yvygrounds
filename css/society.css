@@ -819,3 +819,90 @@ button.gm-spot:focus-visible { outline: 3px dashed var(--pink); outline-offset: 
   .lb-title { font-size: 23px; }
   .lb-steps li { font-size: 16px; }
 }
+
+/* Volunteer How-to (📖 How-to tab, js/howto.js): numbered steps, each with its photos as little polaroids */
+.howto-intro { margin: 0 0 8px; font: 600 15px var(--f-round); }
+.howto-rule {
+  display: inline-block;
+  margin: 0 0 12px;
+  padding: 5px 12px;
+  border: 3px solid var(--ink);
+  border-radius: 10px;
+  background: var(--yellow);
+  font: 700 14px var(--f-round);
+}
+.howto-pick { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 0 0 16px; }
+.howto-pick button {
+  border: 3px solid var(--ink);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  font: 700 14px var(--f-round);
+  padding: 5px 14px;
+  box-shadow: 0 3px 0 var(--ink);
+  cursor: pointer;
+}
+.howto-pick button:hover { background: #fff3c4; }
+.howto-pick button[aria-pressed="true"] { background: var(--green-dark); color: #fff; }
+.howto-pick button:focus-visible { outline: 3px dashed var(--pink); outline-offset: 2px; }
+.howto-guide { text-align: left; }
+.howto-title { margin: 0; font: 24px var(--f-logo); color: var(--green-dark); text-align: center; }
+.howto-when, .howto-note { margin: 4px 0 0; text-align: center; font: 600 14px var(--f-round); }
+.howto-note { color: var(--purple); }
+.howto-steps {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.howto-step {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  border: 3px solid var(--ink);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 4px 0 rgba(43, 26, 82, .18);
+}
+/* A step with no photo is a sticky note */
+.howto-step-words { background: #fff8c9; transform: rotate(-.6deg); justify-content: center; }
+.howto-step p { margin: 0; font: 500 15px/1.35 var(--f-round); }
+.howto-n {
+  display: inline-grid;
+  place-items: center;
+  min-width: 24px;
+  height: 24px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: var(--pink);
+  color: #fff;
+  font: 9px var(--f-pixel);
+  vertical-align: 1px;
+}
+.howto-pics { display: grid; grid-template-columns: repeat(auto-fit, minmax(90px, 1fr)); gap: 6px; }
+.howto-pic { display: block; padding: 0; border: 2px solid var(--ink); border-radius: 6px; background: #eee8f7; cursor: zoom-in; overflow: hidden; }
+.howto-pic img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 50%; transition: transform .2s; }
+.howto-pic:hover img { transform: scale(1.04); }
+.howto-pic:focus-visible { outline: 3px dashed var(--pink); outline-offset: 2px; }
+.howto-code { padding: 0 5px; border-radius: 4px; background: var(--ink); color: var(--yellow); font: 11px var(--f-pixel); letter-spacing: 2px; }
+/* How-to links on the map: a spot's speech box and each Volunteer Days job */
+.gm-howto { margin-right: 6px; background: var(--purple); }
+.gm-day-how {
+  margin-left: 4px;
+  border: 2px solid var(--purple);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--purple);
+  font: 700 12px var(--f-round);
+  padding: 0 8px;
+  cursor: pointer;
+}
+.gm-day-how:hover { background: #f0e4ff; }
+.gm-day-how:focus-visible { outline: 3px dashed var(--pink); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { .howto-pic img { transition: none; } .howto-pic:hover img { transform: none; } }
+@media (max-width: 520px) {
+  .howto-steps { grid-template-columns: minmax(0, 1fr); }
+}
