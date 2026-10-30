@@ -116,8 +116,8 @@
     return `<img src="${esc(src)}" alt="${esc(alt)}" loading="lazy" data-fallback="${esc(fallbackEmoji || "🌱")}"${full ? ` data-full="${esc(full)}"` : ""}${focusStyle(focus)}>`;
   }
   // Wall frames are tiny, so they load a small copy from the album's thumbs/ folder
-  // (made by tools/photos.py). A photo with no thumbnail yet falls back to the full one.
-  const thumbOf = (src) => src.replace(/([^/]+)$/, "thumbs/$1");
+  // (thumbs/<name>.webp, made by tools/photos.py). A photo with no thumbnail yet falls back to the full one.
+  const thumbOf = (src) => src.replace(/([^/]+?)(\.[^./]+)?$/, "thumbs/$1.webp");
   document.addEventListener("error", (e) => {
     const img = e.target;
     if (img.tagName === "IMG" && img.dataset.full) {

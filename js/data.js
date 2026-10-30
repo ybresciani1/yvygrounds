@@ -478,7 +478,7 @@ window.YVY = {
    */
   games: [
     { title: "Rabbit & Frog: Gardenbound", type: "garden", date: "2026-10-18", featured: true, badge: "still updating ✨",
-      url: "https://seed-game-pi.vercel.app/", thumb: "images/games/rabbit-and-frog.png",
+      url: "https://seed-game-pi.vercel.app/", thumb: "images/games/rabbit-and-frog.webp",
       blurb: "A watercolor garden adventure all about seeds: how they pop, travel and get saved for next year. Play in English or Español!" },
     { title: "Tomato Tussle", type: ["garden", "silly"], date: "2026-10-18", play: "arcade/tomato-tussle/", icon: "tomato",
       blurb: "Squirrels, crows and raccoons are raiding the garden. Splat them with tomatoes, but don't splat Riot or Beyonce!" },

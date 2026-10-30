@@ -1,7 +1,7 @@
 """Photo helper for YvyGrounds (needs Pillow: python -m pip install --user Pillow).
 
-  python tools/photos.py thumbs   Make small copies for the background photo wall
-                                  (images/<album>/thumbs/<name>). Skips ones already up to date.
+  python tools/photos.py thumbs   Make small WebP copies for the background photo wall
+                                  (images/<album>/thumbs/<name>.webp). Skips ones already up to date.
   python tools/photos.py shrink   Recompress photos over 250 KB (max 1200 px, quality 75).
                                   Only keeps the new file if it's at least 10% smaller.
 
@@ -47,15 +47,16 @@ def thumbs():
     for album in WALL_ALBUMS:
         os.makedirs(os.path.join("images", album, "thumbs"), exist_ok=True)
         for path in photos(album):
-            thumb = os.path.join(os.path.dirname(path), "thumbs", os.path.basename(path))
+            name = os.path.splitext(os.path.basename(path))[0] + ".webp"
+            thumb = os.path.join(os.path.dirname(path), "thumbs", name)
             if os.path.exists(thumb) and os.path.getmtime(thumb) >= os.path.getmtime(path):
                 continue
             im = load(path)
             # Cover the box without cropping, so a photo's "focus" still works on the wall.
             scale = min(1, max(THUMB_BOX[0] / im.width, THUMB_BOX[1] / im.height))
             im = im.resize((round(im.width * scale), round(im.height * scale)), Image.LANCZOS)
-            with open(thumb, "wb") as f:
-                f.write(encode(im, thumb, 72))
+            # WebP: about a quarter smaller than the JPEGs these used to be, and looks the same
+            im.save(thumb, "WEBP", quality=75, method=6)
             made += 1
     print(f"made {made} thumbnails")
 
