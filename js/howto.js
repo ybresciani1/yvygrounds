@@ -13,9 +13,9 @@
   const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => (
     { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]
   ));
-  // {code} in a step's text becomes the shed code, shown big so it's easy to spot
-  const words = (t) => esc(t).replace(/\{code\}/g, `<b class="howto-code">${esc(H.code)}</b>`);
-  const plain = (t) => t.replace(/\{code\}/g, H.code);
+  // {code} in a step's text becomes a "🔒 Ask Yvy for the code" tag: the lock code never goes on the site
+  const words = (t) => esc(t).replace(/\{code\}/g, `<b class="howto-code">🔒 ${esc(H.askCode)}</b>`);
+  const plain = (t) => t.replace(/\{code\}/g, `(${H.askCode}.)`);
   // A guide's steps, with "shed" / "faucet" swapped for those shared steps
   const stepsOf = (g) => g.steps.flatMap((s) => (typeof s === "string" ? H.shared[s] || [] : [s]));
   const src = (name) => `images/howto/${name}.jpg`;

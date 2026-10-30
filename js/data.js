@@ -1617,7 +1617,8 @@ window.YVY = {
    * HOW-TO (Garden Society → 📖 How-to tab, built by js/howto.js): step-by-step photo guides from the
    * volunteer directions doc. Photos are in images/howto/ (pics: { file name: alt text }).
    * A step can be a name from shared ("shed", "faucet") to drop in those steps, so guides that start the
-   * same way only say it once. {code} in a step is filled in with code.
+   * same way only say it once. {code} in a step becomes a note to ask Yvy for the lock code (askCode).
+   * The code itself never goes on the site: volunteers get it from Yvy.
    * Map spots and Volunteer Days jobs with howto: "<key>" get a button that opens that guide.
    */
   howTo: {
@@ -1625,11 +1626,11 @@ window.YVY = {
     title: "Volunteer How-to",
     intro: "Step-by-step pictures for watering and chicken care. Tap a photo to see it big!",
     rule: "Please don't go into any rooms or use the electricity.",
-    code: "5055", // the shed and chicken-area code
+    askCode: "Ask Yvy for the code",
     shared: {
       shed: [
         { text: "Go into the Central Garden. The shed with the schedules is next to the YMCA room.", pics: { shed: "The garden shed's doors with the schedules taped on" } },
-        { text: "Unlock the shed. The code is {code}.", pics: { "shed-lock": "The shed's combination lock" } },
+        { text: "Unlock the shed with the lock code. {code}" },
         { text: "The watering key hangs on a magnetic strip on the left side of the shed. Always put it back there when you're done.", pics: { "key-strip": "The watering key on its magnetic strip" } },
       ],
       faucet: [
@@ -1674,12 +1675,12 @@ window.YVY = {
       ] },
       { key: "chickens", button: "🐔 Chicken Care", title: "Chicken Care", when: "Mondays, Wednesdays and Fridays (anyone can check their food and water any day)",
         note: "Yes, you can let the chickens out in the gated area!", steps: ["shed", "faucet",
-        { text: "The chicken areas open with the same code, {code}.", pics: { "run-lock": "The lock on the chicken run" } },
+        { text: "The chicken areas open with the same code as the shed.", pics: { "run-lock": "The lock on the chicken run" } },
         { text: "On chicken days we water the Central Garden too. Turn on knob 2 (the long hose): it fills the auto water jug under the coop.", pics: { "chicken-hose": "The long hose hooked up to the chickens' water" } },
         { text: "Then fill the water feeders on the run's gate at the Central Garden sink.", pics: { "gate-feeders": "Two water feeders on the run's gate" } },
         { text: "The auto water feeder: check that it's full by taking out the coop's trays.", pics: { "auto-feeder": "The auto water feeder under the coop" } },
         { text: "The coop: turn the knob to unlock it and pull. Then you can check for eggs, pull out the trays to clean them and check the auto water feeder. Don't force the trays back in!", pics: { coop: "The coop's door knob" } },
-        { text: "To feed them, open the run with the code {code}. Their feeder is the green bin closest to the run's gate.", pics: { feeder: "The green feeder in the run" } },
+        { text: "To feed them, open the run with the same code. Their feeder is the green bin closest to the run's gate.", pics: { feeder: "The green feeder in the run" } },
         { text: "Their feed is in this container at the back. Fill the feeder up to the opening with the scoop (tilting it a little makes it easier to pour).", pics: { "feed-bin": "The white feed container" } },
         { text: "To clean the trays, collect the eggs first. Put them in the egg cartons in the cardboard box on the bottom of the rack next to the Central Garden sink, with a card labeled with the date. Pull out the trays, put the droppings in the big green bin and close it, then clean the trays with the hose and Clorox wipes (in the shed, with latex-free gloves if you want). Let them dry, then slide them back in.",
           pics: { "droppings-bin": "The big green bin for droppings" } },

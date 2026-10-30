@@ -887,7 +887,7 @@ button.gm-spot:focus-visible { outline: 3px dashed var(--pink); outline-offset: 
 .howto-pic img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; object-position: 50% 50%; transition: transform .2s; }
 .howto-pic:hover img { transform: scale(1.04); }
 .howto-pic:focus-visible { outline: 3px dashed var(--pink); outline-offset: 2px; }
-.howto-code { padding: 0 5px; border-radius: 4px; background: var(--ink); color: var(--yellow); font: 11px var(--f-pixel); letter-spacing: 2px; }
+.howto-code { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--ink); color: var(--yellow); font: 700 13px var(--f-round); white-space: nowrap; }
 /* How-to links on the map: a spot's speech box and each Volunteer Days job */
 .gm-howto { margin-right: 6px; background: var(--purple); }
 .gm-day-how {
