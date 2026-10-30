@@ -23,21 +23,21 @@
   const SPRITES = window.YvyEmojiSprites || {};
   const spriteFor = (emoji) => SPRITES[emoji] || SPRITES[emoji.replace(/️/g, "")] || SPRITES[`${emoji}️`];
 
+  // A sprite becomes a tiny SVG (one path of 1×1 squares per color). Building the text is instant,
+  // where drawing on a canvas and calling toDataURL took ~7ms per emoji and froze the page on load.
   function drawSprite(s) {
     const h = s.g.length;
     const w = Math.max(...s.g.map((row) => row.length));
-    const c = document.createElement("canvas");
-    c.width = w;
-    c.height = h;
-    const ctx = c.getContext("2d");
+    const paths = {};
     s.g.forEach((row, y) => {
       [...row].forEach((ch, x) => {
         if (ch === "." || !s.c[ch]) return;
-        ctx.fillStyle = s.c[ch];
-        ctx.fillRect(x, y, 1, 1);
+        (paths[ch] = paths[ch] || []).push(`M${x} ${y}h1v1h-1z`);
       });
     });
-    return { url: c.toDataURL("image/png"), ratio: w / h };
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}" shape-rendering="crispEdges">` +
+      Object.keys(paths).map((ch) => `<path fill="${s.c[ch]}" d="${paths[ch].join("")}"/>`).join("") + "</svg>";
+    return { url: `data:image/svg+xml,${encodeURIComponent(svg)}`, ratio: w / h };
   }
 
   function pixelUrl(emoji) {
