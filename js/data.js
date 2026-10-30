@@ -1630,7 +1630,7 @@ window.YVY = {
     shared: {
       shed: [
         { text: "Go into the Central Garden. The shed with the schedules is next to the YMCA room.", pics: { shed: "The garden shed's doors with the schedules taped on" } },
-        { text: "Unlock the shed with the lock code. {code}" },
+        { text: "Unlock the shed with the lock code. {code}", pics: { "shed-lock": "The shed's combination lock, with its numbers pixelated" } },
         { text: "The watering key hangs on a magnetic strip on the left side of the shed. Always put it back there when you're done.", pics: { "key-strip": "The watering key on its magnetic strip" } },
       ],
       faucet: [
