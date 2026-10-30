@@ -1671,6 +1671,7 @@ window.YVY = {
         { text: "Double-check that the knobs are on and everything is running. Leave it on for 15 minutes (unless you're hand watering), then turn the faucet off.", pics: { "ms-knobs": "The middle school bed knobs" } },
         { text: "On: the knob is vertical to the pipe.", pics: { "ms-on": "A knob turned on" } },
         { text: "Off: the knob is horizontal to the pipe.", pics: { "ms-off": "A knob turned off" } },
+        { text: "Add water to the olla pots: lift the lid and fill each one to the top. Right now there's one, in MS Bed #6.", pics: { "olla-lid": "An olla's lid in the soil", "olla-open": "Lifting the lid off an olla" } },
         { text: "Keep an eye out for leaks, and tell us by email, phone or Konstella." },
       ] },
       { key: "chickens", button: "🐔 Chicken Care", title: "Chicken Care", when: "Mondays, Wednesdays and Fridays (anyone can check their food and water any day)",
