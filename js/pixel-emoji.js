@@ -1,7 +1,7 @@
 /*
  * Pixel emoji: every emoji on the page is swapped for an original hand-drawn 12×12 pixel sprite
  * (js/emoji-sprites.js), shown scaled up with crisp, blocky pixels (NES style). An emoji without a
- * sprite yet is drawn on a tiny 16×16 canvas from the device's own emoji instead.
+ * sprite yet is drawn on a tiny 16×16 canvas from the device's own emoji instead, once the page is up.
  * Turn it all off with data.js → pixelEmoji: false.
  * Skips the Garden Almanac (#growing), form fields, SVG, and anything inside .no-pixel.
  * Text symbols like ♥ ★ ✿ stay text (they keep their CSS colors); only real emoji are swapped.
@@ -40,15 +40,18 @@
     return { url: `data:image/svg+xml,${encodeURIComponent(svg)}`, ratio: w / h };
   }
 
+  // The sprite's picture, or null for an emoji with no sprite whose canvas copy isn't drawn yet
   function pixelUrl(emoji) {
     if (cache.has(emoji)) return cache.get(emoji);
     const sprite = spriteFor(emoji);
-    if (sprite) {
-      const out = drawSprite(sprite);
-      cache.set(emoji, out);
-      return out;
-    }
-    // No hand-drawn sprite yet: shrink the device's own emoji onto a tiny canvas instead
+    if (!sprite) return null;
+    const out = drawSprite(sprite);
+    cache.set(emoji, out);
+    return out;
+  }
+
+  // No hand-drawn sprite yet: shrink the device's own emoji onto a tiny canvas instead
+  function canvasEmoji(emoji) {
     const c = document.createElement("canvas");
     const ctx = c.getContext("2d");
     const font = `${GRID - 2}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","Segoe UI Symbol",sans-serif`;
@@ -66,6 +69,28 @@
     return out;
   }
 
+  // Each canvas copy takes ~6ms, which added up on load, so they're drawn one at a time while the
+  // browser is idle. Until then their imgs are blank (alt still has the emoji).
+  const BLANK = "data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==";
+  const waiting = new Map(); // emoji -> imgs waiting for its canvas copy
+  const idle = (fn) => (window.requestIdleCallback ? requestIdleCallback(fn, { timeout: 1000 }) : setTimeout(fn, 50));
+  const setPicture = (img, { url, ratio }) => {
+    img.src = url;
+    if (ratio > 1) img.style.setProperty("--px-ratio", ratio.toFixed(2));
+  };
+  function drawNext() {
+    const [emoji, imgs] = waiting.entries().next().value;
+    waiting.delete(emoji);
+    const out = canvasEmoji(emoji);
+    imgs.forEach((img) => setPicture(img, out));
+    if (waiting.size) idle(drawNext);
+  }
+  function drawLater(emoji, img) {
+    if (!waiting.size) idle(drawNext);
+    if (!waiting.has(emoji)) waiting.set(emoji, []);
+    waiting.get(emoji).push(img);
+  }
+
   function swap(textNode) {
     const text = textNode.nodeValue;
     if (!text || !HAS_EMOJI.test(text)) return;
@@ -79,13 +104,13 @@
     let m;
     while ((m = EMOJI.exec(text))) {
       if (m.index > last) frag.appendChild(document.createTextNode(text.slice(last, m.index)));
-      const { url, ratio } = pixelUrl(m[0]);
+      const out = pixelUrl(m[0]);
       const img = document.createElement("img");
       img.className = "px-emoji";
-      img.src = url;
       img.alt = m[0];          // screen readers and copy/paste still get the emoji
       img.draggable = false;
-      if (ratio > 1) img.style.setProperty("--px-ratio", ratio.toFixed(2));
+      if (out) setPicture(img, out);
+      else { img.src = BLANK; drawLater(m[0], img); }
       frag.appendChild(img);
       last = m.index + m[0].length;
     }

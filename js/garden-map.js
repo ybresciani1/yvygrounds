@@ -213,269 +213,280 @@
     volunteer: { spots: volunteerSpots, items: jobItems, state: itemState } };
   if (!box) return;
 
-  let cur = M, spots = M.spots;
-  const mapHtml = () => `
-        ${spots.map((s, i) => {
-          const pieces = [[s.x, s.y, s.w, s.h]].concat(s.more || []);
-          if (!s.name) {
-            return pieces.map((r, n) => `<div class="${classes(s)}" style="${place(r)}" aria-hidden="true">${shape(s)}${n ? "" : label(s)}</div>`).join("");
-          }
-          // The first piece is the real button; extra pieces (the other arm of an L) just point to it
-          return `<button type="button" class="${classes(s)}" style="${place(pieces[0])}" data-i="${i}" aria-label="${esc(s.name)}${fixLeft(s).length ? ", needs fixing" : ""}">${shape(s)}${label(s)}</button>`
-            + pieces.slice(1).map((r) => `<div class="${classes(s)} gm-more" style="${place(r)}" data-i="${i}" aria-hidden="true"><span class="gm-shape"></span></div>`).join("");
-        }).join("")}
-        ${spots.filter((s) => s.has).map(marks).join("")}
-        ${spots.filter((s) => s.runner).map(runner).join("")}
-        ${spots.map((s, i) => (s.fix ? alert(s, i) : "")).join("")}`;
-  // Once every repair on a spot is crossed off, its "!" goes away (called again when the live log loads)
-  const syncAlerts = () => map.querySelectorAll("[data-alert]").forEach((el) => {
-    const s = spots[+el.dataset.alert];
-    el.hidden = !fixLeft(s).length;
-    const btn = map.querySelector(`button[data-i="${el.dataset.alert}"]`);
-    if (btn) btn.setAttribute("aria-label", `${s.name}${el.hidden ? "" : ", needs fixing"}`);
-  });
-  // The picked volunteer day. -1 is General: the plain map, no day picked
-  let day = -1;
-  box.innerHTML = `
-    ${maps.length > 1 ? `<div class="gm-switch" role="group" aria-label="Pick a garden">${maps.map((m, k) =>
-      `<button type="button" data-map="${k}" aria-pressed="${k ? "false" : "true"}">${esc(m.button || m.title)}</button>`).join("")}</div>` : ""}
-    <div class="gm-head">
-      <h3 class="leaf-title"><span class="gm-title"></span></h3>
-      <p class="gm-season"></p>
-    </div>
-    ${VD ? `<div class="gm-days-pick" role="group" aria-label="${esc(VD.title)}">
-      <button type="button" data-day="-1" aria-pressed="true">${esc(VD.general)}</button>
-      <span class="gm-days-label">📋 ${esc(VD.title)}:</span>${VD.days.map((d, k) =>
-      `<button type="button" data-day="${k}" aria-pressed="false">${esc(d.button)}</button>`).join("")}</div>` : ""}
-    <div class="gm-wrap">
-      <div class="gm-frame"><div class="gm-map" role="group"></div></div>
-      <div class="gm-side">
-        <div class="gm-info" aria-live="polite">
-          <span class="gm-name"></span>
-          <div class="gm-body"></div>
-        </div>
-        ${VD ? '<div class="gm-day" aria-live="polite" hidden></div>' : ""}
+  // The map lives in the Garden Society's Map tab, hidden until someone opens it, so it's built the first
+  // time it shows (drawing it is one of the slower things on a phone's first load). Until then a
+  // to-do report has nothing to redraw; the map loads the newest log when it's built.
+  window.YvyGarden.reload = () => Promise.resolve();
+  const io = new IntersectionObserver((entries) => {
+    if (entries.some((x) => x.isIntersecting)) { io.disconnect(); build(); }
+  }, { rootMargin: "300px" });
+  io.observe(box);
+
+  function build() {
+    let cur = M, spots = M.spots;
+    const mapHtml = () => `
+          ${spots.map((s, i) => {
+            const pieces = [[s.x, s.y, s.w, s.h]].concat(s.more || []);
+            if (!s.name) {
+              return pieces.map((r, n) => `<div class="${classes(s)}" style="${place(r)}" aria-hidden="true">${shape(s)}${n ? "" : label(s)}</div>`).join("");
+            }
+            // The first piece is the real button; extra pieces (the other arm of an L) just point to it
+            return `<button type="button" class="${classes(s)}" style="${place(pieces[0])}" data-i="${i}" aria-label="${esc(s.name)}${fixLeft(s).length ? ", needs fixing" : ""}">${shape(s)}${label(s)}</button>`
+              + pieces.slice(1).map((r) => `<div class="${classes(s)} gm-more" style="${place(r)}" data-i="${i}" aria-hidden="true"><span class="gm-shape"></span></div>`).join("");
+          }).join("")}
+          ${spots.filter((s) => s.has).map(marks).join("")}
+          ${spots.filter((s) => s.runner).map(runner).join("")}
+          ${spots.map((s, i) => (s.fix ? alert(s, i) : "")).join("")}`;
+    // Once every repair on a spot is crossed off, its "!" goes away (called again when the live log loads)
+    const syncAlerts = () => map.querySelectorAll("[data-alert]").forEach((el) => {
+      const s = spots[+el.dataset.alert];
+      el.hidden = !fixLeft(s).length;
+      const btn = map.querySelector(`button[data-i="${el.dataset.alert}"]`);
+      if (btn) btn.setAttribute("aria-label", `${s.name}${el.hidden ? "" : ", needs fixing"}`);
+    });
+    // The picked volunteer day. -1 is General: the plain map, no day picked
+    let day = -1;
+    box.innerHTML = `
+      ${maps.length > 1 ? `<div class="gm-switch" role="group" aria-label="Pick a garden">${maps.map((m, k) =>
+        `<button type="button" data-map="${k}" aria-pressed="${k ? "false" : "true"}">${esc(m.button || m.title)}</button>`).join("")}</div>` : ""}
+      <div class="gm-head">
+        <h3 class="leaf-title"><span class="gm-title"></span></h3>
+        <p class="gm-season"></p>
       </div>
-    </div>`;
+      ${VD ? `<div class="gm-days-pick" role="group" aria-label="${esc(VD.title)}">
+        <button type="button" data-day="-1" aria-pressed="true">${esc(VD.general)}</button>
+        <span class="gm-days-label">📋 ${esc(VD.title)}:</span>${VD.days.map((d, k) =>
+        `<button type="button" data-day="${k}" aria-pressed="false">${esc(d.button)}</button>`).join("")}</div>` : ""}
+      <div class="gm-wrap">
+        <div class="gm-frame"><div class="gm-map" role="group"></div></div>
+        <div class="gm-side">
+          <div class="gm-info" aria-live="polite">
+            <span class="gm-name"></span>
+            <div class="gm-body"></div>
+          </div>
+          ${VD ? '<div class="gm-day" aria-live="polite" hidden></div>' : ""}
+        </div>
+      </div>`;
 
-  const map = box.querySelector(".gm-map");
-  const name = box.querySelector(".gm-name");
-  const body = box.querySelector(".gm-body");
-  let pinned = null;
+    const map = box.querySelector(".gm-map");
+    const name = box.querySelector(".gm-name");
+    const body = box.querySelector(".gm-body");
+    let pinned = null;
 
-  // Size the squares to fit: the biggest whole number of pixels per square (at least 5)
-  const frame = box.querySelector(".gm-frame");
-  const BORDER = 12; // the map's wooden frame, both sides
-  function fit() {
-    if (!frame.clientWidth) return; // tab hidden
-    const cols = cur.cols || 40, rows = cur.rows || 53;
-    const c = Math.max(5, Math.min(13, Math.floor((frame.clientWidth - BORDER) / cols)));
-    map.style.setProperty("--c", c + "px");
-    map.style.width = c * cols + BORDER + "px";
-    map.style.height = c * rows + BORDER + "px";
-  }
-  new ResizeObserver(fit).observe(frame);
-
-  // A spot can say something different on certain days (dated: [{ dates: ["2026-11-06", ...], about }])
-  const aboutToday = (s) => {
-    const today = new Date().toLocaleDateString("en-CA");
-    const special = (s.dated || []).find((d) => (d.dates || []).includes(today));
-    return special ? special.about : s.about;
-  };
-  // keep: plants not to pull (basil in the wood chips). Their names in about become buttons that show their photos.
-  const aboutHtml = (s, text) => (s.keep || []).reduce((html, k, n) => {
-    const word = new RegExp(`\\b(${esc(k.name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})\\b`, "i");
-    return html.replace(word, `<button type="button" class="gm-keep" data-keep="${n}" aria-expanded="false">$1</button>`);
-  }, esc(text));
-  // A spot or job with howto opens that guide in the How-to tab (js/howto.js; not on the admin page)
-  const hasHowTo = (key) => !!key && !!window.YvyHowTo && window.YvyHowTo.has(key);
-  let shown = null; // the spot in the speech box right now
-  function show(i) {
-    shown = i;
-    const s = spots[i];
-    map.querySelectorAll(".is-on").forEach((el) => el.classList.remove("is-on"));
-    if (!s) {
-      name.textContent = "Yvy";
-      body.innerHTML = `<p>${esc(cur.hint || M.hint)}</p>`;
-      return;
+    // Size the squares to fit: the biggest whole number of pixels per square (at least 5)
+    const frame = box.querySelector(".gm-frame");
+    const BORDER = 12; // the map's wooden frame, both sides
+    function fit() {
+      if (!frame.clientWidth) return; // tab hidden
+      const cols = cur.cols || 40, rows = cur.rows || 53;
+      const c = Math.max(5, Math.min(13, Math.floor((frame.clientWidth - BORDER) / cols)));
+      map.style.setProperty("--c", c + "px");
+      map.style.width = c * cols + BORDER + "px";
+      map.style.height = c * rows + BORDER + "px";
     }
-    map.querySelectorAll(`[data-i="${i}"]`).forEach((el) => el.classList.add("is-on"));
-    name.textContent = s.name;
-    body.innerHTML =
-      (s.planted ? `<p class="gm-what">Growing now:</p><ul class="gm-plants">${s.planted.map(plant).join("")}</ul>` : "") +
-      (aboutToday(s) ? `<p>${aboutHtml(s, aboutToday(s))}</p>` : "") +
-      (s.has ? hasList(s) : "") +
-      (s.keep ? '<div class="gm-keep-photo" hidden></div>' : "") +
-      (s.lesson && lessonNow ? `<p class="gm-what">Now learning:</p><p>📚 Unit ${esc(lessonNow.unit)} · Lesson ${esc(lessonNow.lesson)}: <b>${esc(lessonNow.title)}</b>
-        (${esc(lessonNow.island)} in Gardenbound)</p>` : "") +
-      (s.fix ? `<p class="gm-what gm-what-fix">Needs fixing:</p>${checkList(s, s.fix, "gm-fix")}` : "") +
-      (s.todo ? `<p class="gm-what">${esc(M.todoTitle || "To-do")}:</p>${checkList(s, s.todo, "gm-todo")}` : "") +
-      (s.id && chores(s).length ? `<p class="gm-what">Chores:</p>${choreList(s)}` : "") +
-      (s.id ? alsoDone(s) : "") +
-      ((s.todo || s.fix || chores(s).length) && s.id && window.YvySociety && window.YvySociety.canReport() ? '<button type="button" class="gm-go gm-report">✅ I did one! Tell Yvy</button>' : "") +
-      (s.feed ? `<p class="gm-what gm-what-feed">${esc(M.feedTitle || "Feeding")}:</p>${s.feedPlan ? feedLog(s) : ""}${list(s.feed, "gm-feed")}`
-        + (M.feedNote ? `<p class="gm-feed-note">${esc(M.feedNote)}</p>` : "") : "") +
-      (hasHowTo(s.howto) ? `<button type="button" class="gm-go gm-howto" data-howto="${esc(s.howto)}">📖 How-to: ${esc(window.YvyHowTo.title(s.howto))} ▶</button>` : "") +
-      (s.tab ? `<button type="button" class="gm-go" data-tab-go="${esc(s.tab)}">See the compost log ▶</button>` : "") +
-      (s.link ? `<a class="gm-go" href="${esc(s.link)}">Meet the flock ▶</a>` : "");
-  }
+    new ResizeObserver(fit).observe(frame);
 
-  const spotOf = (e) => e.target.closest("[data-i]");
-  map.addEventListener("pointerover", (e) => { const el = spotOf(e); if (el && e.pointerType === "mouse") show(+el.dataset.i); });
-  map.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") show(pinned); });
-  map.addEventListener("click", (e) => {
-    const el = spotOf(e);
-    if (!el) return;
-    pinned = +el.dataset.i;
-    show(pinned);
-    if (el.classList.contains("gm-more")) map.querySelector(`button[data-i="${pinned}"]`).focus();
-    // On phones the speech box is above the map: bring it back into view if it scrolled away
-    const info = body.parentElement.getBoundingClientRect();
-    if (info.top < 0) body.parentElement.scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-  });
-  map.addEventListener("focusin", (e) => { const el = spotOf(e); if (el) { pinned = +el.dataset.i; show(pinned); } });
-  // "See the compost log" opens that Garden Society tab; a plant name (keep) shows or hides its photo
-  body.addEventListener("click", (e) => {
-    // "Olla" / "In-ground worm bin": show or hide what it is
-    const d = e.target.closest("[data-def]");
-    if (d) {
-      const f = FEATURES[d.dataset.def];
-      const box = body.querySelector(".gm-def");
-      const open = d.getAttribute("aria-expanded") !== "true";
-      body.querySelectorAll("[data-def]").forEach((el) => el.setAttribute("aria-expanded", "false"));
-      d.setAttribute("aria-expanded", String(open));
-      box.hidden = !open;
-      box.innerHTML = open ? `<b>${esc(f.name)}:</b> ${esc(f.about)}` : "";
-      return;
-    }
-    const k = e.target.closest("[data-keep]");
-    if (k) {
-      const plant = spots[shown].keep[+k.dataset.keep];
-      const box = body.querySelector(".gm-keep-photo");
-      const open = k.getAttribute("aria-expanded") !== "true";
-      body.querySelectorAll("[data-keep]").forEach((el) => el.setAttribute("aria-expanded", "false"));
-      k.setAttribute("aria-expanded", String(open));
-      box.hidden = !open;
-      box.innerHTML = open ? `${plant.note ? `<p class="gm-keep-note">${esc(plant.note)}</p>` : ""}
-        <div class="gm-keep-pics">${(plant.photos || []).map((p) => `<figure>
-          <img src="${esc(p.src)}" alt="${esc(p.alt || plant.name)}" data-fallback="🌿">
-          ${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}
-          ${p.credit ? `<small class="gm-credit">Photo: ${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.credit)}</a>` : esc(p.credit)}</small>` : ""}
-        </figure>`).join("")}</div>` : "";
-      return;
-    }
-    // "I did one!" opens Submit an entry at this garden and spot (js/society.js)
-    if (e.target.closest(".gm-report") && window.YvySociety) {
-      window.YvySociety.reportTodo(maps.indexOf(cur), spots[shown].id);
-      return;
-    }
-    const b = e.target.closest("[data-tab-go]");
-    const tab = b && document.querySelector(`.society-tabs [data-tab="${b.dataset.tabGo}"]`);
-    if (tab) { tab.click(); tab.focus(); }
-  });
-
-  // The picked day: its spots get a pink outline on the map, and its jobs show beside the map with their
-  // checkboxes (✓ done, ? waiting for Yvy's OK). A job's spot names are buttons that show that spot
-  // (switching gardens if it's on another map).
-  function showDay() {
-    if (!VD) return;
-    box.querySelectorAll("[data-day]").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.day === day)));
-    map.querySelectorAll(".gm-day-on").forEach((el) => el.classList.remove("gm-day-on"));
-    const card = box.querySelector(".gm-day");
-    const d = VD.days[day];
-    card.hidden = !d;
-    if (!d) return;
-    const here = maps.indexOf(cur);
-    d.jobs.forEach((j) => (j.at || []).forEach((ref) => {
-      const f = findSpot(ref);
-      if (f && f[0] === here) map.querySelectorAll(`[data-i="${f[1]}"]`).forEach((el) => el.classList.add("gm-day-on"));
-    }));
-    // A spot on another map starts with that map's emoji (🏫, 🧒); spots that share a name get numbered (Fig Tree #2)
-    const chip = (ref) => {
-      const f = findSpot(ref);
-      if (!f) return "";
-      const all = maps[f[0]].spots, s = all[f[1]], same = all.filter((o) => o.name === s.name);
-      const label = same.length > 1 ? `${s.name} #${same.indexOf(s) + 1}` : s.name;
-      const mark = f[0] ? `${(maps[f[0]].button || "").split(" ")[0]} ` : "";
-      return `<button type="button" class="gm-day-spot${f[0] ? " gm-day-other" : ""}" data-go="${f[0]}:${f[1]}">${esc(mark + label)}</button>`;
+    // A spot can say something different on certain days (dated: [{ dates: ["2026-11-06", ...], about }])
+    const aboutToday = (s) => {
+      const today = new Date().toLocaleDateString("en-CA");
+      const special = (s.dated || []).find((d) => (d.dates || []).includes(today));
+      return special ? special.about : s.about;
     };
-    const canReport = window.YvySociety && window.YvySociety.canReport();
-    const job = (j) => {
-      const items = jobItems(d, j), st = items.map((x) => itemState(live, x));
-      // A shared job is ✓ once every chore it stands for is done, ? while the rest are waiting for Yvy's OK,
-      // and says how far along it is in between ("2 of 4 done, 1 waiting for Yvy's OK")
-      const done = st.filter((x) => x === "done").length, wait = st.filter((x) => x === "wait").length;
-      const state = j.tip || j.feed || !items.length ? "" : done === items.length ? "is-done" : done + wait === items.length ? "is-pending" : "";
-      const note = state === "is-done" ? "" : [done ? `${done} of ${items.length} done` : "",
-        wait ? `${items.length > 1 ? `${wait} ` : ""}waiting for Yvy's OK` : ""].filter(Boolean).join(", ");
-      return `<li class="${j.tip ? "gm-day-tip" : state}"><b>${esc(j.what)}</b>${j.how ? `: ${esc(j.how)}` : ""}
-        ${hasHowTo(j.howto) ? `<button type="button" class="gm-day-how" data-howto="${esc(j.howto)}">📖 How</button>` : ""}
-        ${note ? `<em class="gm-day-state">(${esc(note)})</em>` : ""}${state === "is-done" ? ' <span class="sr-only">(done)</span>' : ""}
-        ${j.list ? `<ul>${j.list.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
-        ${j.at && j.at.length < 8 ? `<span class="gm-day-at">${j.at.map(chip).join("")}</span>` : ""}
-        ${j.feed && canReport ? '<button type="button" class="gm-go gm-day-go" data-feed-go>🌱 Log a feeding</button>' : ""}</li>`;
-    };
-    card.innerHTML = `<h4 class="gm-day-title">${esc(d.title)}</h4>
-      <ul class="gm-day-jobs">${d.jobs.map(job).join("")}</ul>
-      ${canReport ? `<button type="button" class="gm-go gm-report" data-vd-report="vd-${esc(d.key)}">✅ I did some! Tell Yvy</button>` : ""}`;
-  }
-  box.addEventListener("click", (e) => {
-    const b = e.target.closest("[data-day]");
-    if (b) { day = +b.dataset.day; showDay(); return; }
-    const how = e.target.closest("[data-howto]");
-    if (how && window.YvyHowTo) { window.YvyHowTo.open(how.dataset.howto); return; }
-    // "I did some!" opens Submit an entry at that day's jobs; "Log a feeding" opens it at "Fertilized a bed" (js/society.js)
-    const vd = e.target.closest("[data-vd-report]");
-    if (vd && window.YvySociety) { window.YvySociety.reportTodo("vd", vd.dataset.vdReport); return; }
-    if (e.target.closest("[data-feed-go]") && window.YvySociety) { window.YvySociety.reportFeed(); return; }
-    const go = e.target.closest("[data-go]");
-    if (!go) return;
-    const [k, i] = go.dataset.go.split(":").map(Number);
-    if (maps[k] !== cur) draw(k);
-    pinned = i;
-    show(i);
-    body.parentElement.scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-  });
+    // keep: plants not to pull (basil in the wood chips). Their names in about become buttons that show their photos.
+    const aboutHtml = (s, text) => (s.keep || []).reduce((html, k, n) => {
+      const word = new RegExp(`\\b(${esc(k.name).replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})\\b`, "i");
+      return html.replace(word, `<button type="button" class="gm-keep" data-keep="${n}" aria-expanded="false">$1</button>`);
+    }, esc(text));
+    // A spot or job with howto opens that guide in the How-to tab (js/howto.js; not on the admin page)
+    const hasHowTo = (key) => !!key && !!window.YvyHowTo && window.YvyHowTo.has(key);
+    let shown = null; // the spot in the speech box right now
+    function show(i) {
+      shown = i;
+      const s = spots[i];
+      map.querySelectorAll(".is-on").forEach((el) => el.classList.remove("is-on"));
+      if (!s) {
+        name.textContent = "Yvy";
+        body.innerHTML = `<p>${esc(cur.hint || M.hint)}</p>`;
+        return;
+      }
+      map.querySelectorAll(`[data-i="${i}"]`).forEach((el) => el.classList.add("is-on"));
+      name.textContent = s.name;
+      body.innerHTML =
+        (s.planted ? `<p class="gm-what">Growing now:</p><ul class="gm-plants">${s.planted.map(plant).join("")}</ul>` : "") +
+        (aboutToday(s) ? `<p>${aboutHtml(s, aboutToday(s))}</p>` : "") +
+        (s.has ? hasList(s) : "") +
+        (s.keep ? '<div class="gm-keep-photo" hidden></div>' : "") +
+        (s.lesson && lessonNow ? `<p class="gm-what">Now learning:</p><p>📚 Unit ${esc(lessonNow.unit)} · Lesson ${esc(lessonNow.lesson)}: <b>${esc(lessonNow.title)}</b>
+          (${esc(lessonNow.island)} in Gardenbound)</p>` : "") +
+        (s.fix ? `<p class="gm-what gm-what-fix">Needs fixing:</p>${checkList(s, s.fix, "gm-fix")}` : "") +
+        (s.todo ? `<p class="gm-what">${esc(M.todoTitle || "To-do")}:</p>${checkList(s, s.todo, "gm-todo")}` : "") +
+        (s.id && chores(s).length ? `<p class="gm-what">Chores:</p>${choreList(s)}` : "") +
+        (s.id ? alsoDone(s) : "") +
+        ((s.todo || s.fix || chores(s).length) && s.id && window.YvySociety && window.YvySociety.canReport() ? '<button type="button" class="gm-go gm-report">✅ I did one! Tell Yvy</button>' : "") +
+        (s.feed ? `<p class="gm-what gm-what-feed">${esc(M.feedTitle || "Feeding")}:</p>${s.feedPlan ? feedLog(s) : ""}${list(s.feed, "gm-feed")}`
+          + (M.feedNote ? `<p class="gm-feed-note">${esc(M.feedNote)}</p>` : "") : "") +
+        (hasHowTo(s.howto) ? `<button type="button" class="gm-go gm-howto" data-howto="${esc(s.howto)}">📖 How-to: ${esc(window.YvyHowTo.title(s.howto))} ▶</button>` : "") +
+        (s.tab ? `<button type="button" class="gm-go" data-tab-go="${esc(s.tab)}">See the compost log ▶</button>` : "") +
+        (s.link ? `<a class="gm-go" href="${esc(s.link)}">Meet the flock ▶</a>` : "");
+    }
 
-  // Draw one of the maps (0 = the Central Garden, then gardenMap.otherMaps in order)
-  function draw(k) {
-    cur = maps[k] || M;
-    spots = cur.spots;
-    pinned = null;
-    box.querySelector(".gm-title").textContent = cur.title;
-    box.querySelector(".gm-season").textContent = `🗺️ ${cur.season || ""}`;
-    map.setAttribute("aria-label", `Map of ${cur.title}`);
-    map.innerHTML = mapHtml();
-    syncAlerts();
-    box.querySelectorAll("[data-map]").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.map === k)));
-    fit();
-    show(null);
-    showDay();
-  }
-  box.addEventListener("click", (e) => {
-    const b = e.target.closest("[data-map]");
-    if (b) draw(+b.dataset.map);
-  });
-  draw(0);
+    const spotOf = (e) => e.target.closest("[data-i]");
+    map.addEventListener("pointerover", (e) => { const el = spotOf(e); if (el && e.pointerType === "mouse") show(+el.dataset.i); });
+    map.addEventListener("pointerleave", (e) => { if (e.pointerType === "mouse") show(pinned); });
+    map.addEventListener("click", (e) => {
+      const el = spotOf(e);
+      if (!el) return;
+      pinned = +el.dataset.i;
+      show(pinned);
+      if (el.classList.contains("gm-more")) map.querySelector(`button[data-i="${pinned}"]`).focus();
+      // On phones the speech box is above the map: bring it back into view if it scrolled away
+      const info = body.parentElement.getBoundingClientRect();
+      if (info.top < 0) body.parentElement.scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    });
+    map.addEventListener("focusin", (e) => { const el = spotOf(e); if (el) { pinned = +el.dataset.i; show(pinned); } });
+    // "See the compost log" opens that Garden Society tab; a plant name (keep) shows or hides its photo
+    body.addEventListener("click", (e) => {
+      // "Olla" / "In-ground worm bin": show or hide what it is
+      const d = e.target.closest("[data-def]");
+      if (d) {
+        const f = FEATURES[d.dataset.def];
+        const box = body.querySelector(".gm-def");
+        const open = d.getAttribute("aria-expanded") !== "true";
+        body.querySelectorAll("[data-def]").forEach((el) => el.setAttribute("aria-expanded", "false"));
+        d.setAttribute("aria-expanded", String(open));
+        box.hidden = !open;
+        box.innerHTML = open ? `<b>${esc(f.name)}:</b> ${esc(f.about)}` : "";
+        return;
+      }
+      const k = e.target.closest("[data-keep]");
+      if (k) {
+        const plant = spots[shown].keep[+k.dataset.keep];
+        const box = body.querySelector(".gm-keep-photo");
+        const open = k.getAttribute("aria-expanded") !== "true";
+        body.querySelectorAll("[data-keep]").forEach((el) => el.setAttribute("aria-expanded", "false"));
+        k.setAttribute("aria-expanded", String(open));
+        box.hidden = !open;
+        box.innerHTML = open ? `${plant.note ? `<p class="gm-keep-note">${esc(plant.note)}</p>` : ""}
+          <div class="gm-keep-pics">${(plant.photos || []).map((p) => `<figure>
+            <img src="${esc(p.src)}" alt="${esc(p.alt || plant.name)}" data-fallback="🌿">
+            ${p.caption ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}
+            ${p.credit ? `<small class="gm-credit">Photo: ${p.link ? `<a href="${esc(p.link)}" target="_blank" rel="noopener">${esc(p.credit)}</a>` : esc(p.credit)}</small>` : ""}
+          </figure>`).join("")}</div>` : "";
+        return;
+      }
+      // "I did one!" opens Submit an entry at this garden and spot (js/society.js)
+      if (e.target.closest(".gm-report") && window.YvySociety) {
+        window.YvySociety.reportTodo(maps.indexOf(cur), spots[shown].id);
+        return;
+      }
+      const b = e.target.closest("[data-tab-go]");
+      const tab = b && document.querySelector(`.society-tabs [data-tab="${b.dataset.tabGo}"]`);
+      if (tab) { tab.click(); tab.focus(); }
+    });
 
-  // Load the live log, then redraw whatever is showing (Submit an entry calls this again after a to-do report).
-  // On the main page the Garden Society form already asked for it (js/society.js), so share that request.
-  const getLog = () => (window.YvyGardenLog
-    ? window.YvyGardenLog()
-    : fetch(`${API}/api/garden`).then((r) => (r.ok ? r.json() : null)));
-  const loadLive = () => getLog().then((data) => {
-    if (!data) return;
-    live.feeds = {};
-    (data.feeds || []).forEach((f) => { (live.feeds[f.bed] = live.feeds[f.bed] || []).push({ date: f.fed_on, id: f.plan_ids }); });
-    live.done = new Set((data.done || []).map((d) => `${d.bed}:${d.item}`));
-    live.doneOn = new Map((data.done || []).map((d) => [`${d.bed}:${d.item}`, d.done_on]));
-    live.pending = new Set((data.pending || []).map((d) => `${d.bed}:${d.item}`));
-    live.others = {};
-    (data.others || []).forEach((o) => { (live.others[o.bed] = live.others[o.bed] || []).push(o); });
-    syncAlerts();
-    show(shown);
-    showDay();
-  }).catch(() => { /* no log yet: the map still works */ });
-  window.YvyGarden.reload = loadLive;
-  loadLive();
+    // The picked day: its spots get a pink outline on the map, and its jobs show beside the map with their
+    // checkboxes (✓ done, ? waiting for Yvy's OK). A job's spot names are buttons that show that spot
+    // (switching gardens if it's on another map).
+    function showDay() {
+      if (!VD) return;
+      box.querySelectorAll("[data-day]").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.day === day)));
+      map.querySelectorAll(".gm-day-on").forEach((el) => el.classList.remove("gm-day-on"));
+      const card = box.querySelector(".gm-day");
+      const d = VD.days[day];
+      card.hidden = !d;
+      if (!d) return;
+      const here = maps.indexOf(cur);
+      d.jobs.forEach((j) => (j.at || []).forEach((ref) => {
+        const f = findSpot(ref);
+        if (f && f[0] === here) map.querySelectorAll(`[data-i="${f[1]}"]`).forEach((el) => el.classList.add("gm-day-on"));
+      }));
+      // A spot on another map starts with that map's emoji (🏫, 🧒); spots that share a name get numbered (Fig Tree #2)
+      const chip = (ref) => {
+        const f = findSpot(ref);
+        if (!f) return "";
+        const all = maps[f[0]].spots, s = all[f[1]], same = all.filter((o) => o.name === s.name);
+        const label = same.length > 1 ? `${s.name} #${same.indexOf(s) + 1}` : s.name;
+        const mark = f[0] ? `${(maps[f[0]].button || "").split(" ")[0]} ` : "";
+        return `<button type="button" class="gm-day-spot${f[0] ? " gm-day-other" : ""}" data-go="${f[0]}:${f[1]}">${esc(mark + label)}</button>`;
+      };
+      const canReport = window.YvySociety && window.YvySociety.canReport();
+      const job = (j) => {
+        const items = jobItems(d, j), st = items.map((x) => itemState(live, x));
+        // A shared job is ✓ once every chore it stands for is done, ? while the rest are waiting for Yvy's OK,
+        // and says how far along it is in between ("2 of 4 done, 1 waiting for Yvy's OK")
+        const done = st.filter((x) => x === "done").length, wait = st.filter((x) => x === "wait").length;
+        const state = j.tip || j.feed || !items.length ? "" : done === items.length ? "is-done" : done + wait === items.length ? "is-pending" : "";
+        const note = state === "is-done" ? "" : [done ? `${done} of ${items.length} done` : "",
+          wait ? `${items.length > 1 ? `${wait} ` : ""}waiting for Yvy's OK` : ""].filter(Boolean).join(", ");
+        return `<li class="${j.tip ? "gm-day-tip" : state}"><b>${esc(j.what)}</b>${j.how ? `: ${esc(j.how)}` : ""}
+          ${hasHowTo(j.howto) ? `<button type="button" class="gm-day-how" data-howto="${esc(j.howto)}">📖 How</button>` : ""}
+          ${note ? `<em class="gm-day-state">(${esc(note)})</em>` : ""}${state === "is-done" ? ' <span class="sr-only">(done)</span>' : ""}
+          ${j.list ? `<ul>${j.list.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
+          ${j.at && j.at.length < 8 ? `<span class="gm-day-at">${j.at.map(chip).join("")}</span>` : ""}
+          ${j.feed && canReport ? '<button type="button" class="gm-go gm-day-go" data-feed-go>🌱 Log a feeding</button>' : ""}</li>`;
+      };
+      card.innerHTML = `<h4 class="gm-day-title">${esc(d.title)}</h4>
+        <ul class="gm-day-jobs">${d.jobs.map(job).join("")}</ul>
+        ${canReport ? `<button type="button" class="gm-go gm-report" data-vd-report="vd-${esc(d.key)}">✅ I did some! Tell Yvy</button>` : ""}`;
+    }
+    box.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-day]");
+      if (b) { day = +b.dataset.day; showDay(); return; }
+      const how = e.target.closest("[data-howto]");
+      if (how && window.YvyHowTo) { window.YvyHowTo.open(how.dataset.howto); return; }
+      // "I did some!" opens Submit an entry at that day's jobs; "Log a feeding" opens it at "Fertilized a bed" (js/society.js)
+      const vd = e.target.closest("[data-vd-report]");
+      if (vd && window.YvySociety) { window.YvySociety.reportTodo("vd", vd.dataset.vdReport); return; }
+      if (e.target.closest("[data-feed-go]") && window.YvySociety) { window.YvySociety.reportFeed(); return; }
+      const go = e.target.closest("[data-go]");
+      if (!go) return;
+      const [k, i] = go.dataset.go.split(":").map(Number);
+      if (maps[k] !== cur) draw(k);
+      pinned = i;
+      show(i);
+      body.parentElement.scrollIntoView({ block: "start", behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    });
+
+    // Draw one of the maps (0 = the Central Garden, then gardenMap.otherMaps in order)
+    function draw(k) {
+      cur = maps[k] || M;
+      spots = cur.spots;
+      pinned = null;
+      box.querySelector(".gm-title").textContent = cur.title;
+      box.querySelector(".gm-season").textContent = `🗺️ ${cur.season || ""}`;
+      map.setAttribute("aria-label", `Map of ${cur.title}`);
+      map.innerHTML = mapHtml();
+      syncAlerts();
+      box.querySelectorAll("[data-map]").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.map === k)));
+      fit();
+      show(null);
+      showDay();
+    }
+    box.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-map]");
+      if (b) draw(+b.dataset.map);
+    });
+    draw(0);
+
+    // Load the live log, then redraw whatever is showing (Submit an entry calls this again after a to-do report).
+    // On the main page the Garden Society form already asked for it (js/society.js), so share that request.
+    const getLog = () => (window.YvyGardenLog
+      ? window.YvyGardenLog()
+      : fetch(`${API}/api/garden`).then((r) => (r.ok ? r.json() : null)));
+    const loadLive = () => getLog().then((data) => {
+      if (!data) return;
+      live.feeds = {};
+      (data.feeds || []).forEach((f) => { (live.feeds[f.bed] = live.feeds[f.bed] || []).push({ date: f.fed_on, id: f.plan_ids }); });
+      live.done = new Set((data.done || []).map((d) => `${d.bed}:${d.item}`));
+      live.doneOn = new Map((data.done || []).map((d) => [`${d.bed}:${d.item}`, d.done_on]));
+      live.pending = new Set((data.pending || []).map((d) => `${d.bed}:${d.item}`));
+      live.others = {};
+      (data.others || []).forEach((o) => { (live.others[o.bed] = live.others[o.bed] || []).push(o); });
+      syncAlerts();
+      show(shown);
+      showDay();
+    }).catch(() => { /* no log yet: the map still works */ });
+    window.YvyGarden.reload = loadLive;
+    loadLive();
+  }
 })();
