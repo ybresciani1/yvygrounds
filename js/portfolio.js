@@ -28,7 +28,7 @@
     const exp = Math.round(((Date.now() - start) / (new Date(year + 1, 0, 1) - start)) * 100);
     const me = rpg.portrait || (D.photos.me || [])[0];
     const portrait = me
-      ? `<img src="${esc(me.src)}" alt="${esc(me.alt || "Yvy")}" loading="lazy" data-fallback="🌟">`
+      ? `<img data-src="${esc(me.src)}" alt="${esc(me.alt || "Yvy")}" data-fallback="🌟">`
       : px("flower", 9);
 
     const bar = (b) => {
@@ -134,6 +134,21 @@
       show(next.dataset.rpg);
     });
     show("stats");
+
+    // The portrait is far down the page, but loading="lazy" still fetched it on the live site: the browser
+    // looked while the sections above weren't built yet. So it only gets its picture once the page has
+    // finished loading and it comes near the screen.
+    const pic = box.querySelector(".rpg-portrait img[data-src]");
+    if (pic) {
+      const watch = () => {
+        const io = new IntersectionObserver((list) => {
+          if (list.some((x) => x.isIntersecting)) { io.disconnect(); pic.src = pic.dataset.src; }
+        }, { rootMargin: "600px" });
+        io.observe(pic);
+      };
+      if (document.readyState === "complete") watch();
+      else window.addEventListener("load", watch, { once: true });
+    }
   }
 
   /* ---------- Hire me: shop counter ---------- */
