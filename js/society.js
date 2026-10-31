@@ -441,7 +441,11 @@
     const todoKind = form.querySelector("[name=kind][value=todo]").closest("label");
     logKinds.concat(todoKind).forEach((l) => { l.hidden = true; });
     let canReport = false;
-    const loadGarden = () => api("/api/garden").then((g) => {
+    // One /api/garden request for this form and the map (js/garden-map.js asks window.YvyGardenLog too).
+    // fresh asks the API again (after a report); otherwise the last answer is shared.
+    let gardenLog = null;
+    window.YvyGardenLog = (fresh) => (!fresh && gardenLog) || (gardenLog = api("/api/garden"));
+    const loadGarden = (fresh) => window.YvyGardenLog(fresh).then((g) => {
       logKinds.forEach((l) => { l.hidden = false; });
       canReport = Array.isArray(g.pending);
       todoKind.hidden = !canReport;
@@ -571,8 +575,8 @@
           form.elements.other.value = "";
           form.elements.other.hidden = true;
           $("#sfOtherOn").checked = false;
-          loadGarden(); // the ones just sent now show "waiting for Yvy"
-          if (window.YvyGarden && window.YvyGarden.reload) window.YvyGarden.reload(); // and get a ? on the map
+          loadGarden(true); // the ones just sent now show "waiting for Yvy"
+          if (window.YvyGarden && window.YvyGarden.reload) window.YvyGarden.reload(); // and get a ? on the map (same request)
         }
       } catch (err) {
         status.textContent = err.message;

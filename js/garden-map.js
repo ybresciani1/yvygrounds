@@ -458,8 +458,12 @@
   });
   draw(0);
 
-  // Load the live log, then redraw whatever is showing (Submit an entry calls this again after a to-do report)
-  const loadLive = () => fetch(`${API}/api/garden`).then((r) => (r.ok ? r.json() : null)).then((data) => {
+  // Load the live log, then redraw whatever is showing (Submit an entry calls this again after a to-do report).
+  // On the main page the Garden Society form already asked for it (js/society.js), so share that request.
+  const getLog = () => (window.YvyGardenLog
+    ? window.YvyGardenLog()
+    : fetch(`${API}/api/garden`).then((r) => (r.ok ? r.json() : null)));
+  const loadLive = () => getLog().then((data) => {
     if (!data) return;
     live.feeds = {};
     (data.feeds || []).forEach((f) => { (live.feeds[f.bed] = live.feeds[f.bed] || []).push({ date: f.fed_on, id: f.plan_ids }); });
