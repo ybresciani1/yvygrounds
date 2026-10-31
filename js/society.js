@@ -605,7 +605,7 @@
     if (!tab) return false;
     started = true;
     openTab(tab);
-    root.scrollIntoView({ behavior: "smooth" });
+    window.YvyScrollTo(root); // js/main.js: stays put while the page is still loading
     return true;
   };
   window.addEventListener("hashchange", showTabFromLink);

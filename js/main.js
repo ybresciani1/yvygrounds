@@ -1244,6 +1244,29 @@
     }, { passive: true });
   }
 
+  /* ---------- Links straight to a section (#resume, #map...) ---------- */
+  // The browser jumps to the section before the ones above it are built and their pictures and API
+  // content arrive, so the section ended up far down the page. YvyScrollTo puts a section at the top and
+  // keeps it there while the page settles (until a few seconds after it loads), unless the visitor
+  // scrolls, taps or presses a key first. js/society.js uses it for #map, #almanac and #howto.
+  let settled = false;
+  let hold = null;
+  const letGo = () => { if (hold) { hold.disconnect(); hold = null; } };
+  window.YvyScrollTo = (el) => {
+    letGo();
+    if (settled) { el.scrollIntoView({ block: "start" }); return; } // smooth, from html { scroll-behavior }
+    const snap = () => el.scrollIntoView({ block: "start", behavior: "instant" });
+    snap();
+    hold = new ResizeObserver(snap);
+    hold.observe(document.body);
+  };
+  ["wheel", "touchstart", "pointerdown", "keydown"].forEach((type) => window.addEventListener(type, letGo, { passive: true }));
+  window.addEventListener("load", () => setTimeout(() => { settled = true; letGo(); }, 3000));
+  function holdLinkedSection() {
+    const el = location.hash.length > 1 && document.getElementById(decodeURIComponent(location.hash.slice(1)));
+    if (el && el.getClientRects().length) window.YvyScrollTo(el); // hidden tabs (#growing) are society.js's
+  }
+
   /* ---------- Go! ---------- */
   buildLogo();
   buildPhotoWall();
@@ -1263,6 +1286,7 @@
   buildLightbox();
   buildMeadow();
   buildSparkles();
+  holdLinkedSection();
 
   let resizeTimer;
   window.addEventListener("resize", () => {
