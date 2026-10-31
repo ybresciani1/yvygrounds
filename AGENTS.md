@@ -19,6 +19,7 @@ Keep new work in that retro-but-cute style. It's meant to feel 2000s-maximalist,
 |---|---|
 | `index.html` | All page sections (single page, anchor nav) |
 | `css/style.css` | All styles; colors and fonts are CSS variables in `:root` |
+| `fonts/`, `css/fonts.css` | The site's own copies of its Google Fonts (Chewy, Fredoka, Gochi Hand, Press Start 2P; Latin only), preloaded in each page's `<head>`. How to add one: `fonts/README.md` |
 | `js/data.js` | **All content**: games, photos, chickens, pets, ticker, about text, history facts |
 | `js/pixels.js` | Pixel-art sprites defined as letter grids → inline SVG (`Pixel.svg(name, scale, colorOverrides)`) |
 | `js/veg-icons.js` | Hand-drawn 32×32 SVG vegetable icons for crops with no accurate emoji (cauliflower, beets, kale...). Use `icon: "name"` in `data.js`; shown at emoji size |
@@ -43,7 +44,7 @@ Keep new work in that retro-but-cute style. It's meant to feel 2000s-maximalist,
 
 ## Conventions
 
-- Plain HTML/CSS/vanilla JS. No build step, no npm dependencies, no frameworks. External assets are Google Fonts only.
+- Plain HTML/CSS/vanilla JS. No build step, no npm dependencies, no frameworks. No external assets on the site's own pages: fonts are copies in `fonts/` (`css/fonts.css`), so the first paint doesn't wait on Google. Arcade games still load Google Fonts.
 - Content changes go in `js/data.js`, not hard-coded into HTML/JS. Escape user-facing strings with `esc()` in `main.js`.
 - All asset paths are **relative** (`images/...`, not `/images/...`) so the site works both at a subpath and at a custom domain.
 - `index.html` loads `css/style.css` and `js/*.js` with a `?v=` date. Bump it (all of them together) whenever you change CSS or JS, so visitors don't mix a new page with old cached files (GitHub Pages caches for 10 minutes).
