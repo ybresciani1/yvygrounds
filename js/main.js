@@ -286,7 +286,8 @@
     return art ? Math.min(5, Math.floor(64 / Math.max(art.grid.length, art.grid[0].length))) : 5;
   };
   const gameIcon = (g) => {
-    if (g.thumb) return imgTag(g.thumb, "", TYPES[typeKey(g)].emoji, g.focus);
+    // The 70px icon loads a small copy from images/games/thumbs/ (tools/photos.py)
+    if (g.thumb) return imgTag(thumbOf(g.thumb), "", TYPES[typeKey(g)].emoji, g.focus, g.thumb);
     const name = g.icon || TYPES[typeKey(g)].icon;
     return px(name, iconScale(name));
   };

@@ -1,7 +1,8 @@
 """Photo helper for YvyGrounds (needs Pillow: python -m pip install --user Pillow).
 
-  python tools/photos.py thumbs   Make small WebP copies for the background photo wall
-                                  (images/<album>/thumbs/<name>.webp). Skips ones already up to date.
+  python tools/photos.py thumbs   Make small WebP copies for the background photo wall and the
+                                  game list icons (images/<album>/thumbs/<name>.webp).
+                                  Skips ones already up to date.
   python tools/photos.py shrink   Recompress photos over 250 KB (max 1200 px, quality 75).
                                   Only keeps the new file if it's at least 10% smaller.
 
@@ -17,14 +18,15 @@ from PIL import Image, ImageOps
 WALL_ALBUMS = ["me", "chickens", "pets", "club", "students"]
 GALLERY_ALBUMS = WALL_ALBUMS + ["compost", "hall", "devlogs"]
 THUMB_BOX = (240, 300)   # wall ovals are 116x148, doubled for sharp screens
+ICON_BOX = (140, 140)    # game list icons are 70x70, doubled
 BIG = 250 * 1024
 MAX_SIDE = 1200
 
 
-def photos(album):
+def photos(album, kinds=(".jpg", ".jpeg", ".png")):
     folder = os.path.join("images", album)
     for name in sorted(os.listdir(folder)):
-        if name.lower().endswith((".jpg", ".jpeg", ".png")):
+        if name.lower().endswith(kinds):
             yield os.path.join(folder, name)
 
 
@@ -44,16 +46,17 @@ def encode(im, path, quality):
 
 def thumbs():
     made = 0
-    for album in WALL_ALBUMS:
+    jobs = [(album, THUMB_BOX) for album in WALL_ALBUMS] + [("games", ICON_BOX)]
+    for album, box in jobs:
         os.makedirs(os.path.join("images", album, "thumbs"), exist_ok=True)
-        for path in photos(album):
+        for path in photos(album, (".jpg", ".jpeg", ".png", ".webp")):
             name = os.path.splitext(os.path.basename(path))[0] + ".webp"
             thumb = os.path.join(os.path.dirname(path), "thumbs", name)
             if os.path.exists(thumb) and os.path.getmtime(thumb) >= os.path.getmtime(path):
                 continue
             im = load(path)
             # Cover the box without cropping, so a photo's "focus" still works on the wall.
-            scale = min(1, max(THUMB_BOX[0] / im.width, THUMB_BOX[1] / im.height))
+            scale = min(1, max(box[0] / im.width, box[1] / im.height))
             im = im.resize((round(im.width * scale), round(im.height * scale)), Image.LANCZOS)
             # WebP: about a quarter smaller than the JPEGs these used to be, and looks the same
             im.save(thumb, "WEBP", quality=75, method=6)
