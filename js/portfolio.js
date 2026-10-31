@@ -28,7 +28,7 @@
     const exp = Math.round(((Date.now() - start) / (new Date(year + 1, 0, 1) - start)) * 100);
     const me = rpg.portrait || (D.photos.me || [])[0];
     const portrait = me
-      ? `<img src="${esc(me.src)}" alt="${esc(me.alt || "Yvy")}" data-fallback="🌟">`
+      ? `<img src="${esc(me.src)}" alt="${esc(me.alt || "Yvy")}" loading="lazy" data-fallback="🌟">`
       : px("flower", 9);
 
     const bar = (b) => {
