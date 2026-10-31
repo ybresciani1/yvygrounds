@@ -838,21 +838,28 @@ a.game:hover { background: #34303b; }
 .is-memorial .tcard-photo { border-color: #a98fe6; }
 /* Pinned to the frame so a photo's focus (object-position) picks the crop */
 .tcard-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
-/* Holo foil: a rainbow shine that slides across the photo */
+/* Holo foil: a rainbow shine that slides across the photo. It's a strip of two 2.5-photo-wide shine tiles
+   that slides with transform (moving the background itself repainted the card every frame); the tiles
+   pass by exactly where the old background-position animation put them. */
 .tcard-photo::after {
   content: "";
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: -250%;
+  width: 500%;
   background: linear-gradient(115deg, transparent 30%, rgba(255, 140, 198, .35) 40%, rgba(255, 255, 255, .55) 47%, rgba(55, 198, 230, .35) 54%, transparent 64%);
-  background-size: 250% 100%;
+  background-size: 50% 100%;
   mix-blend-mode: screen;
   animation: holo 4s linear infinite;
   pointer-events: none;
 }
-@keyframes holo { from { background-position: 100% 0; } to { background-position: -150% 0; } }
+@keyframes holo { from { transform: translateX(-30%); } to { transform: translateX(45%); } }
 /* While the card is being tilted the photo turns full holo-rare: rainbow foil bars that follow the pointer */
 .is-holo .tcard-photo::after {
   animation: none;
+  left: 0;
+  width: 100%;
   background:
     repeating-linear-gradient(0deg, #ff8cb0 0%, #ffd23f 6%, #9af07f 12%, #6fe3ff 18%, #b99cff 24%, #ff8cb0 30%),
     repeating-linear-gradient(130deg, #1b1340 0%, #8fa6c0 3.5%, #c8e4ec 4.5%, #8fa6c0 5.5%, #1b1340 10%, #1b1340 12%);
@@ -1347,7 +1354,8 @@ a.badge:hover { border-style: inset; }
 .flowers .px { position: absolute; filter: drop-shadow(1px 0 0 var(--ink)) drop-shadow(-1px 0 0 var(--ink)) drop-shadow(0 1px 0 var(--ink)) drop-shadow(0 -1px 0 var(--ink)); animation: pop .35s cubic-bezier(.3, 1.8, .6, 1) both; transform-origin: bottom center; }
 @keyframes pop { from { transform: translate(-50%, -100%) scale(0); } to { transform: translate(-50%, -100%) scale(1); } }
 
-.rail { position: relative; margin: 92px -16px 0; }
+/* container-type: the walker crosses 100cqw, the rail's width */
+.rail { position: relative; margin: 92px -16px 0; container-type: inline-size; }
 .walker {
   position: absolute;
   bottom: 18px;
@@ -1356,13 +1364,14 @@ a.badge:hover { border-style: inset; }
   filter: drop-shadow(2px 0 0 var(--ink)) drop-shadow(-2px 0 0 var(--ink)) drop-shadow(0 2px 0 var(--ink)) drop-shadow(0 -2px 0 var(--ink));
 }
 .walker-bob { display: block; animation: bob .5s steps(2) infinite; }
-/* The chicken sprite faces left, so flip it while it walks right */
+/* The chicken sprite faces left, so flip it while it walks right.
+   It moves with transform (not left), so the browser doesn't redo the page layout every frame. */
 @keyframes walk {
-  0%   { left: -60px; transform: scaleX(-1); }
-  48%  { left: calc(100% + 10px); transform: scaleX(-1); }
-  50%  { left: calc(100% + 10px); transform: scaleX(1); }
-  98%  { left: -60px; transform: scaleX(1); }
-  100% { left: -60px; transform: scaleX(-1); }
+  0%   { transform: translateX(0) scaleX(-1); }
+  48%  { transform: translateX(calc(100cqw + 70px)) scaleX(-1); }
+  50%  { transform: translateX(calc(100cqw + 70px)) scaleX(1); }
+  98%  { transform: translateX(0) scaleX(1); }
+  100% { transform: translateX(0) scaleX(-1); }
 }
 
 .tracks {
@@ -1640,6 +1649,10 @@ body.arcade-open { overflow: hidden; }
   .stamp { display: none; }
   .tabs a { font-size: 14px; padding: 8px 10px 6px; }
 }
+
+/* Boxes scrolled off-screen pause their looping animations (main.js → pauseOffscreen) */
+.is-offscreen, .is-offscreen::before, .is-offscreen::after,
+.is-offscreen *, .is-offscreen *::before, .is-offscreen *::after { animation-play-state: paused !important; }
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }

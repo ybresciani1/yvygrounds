@@ -1244,6 +1244,19 @@
     }, { passive: true });
   }
 
+  /* ---------- Pause decorations you can't see ---------- */
+  // Looping animations keep the browser drawing frames even when they're scrolled away, which made the
+  // page choppy on laptops. These boxes hold every endless one (except the falling seasonal bits, which
+  // are always on screen); each pauses while it's off-screen (css/style.css → .is-offscreen).
+  // A new looping animation goes in one of these boxes, or its box gets added here.
+  function pauseOffscreen() {
+    const boxes = document.querySelectorAll(".ticker, #mascot, .dialog, #gameList, #flockCards, #petCards, #gardenMap, #shopKeeper, .meadow");
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((e) => e.target.classList.toggle("is-offscreen", !e.isIntersecting));
+    }, { rootMargin: "100px" });
+    boxes.forEach((b) => io.observe(b));
+  }
+
   /* ---------- Links straight to a section (#resume, #map...) ---------- */
   // The browser jumps to the section before the ones above it are built and their pictures and API
   // content arrive, so the section ended up far down the page. YvyScrollTo puts a section at the top and
@@ -1286,6 +1299,7 @@
   buildLightbox();
   buildMeadow();
   buildSparkles();
+  pauseOffscreen();
   holdLinkedSection();
 
   let resizeTimer;
