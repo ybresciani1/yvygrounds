@@ -1,3 +1,5 @@
 .claude/settings.local.json
 Thumbs.db
 .DS_Store
+# Unblurred photos waiting on a parent OK (local only, never commit)
+images/club/originals/
