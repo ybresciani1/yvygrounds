@@ -122,7 +122,7 @@
   const FX = {};
   Object.keys(FX_ART).forEach((k) => { FX[k] = bakeGrid(FX_ART[k].g, FX_ART[k].c); });
 
-  // ----- The Garden Society: thirteen students (placeholders as Player N until Yvy shares names) -----
+  // ----- The Garden Society: thirteen students (first names only) -----
   // Everyone wears the green Garden Society apron (unless their shirt should show). Looks are built from
   // one body plus a hairstyle; name is first name only.
   const KID_BASE = [
@@ -164,7 +164,7 @@
     { name: "Ella", skin: SKIN[1], hair: "#e8c25a", eye: "#5a3a26", shirt: "#ff8a1e", style: "bob", bobTo: 17, glasses: true,
       blurb: ["Blonde long bob", "and glasses!"] },
     // Brown side-swept bangs (swept the other way), a little tan, jeans
-    { skin: SKIN[1], hair: "#5a3a22", style: "sweep", sweepRight: true, shirt: "#37c6e6", pants: "#4f78b0", jeans: true,
+    { name: "Emmett", skin: SKIN[1], hair: "#5a3a22", style: "sweep", sweepRight: true, shirt: "#37c6e6", pants: "#4f78b0", jeans: true,
       blurb: ["Side-swept bangs", "and jeans!"] },
     // Brown shoulder-length bob with the top half pulled up in a claw clip; black Converse
     { name: "Roweena", skin: "#f8dcc8", hair: "#6b4a2e", shirt: "#c9b8f2", style: "bobknot", tall: true, converse: true, blurb: ["Half-up bob,", "black Converse!"] },
