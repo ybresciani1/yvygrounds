@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Garden Society Dash ★ YvyGrounds Arcade</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌱</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../arcade.css">
+  <style>
+    /* Student select: 13 buttons in three rows */
+    #select { gap: 1cqw; padding: 0 3cqw; }
+    #select button { font-size: 1.4cqw; padding: 1.1cqw 1.4cqw; }
+    #select button[aria-pressed="true"] { background: #fff8e4; outline: .6cqw dashed #3f8f2e; outline-offset: .3cqw; }
+    #days button[disabled] { opacity: .45; cursor: not-allowed; filter: grayscale(.6); }
+  </style>
+</head>
+<body>
+  <p class="arcade-back"><a href="../../#games">« Back to YvyGrounds</a></p>
+  <h1 class="arcade-title">Garden Society Dash</h1>
+
+  <div class="stage">
+    <canvas id="game" width="960" height="720" tabindex="0"
+      aria-label="Garden Society Dash. Garden beds ask for seeds, water, weeding, compost and harvesting. Grab the right tool from the shed, take care of each bed before its patience runs out, and sell the harvest at the farm stand."></canvas>
+    <!-- Menus sit under the canvas panels (positions match the canvas layout) -->
+    <div class="arcade-menu" id="titleMenu" style="top: 82%; bottom: auto;">
+      <button type="button" id="startBtn">▶ Press Start</button>
+    </div>
+    <div class="arcade-menu" id="select" style="top: 69%; bottom: auto;" hidden>
+      <button type="button" data-pick="0">Aiden</button>
+      <button type="button" data-pick="1" class="alt">Vivian</button>
+      <button type="button" data-pick="2" class="alt2">Andrew</button>
+      <button type="button" data-pick="3">Phoebe</button>
+      <button type="button" data-pick="4" class="alt">Ayra</button>
+      <button type="button" data-pick="5" class="alt2">Ella</button>
+      <button type="button" data-pick="6">Player 7</button>
+      <button type="button" data-pick="7" class="alt">Roweena</button>
+      <button type="button" data-pick="8" class="alt2">Tessa</button>
+      <button type="button" data-pick="9">Juleesa</button>
+      <button type="button" data-pick="10" class="alt">Maddy</button>
+      <button type="button" data-pick="11" class="alt2">Landon</button>
+      <button type="button" data-pick="12">Lucas</button>
+    </div>
+    <div class="arcade-menu" id="days" style="top: 76%; bottom: auto;" hidden>
+      <button type="button" data-day="0">Day 1</button>
+      <button type="button" data-day="1">Day 2</button>
+      <button type="button" data-day="2">Day 3</button>
+      <button type="button" data-day="3">Day 4</button>
+      <button type="button" data-day="4">Day 5</button>
+      <button type="button" id="daysBack" class="alt">◀ Back</button>
+    </div>
+    <div class="arcade-menu" id="endMenu" style="top: 78%; bottom: auto;" hidden>
+      <button type="button" id="nextBtn">Next day ▶</button>
+      <button type="button" id="retryBtn" class="alt2">Try again</button>
+      <button type="button" id="menuBtn" class="alt">Days</button>
+    </div>
+    <button class="mute" id="mute" type="button" aria-pressed="false" aria-label="Mute sound">🔊</button>
+  </div>
+
+  <p class="arcade-help">The garden beds need help! Tap a tool in the shed (🌱 seeds, 💧 water, 🌿 weeding, 🪱 compost), then tap the bed that's asking for it. Tap a ripe bed to pick the harvest 🧺 and bring it to the farm stand. You can hold two things at once, and you can line up several taps. Same job in a row = combo! Keys: <kbd>1</kbd>–<kbd>4</kbd> tools, <kbd>5</kbd> farm stand, <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> / <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> beds, <kbd>X</kbd> empties your hands. <kbd>P</kbd> pauses, <kbd>M</kbd> mutes.</p>
+
+  <script src="game.js?v=2026-11-08f"></script>
+</body>
+</html>
