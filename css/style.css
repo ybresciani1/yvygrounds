@@ -264,10 +264,12 @@ main > section { margin-top: 28px; scroll-margin-top: 16px; }
 .sticker:nth-child(1) { transform: rotate(-4deg); }
 .sticker:nth-child(2) { transform: rotate(3deg); }
 .sticker:nth-child(3) { transform: rotate(-2deg); }
+.sticker:nth-child(4) { transform: rotate(3deg); }
 .sticker:hover { transform: rotate(0) scale(1.06); }
 .sticker-purple { background: #c58cff; color: #fff; -webkit-text-stroke: 1px var(--ink); }
 .sticker-orange { background: #ffb53d; }
 .sticker-yellow { background: #fff04d; }
+.sticker-green { background: #a8e384; }
 .sticker-icon { flex: none; }
 
 .welcome-center { text-align: center; }

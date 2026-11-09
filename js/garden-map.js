@@ -217,6 +217,12 @@
   // time it shows (drawing it is one of the slower things on a phone's first load). Until then a
   // to-do report has nothing to redraw; the map loads the newest log when it's built.
   window.YvyGarden.reload = () => Promise.resolve();
+  // "Volunteers Click Here!" (#volunteer): the map opens at today's Volunteer Day with its guide open.
+  // The map may not be built yet, so remember the ask and do it once it is.
+  let wantVolunteer = location.hash === "#volunteer";
+  let openVolunteer = null;
+  window.YvyGarden.openVolunteer = () => { wantVolunteer = true; if (openVolunteer) openVolunteer(); };
+  window.addEventListener("hashchange", () => { if (location.hash === "#volunteer") window.YvyGarden.openVolunteer(); });
   const io = new IntersectionObserver((entries) => {
     if (entries.some((x) => x.isIntersecting)) { io.disconnect(); build(); }
   }, { rootMargin: "300px" });
@@ -246,6 +252,13 @@
     });
     // The picked volunteer day. -1 is General: the plain map, no day picked
     let day = -1;
+    // Today's day: the first one that starts fresh today (Mon & Fri on Mondays and Fridays, Wed on Wednesdays),
+    // or the last one (Everyone, any day) when no day's jobs are today
+    const todayDay = () => {
+      const wd = new Date().getDay(), k = VD.days.findIndex((d) => (d.resets || []).includes(wd));
+      return k >= 0 ? k : VD.days.length - 1;
+    };
+    const G = VD && VD.guide;
     box.innerHTML = `
       ${maps.length > 1 ? `<div class="gm-switch" role="group" aria-label="Pick a garden">${maps.map((m, k) =>
         `<button type="button" data-map="${k}" aria-pressed="${k ? "false" : "true"}">${esc(m.button || m.title)}</button>`).join("")}</div>` : ""}
@@ -256,7 +269,14 @@
       ${VD ? `<div class="gm-days-pick" role="group" aria-label="${esc(VD.title)}">
         <button type="button" data-day="-1" aria-pressed="true">${esc(VD.general)}</button>
         <span class="gm-days-label">📋 ${esc(VD.title)}:</span>${VD.days.map((d, k) =>
-        `<button type="button" data-day="${k}" aria-pressed="false">${esc(d.button)}</button>`).join("")}</div>` : ""}
+        `<button type="button" data-day="${k}" aria-pressed="false">${esc(d.button)}</button>`).join("")}
+        ${G ? `<button type="button" class="gm-guide-btn" data-guide-toggle aria-expanded="false" aria-controls="gmGuide">${esc(G.button)}</button>` : ""}</div>` : ""}
+      ${G ? `<div class="gm-guide" id="gmGuide" hidden>
+        <h4 class="gm-guide-title">${esc(G.title)}</h4>
+        <p class="gm-guide-today" hidden></p>
+        <ol class="gm-guide-steps">${G.steps.map((t, n) => `<li><span class="gm-guide-n">${n + 1}</span><span>${esc(t)}</span></li>`).join("")}</ol>
+        <button type="button" class="gm-guide-close" data-guide-toggle>${esc(G.close)}</button>
+      </div>` : ""}
       <div class="gm-wrap">
         <div class="gm-frame"><div class="gm-map" role="group"></div></div>
         <div class="gm-side">
@@ -390,6 +410,13 @@
     function showDay() {
       if (!VD) return;
       box.querySelectorAll("[data-day]").forEach((b) => b.setAttribute("aria-pressed", String(+b.dataset.day === day)));
+      // The guide says "It's Monday, so 💧 Mon & Fri is picked for you" while today's day is the one showing
+      const todayLine = G && box.querySelector(".gm-guide-today");
+      if (todayLine) {
+        todayLine.hidden = day < 0 || day !== todayDay();
+        todayLine.textContent = G.today.replace("{weekday}", new Date().toLocaleDateString("en-US", { weekday: "long" }))
+          .replace("{day}", day < 0 ? "" : VD.days[day].button);
+      }
       map.querySelectorAll(".gm-day-on").forEach((el) => el.classList.remove("gm-day-on"));
       const card = box.querySelector(".gm-day");
       const d = VD.days[day];
@@ -432,6 +459,7 @@
     box.addEventListener("click", (e) => {
       const b = e.target.closest("[data-day]");
       if (b) { day = +b.dataset.day; showDay(); return; }
+      if (e.target.closest("[data-guide-toggle]")) { showGuide(box.querySelector(".gm-guide").hidden); return; }
       const how = e.target.closest("[data-howto]");
       if (how && window.YvyHowTo) { window.YvyHowTo.open(how.dataset.howto); return; }
       // "I did some!" opens Submit an entry at that day's jobs; "Log a feeding" opens it at "Fertilized a bed" (js/society.js)
@@ -467,6 +495,24 @@
       if (b) draw(+b.dataset.map);
     });
     draw(0);
+
+    // The step-by-step guide (data.js → volunteerDays.guide), opened by its ❓ button or by #volunteer
+    function showGuide(open) {
+      const g = box.querySelector(".gm-guide");
+      if (!g) return;
+      g.hidden = !open;
+      box.querySelectorAll(".gm-guide-btn").forEach((b) => b.setAttribute("aria-expanded", String(open)));
+    }
+    if (VD) {
+      openVolunteer = () => {
+        wantVolunteer = false;
+        if (cur !== M) draw(0);
+        day = todayDay();
+        showDay();
+        showGuide(true);
+      };
+      if (wantVolunteer) openVolunteer();
+    }
 
     // Load the live log, then redraw whatever is showing (Submit an entry calls this again after a to-do report).
     // On the main page the Garden Society form already asked for it (js/society.js), so share that request.

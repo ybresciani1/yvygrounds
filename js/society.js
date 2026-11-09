@@ -598,17 +598,27 @@
   });
   buildForm();
   // Links to #growing / #almanac (e.g. the "Garden Almanac" link up top) open the Almanac tab,
-  // #map / #garden-map open the Map, and #howto the How-to
-  const LINKED = { "#growing": "almanac", "#almanac": "almanac", "#map": "map", "#garden-map": "map", "#howto": "howto" };
+  // #map / #garden-map open the Map, #howto the How-to, and #volunteer the Map at today's Volunteer Day
+  // (js/garden-map.js picks the day and opens its guide)
+  const LINKED = { "#growing": "almanac", "#almanac": "almanac", "#map": "map", "#garden-map": "map", "#howto": "howto", "#volunteer": "map" };
   const showTabFromLink = () => {
     const tab = LINKED[location.hash];
     if (!tab) return false;
     started = true;
     openTab(tab);
-    window.YvyScrollTo(root); // js/main.js: stays put while the page is still loading
+    // js/main.js: stays put while the page is still loading. Volunteers land right on the map.
+    window.YvyScrollTo(location.hash === "#volunteer" ? $("#gardenMap") : root);
     return true;
   };
   window.addEventListener("hashchange", showTabFromLink);
+  // Tapping "Volunteers Click Here!" again (the address already ends in #volunteer) goes back there too
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest('a[href="#volunteer"]');
+    if (!a || location.hash !== "#volunteer") return;
+    e.preventDefault();
+    showTabFromLink();
+    if (window.YvyGarden && window.YvyGarden.openVolunteer) window.YvyGarden.openVolunteer();
+  });
 
   // Load the journal when the section scrolls into view, or a few seconds after the page loads
   let started = false;

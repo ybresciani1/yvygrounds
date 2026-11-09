@@ -1071,6 +1071,21 @@ window.YVY = {
     volunteerDays: {
       title: "Volunteer Days",
       general: "🗺️ General",
+      // "Volunteers Click Here!" (the sticker up top, and any #volunteer link) opens the map at today's day
+      // with this guide open. The ❓ button by the day buttons opens it any time. {weekday} and {day} get filled in.
+      guide: {
+        button: "❓ How to check things off",
+        title: "Volunteering, step by step",
+        today: "It's {weekday}, so {day} is picked for you.",
+        steps: [
+          "Your day's jobs are in the list by the map, and their spots glow pink on the map. Came on a different day? Tap that day's button above the map.",
+          "Do the jobs. Tap 📖 How on a job for step-by-step photos, or tap a spot's name to find it on the map.",
+          "Done? Tap ✅ I did some! Tell Yvy at the bottom of the list.",
+          "Check off the jobs you did, then add your first name or initials and the Garden Society passcode (ask Yvy for it). Did something that's not on the list? Check Other and write it in.",
+          "Yvy reads it and OKs it. While it waits, the job shows a yellow ?. Once it's OK'd, it gets a green ✓. Weekly jobs start fresh on their day.",
+        ],
+        close: "Got it!",
+      },
       days: [
         { key: "mf", button: "💧 Mon & Fri", title: "Monday & Friday: water", resets: [1, 5], jobs: [
           { what: "Fill the ollas", share: "olla", howto: "central", how: "Bed #8 (1 olla), Bed #4 (2 ollas), MS Bed #6 (1 olla) and Kinder Bed #8 (1 olla).",
