@@ -149,39 +149,43 @@
     { name: "Aiden", skin: SKIN[2], hair: "#1e1414", shirt: "#ffffff", style: "swoop", catShirt: true, cat: "#2b2433", blurb: ["Swoopy hair,", "cat shirt!"] },
     // Long dark brown hair with chestnut and sand-beige highlights framing her face down to her waist, fair peach
     // skin, freckles, brown eyes; maroon-and-white baby tee, watch, hoops, black pants, Converse
-    { name: "Vivian", skin: "#f8dcc8", skinShade: "#d9a5ad", hair: "#3b2416", tones: ["#3b2416", "#7b4a2b", "#d8bf94"], eye: "#5a3a26",
-      style: "longHair", tall: true, freckles: true, hoops: true,
+    { name: "Vivian", lashes: true, skin: "#f8dcc8", skinShade: "#d9a5ad", hair: "#3b2416", tones: ["#3b2416", "#7b4a2b", "#d8bf94"], eye: "#5a3a26",
+      style: "longHair", tall: true, thin: true, freckles: true, hoops: true,
       outfit: "babyTee", shirt: "#ffffff", trim: "#7a1f3a", pants: "#2b2433", converse: true, blurb: ["Baby tee, hoops", "and Converse!"] },
     // Blonde boy, fair, side-swept bangs; gym clothes: gray tee, navy shorts with white stripes, socks, sneakers
     { name: "Andrew", skin: SKIN[0], hair: "#e8c25a", tones: ["#b98a34", "#e8c25a", "#fff0b0"], style: "sweep",
       outfit: "gym", shirt: "#c8ced6", trim: "#2b3a7a", pants: "#2b3a7a", shoes: "#e8352e", blurb: ["Side-swept bangs", "and gym clothes!"] },
     // Pale, hazel eyes, freckles, dark brown low ponytail; a pullover with an anime face on it
-    { name: "Phoebe", skin: "#fbe3d3", hair: "#3a2418", eye: "#7a6a2e", freckles: true, style: "lowpony", tall: true,
+    { name: "Phoebe", lashes: true, skin: "#fbe3d3", hair: "#3a2418", eye: "#7a6a2e", freckles: true, style: "lowpony", tall: true, thin: true,
       outfit: "anime", shirt: "#3d3a6a", blurb: ["Low ponytail,", "anime pullover!"] },
-    // Same skin tone as Aiden, long black hair like Player 2's
-    { name: "Ayra", skin: SKIN[2], hair: "#141014", tones: BLACK_HAIR, shirt: "#7cc6ff", style: "longHair", blurb: ["Long black", "hair!"] },
+    // Same skin tone as Aiden, long black hair like Vivian's; a cute kitty shirt with a bow
+    { name: "Ayra", lashes: true, skin: SKIN[2], hair: "#141014", tones: BLACK_HAIR, style: "longHair", thin: true,
+      outfit: "tee", art: "kitty", shirt: "#ffd0e6", cat: "#ffffff", ribbon: "#e8357a", blurb: ["Long black hair,", "kitty shirt!"] },
     // Blonde long bob, glasses, brown eyes
-    { name: "Ella", skin: SKIN[1], hair: "#e8c25a", eye: "#5a3a26", shirt: "#ff8a1e", style: "bob", bobTo: 17, glasses: true,
-      blurb: ["Blonde long bob", "and glasses!"] },
+    { name: "Ella", lashes: true, skin: SKIN[1], hair: "#e8c25a", eye: "#5a3a26", style: "bob", bobTo: 17, glasses: true, thin: true,
+      outfit: "tee", art: "band", shirt: "#24202c", blurb: ["Glasses and a", "black band tee!"] },
     // Brown side-swept bangs (swept the other way), a little tan, jeans
     { name: "Emmett", skin: SKIN[1], hair: "#5a3a22", style: "sweep", sweepRight: true, shirt: "#37c6e6", pants: "#4f78b0", jeans: true,
       blurb: ["Side-swept bangs", "and jeans!"] },
-    // Brown shoulder-length bob with the top half pulled up in a claw clip; black Converse
-    { name: "Roweena", skin: "#f8dcc8", hair: "#6b4a2e", shirt: "#c9b8f2", style: "bobknot", tall: true, converse: true, blurb: ["Half-up bob,", "black Converse!"] },
-    // Tall, tan, dark brown bob
-    { name: "Tessa", skin: "#d9a173", hair: "#3a2418", tones: ["#24160e", "#3a2418", "#7b4a2b"], shirt: "#fff8e4", style: "bob", tall: true,
-      blurb: ["Tall, with a", "dark brown bob!"] },
-    // Tall, long black hair like Player 2's, with face-framing bangs
-    { name: "Juleesa", skin: SKIN[2], hair: "#141014", tones: BLACK_HAIR, shirt: "#3d5aa8", style: "longHair", tall: true, bangs: true,
-      blurb: ["Tall, long black", "hair with bangs!"] },
+    // Brown shoulder-length bob with the top half pulled up in a claw clip; black-and-white baby tee, black Converse
+    { name: "Roweena", lashes: true, skin: "#f8dcc8", hair: "#6b4a2e", style: "bobknot", tall: true, thin: true, converse: true,
+      outfit: "ringer", shirt: "#ffffff", trim: "#1e1a24", blurb: ["Half-up bob,", "black & white tee!"] },
+    // Tall, tan, dark brown bob; jean shorts
+    { name: "Tessa", lashes: true, skin: "#d9a173", hair: "#3a2418", tones: ["#24160e", "#3a2418", "#7b4a2b"], shirt: "#fff8e4", style: "bob", tall: true, thin: true,
+      shorts: true, pants: "#5b7fb5", blurb: ["Dark brown bob", "and shorts!"] },
+    // Tall and thin, long black hair like Vivian's, with face-framing bangs; lavender tee, baggy pants
+    { name: "Juleesa", lashes: true, skin: SKIN[2], hair: "#141014", tones: BLACK_HAIR, style: "longHair", tall: true, thin: true, bangs: true,
+      outfit: "tee", shirt: "#c9b8f2", baggy: true, pants: "#8fa8cc", blurb: ["Lavender tee,", "baggy pants!"] },
     // Long dark brown hair past her shoulders, light tan; red sweatshirt, frayed denim skirt over black leggings
-    { name: "Maddy", skin: "#e2b08a", hair: "#2a1a12", tones: ["#1a0f0a", "#2e1d14", "#6a4a36"], eye: "#3a2418", style: "longHair", hairTo: 20,
+    { name: "Maddy", lashes: true, skin: "#e2b08a", hair: "#2a1a12", tones: ["#1a0f0a", "#2e1d14", "#6a4a36"], eye: "#3a2418", style: "longHair", hairTo: 20, thin: true,
       outfit: "sweater", shirt: "#b3262c", skirt: "#7d98bd", pants: "#1e1a24", shoes: "#2b2433",
       blurb: ["Red sweatshirt,", "denim skirt!"] },
-    // Short hair, thin
-    { name: "Landon", skin: "#f0c8a8", hair: "#7b5236", style: "crew", thin: true, shirt: "#9b7be0", blurb: ["Short hair,", "and thin!"] },
-    // Aiden's skin tone, a touch lighter; black hair combed over to the side
-    { name: "Lucas", skin: "#d39a6e", hair: "#141014", tones: BLACK_HAIR, style: "combover", shirt: "#ffd23f", blurb: ["Black hair,", "combed over!"] },
+    // Short hair, thin; a gray tee under an open black sweater
+    { name: "Landon", skin: "#f0c8a8", hair: "#7b5236", style: "crew", thin: true, outfit: "layers", shirt: "#24202c", trim: "#b8bec8",
+      blurb: ["Gray tee,", "black sweater!"] },
+    // Aiden's skin tone, a touch lighter; black hair combed over to the side; a blue shirt under an open gray sweater
+    { name: "Lucas", skin: "#d39a6e", hair: "#141014", tones: BLACK_HAIR, style: "combover", outfit: "layers", shirt: "#8f96a3", trim: "#4f8fe0",
+      blurb: ["Blue shirt,", "gray sweater!"] },
   ];
   // Outfits that show instead of the apron bib (rows 8-11 of the body)
   const OUTFITS = {
@@ -190,6 +194,9 @@
     babyTee: ["..YYTYYTYY..", ".SYTTTTTTYX.", ".S.TTTTTT.S.", "...TTTTTT..."],         // maroon sleeves and collar, a watch
     gym: ["..TTTTTTTT..", ".STTTTTTTTS.", ".S.TTYYTT.S.", "...TTTTTT..."],              // gym tee with a little logo
     sweater: ["..TTTTTTTT..", ".TTTTTTTTTT.", ".S.TTTTTT.S.", "...TTTTTT..."],          // sweatshirt: sleeves to the wrists
+    tee: ["..TTTTTTTT..", ".STTTTTTTTS.", ".S.TTTTTT.S.", "...TTTTTT..."],              // a plain tee (art goes on top)
+    ringer: ["..YTTYYTTY..", ".SYTTTTTTYS.", ".S.TTTTTT.S.", "...TTTTTT..."],           // baby tee, contrast sleeves and collar
+    layers: ["..TTYYYYTT..", ".TTTYYYYTTT.", ".S.TYYYYT.S.", "...TYYYYT..."],           // open sweater over a tee
   };
   function kidGrid(k) {
     const style = k.style;
@@ -199,9 +206,8 @@
     if (outfit === "anime") g[7] = [..."...TSSSST..."];                                     // the hood around the neck
     if (outfit === "gym") g[14] = [..."...SS..SS..."];                                      // shorts: bare knees below
     if (k.skirt) g[12] = [..."..KKKKKKKK.."];                                               // a skirt over leggings
-    if (k.thin) {                                                                           // narrower shoulders and body
-      g[8] = [..."...TAAAAT..."]; g[9] = [..."..STAAAATS.."]; g[10] = [..."..STAGAATS.."]; g[11] = [..."...TAAAAT..."];
-    }
+    if (k.shorts) g[14] = [..."...SS..SS..."];                                              // shorts: bare knees below
+    const bodyRow = g[8];                                                                   // where the shoulders start
     const set = (x, y, c) => { if (y >= 0 && y < g.length && x >= 0 && x < 12) g[y][x] = c; };
     if (style === "long") { for (let y = 3; y <= 9; y++) { set(1, y, "H"); set(10, y, "H"); } set(2, 3, "H"); set(9, 3, "H"); }
     else if (style === "pony") { set(10, 2, "H"); for (let y = 2; y <= 7; y++) set(11, y, "H"); set(10, 3, "R"); }
@@ -228,7 +234,32 @@
     if (k.tall) { g.splice(11, 0, [...g[11]]); g.splice(14, 0, [...g[14]]); }
     // Half-up ponytail on top, held with a claw clip (added last: it sits above the head)
     if (style === "bobknot") { g.unshift([..."....HHH....."]); g[1][4] = "Q"; g[1][7] = "Q"; }
-    return g.map((r) => r.join(""));
+    const rows = g.map((r) => r.join(""));
+    rows.body = g.indexOf(bodyRow);
+    return rows;
+  }
+  // Slimmer kids: take one fine column out of each side of the body, from the shoulders down
+  // (baggy pants stay wide)
+  function slim(g, from, k) {
+    for (let y = from; y < g.length; y++) {
+      if (k.baggy && g[y].some((c) => c === "P" || c === "p")) continue;
+      const r = [...g[y]];
+      r.splice(16, 1); r.splice(7, 1);
+      g[y] = [".", ...r, "."];
+    }
+  }
+  // Pictures printed on shirts, painted at the fine level over the chest (from the shoulder row)
+  const SHIRT_ART = {
+    // A white kitty with a pink bow on one ear
+    kitty: { x: 8, rows: ["C.....RNR", "CC...CR.R", "CCCCCCC..", "CqCCCqC..", "JCCNCCJ..", ".CCCCC..."] },
+    // Band name across the top, a lightning bolt underneath
+    band: { x: 8, rows: ["W.WW.WWW", "........", "....WW..", "...WW...", "..WWWW..", "...WW...", "..WW...."] },
+  };
+  function shirtArt(g, k, body) {
+    const art = SHIRT_ART[k.art];
+    if (!art) return;
+    const { set } = painter(g);
+    art.rows.forEach((row, n) => [...row].forEach((c, i) => { if (c !== ".") set(art.x + i, body + 1 + n, c); }));
   }
   // Double the resolution: each pixel becomes 2x2, so detail can be painted on top
   const upscale = (rows) => rows.flatMap((r) => { const w = [...r].map((c) => c + c).join(""); return [w, w]; });
@@ -306,7 +337,7 @@
     if (eyes.length === 2) {
       const [[lx], [rx]] = eyes, cy = eyeY + 3;
       for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if (src[y][x] === "F") set(x, y, "S");
-      if (k.freckles) [[lx - 2, cy - 1], [lx, cy], [rx + 1, cy], [rx + 3, cy - 1]].forEach(([x, y]) => set(x, y, "F"));
+      if (k.freckles) [[lx - 2, cy], [lx - 1, cy + 1], [rx + 3, cy], [rx + 2, cy + 1]].forEach(([x, y]) => set(x, y, "F"));
       else [lx - 2, lx - 1, rx + 2, rx + 3].forEach((x) => set(x, cy, "b"));
     }
   }
@@ -317,6 +348,11 @@
       const hem = g.reduce((last, r, y) => (r.includes("K") ? y : last), -1);
       g.forEach((r, y) => r.forEach((c, x) => { if (c === "K" && r[x + 1] !== "K") set(x, y, "f"); }));
       g[hem].forEach((c, x) => { if ((c === "K" || c === "f") && x % 2) set(x, hem, "e"); });   // frayed hem
+    }
+    if (k.baggy) {                                                                          // loose legs, a little flare at the ankle
+      const y = g.findIndex((r) => r.some((c) => "Bwz".includes(c))) - 1;
+      const xs = g[y].map((c, x) => ("Pp".includes(c) ? x : -1)).filter((x) => x >= 0);
+      set(Math.min(...xs) - 1, y, "P"); set(Math.max(...xs) + 1, y, "p");
     }
     if (k.outfit !== "gym" && !k.jeans) return;
     const shoeY = g.findIndex((r) => r.some((c) => "Bwz".includes(c)));
@@ -329,6 +365,29 @@
       g.forEach((r, y) => { if (y < shoeY - 1 && legs[y].length > 4) { set(9, y, "d"); set(14, y, "d"); } });
     }
   }
+  // Cuter faces: each eye grows from 2x2 to 2x3, dark on top with a sparkle and a lighter iris
+  // underneath; the girls get a little lash flick at the outer corner
+  function cuteEyes(g, k) {
+    const { set } = painter(g);
+    const eyes = [];
+    g.forEach((r, y) => r.forEach((c, x) => { if (c === "E" && r[x - 1] !== "E" && (y === 0 || g[y - 1][x] !== "E")) eyes.push([x, y]); }));
+    eyes.slice(0, 2).forEach(([x, y], n) => {
+      set(x + 1, y, "W"); set(x, y + 1, "E"); set(x + 1, y + 1, "E");
+      set(x, y + 2, "v"); set(x + 1, y + 2, "v");
+      const lash = n === 0 ? x - 1 : x + 2;
+      if (k.lashes && !k.glasses && "Ssb4".includes(g[y][lash])) set(lash, y, "E");
+    });
+  }
+  // A little sprout stitched on the apron bib, above the pocket
+  function apronSprout(g) {
+    const { set } = painter(g);
+    const pocket = g.findIndex((r) => r.includes("G"));
+    if (pocket < 0) return;
+    const px = g[pocket].indexOf("G");
+    [[px, pocket - 3], [px + 3, pocket - 3], [px + 1, pocket - 2], [px + 2, pocket - 2], [px + 1, pocket - 1]].forEach(([x, y]) => {
+      if (g[y] && "Aa".includes(g[y][x])) set(x, y, "n");
+    });
+  }
   // Glasses: a frame around each eye with a clear lens on the outer side, a bridge, arms to the ears
   function glasses(g) {
     const { set } = painter(g);
@@ -336,8 +395,8 @@
     g.forEach((r, y) => r.forEach((c, x) => { if (c === "E" && r[x - 1] !== "E" && (y === 0 || g[y - 1][x] !== "E")) eyes.push([x, y]); }));
     eyes.forEach(([x, y], n) => {
       const a = n === 0 ? x - 2 : x - 1, b = a + 4;
-      for (let i = a; i <= b; i++) { set(i, y - 1, "q"); set(i, y + 2, "q"); }
-      for (let j = y; j <= y + 1; j++) { set(a, j, "q"); set(b, j, "q"); set(n === 0 ? a + 1 : b - 1, j, "L"); }
+      for (let i = a; i <= b; i++) { set(i, y - 1, "q"); set(i, y + 3, "q"); }
+      for (let j = y; j <= y + 2; j++) { set(a, j, "q"); set(b, j, "q"); set(n === 0 ? a + 1 : b - 1, j, "L"); }
       if (n === 0) for (let i = b + 1; i < eyes[1][0] - 1; i++) set(i, y, "q");   // bridge
       const arm = n === 0 ? a - 1 : b + 1;
       if ("Ssb".includes(g[y][arm])) set(arm, y, "q");
@@ -431,18 +490,19 @@
       // Brows, eyes with a shine, freckles or blush, nose, smile
       fill(9, 7, 2, 1, "2"); fill(13, 7, 2, 1, "2");
       fill(9, 8, 2, 2, "E"); fill(13, 8, 2, 2, "E"); set(10, 8, "W"); set(14, 8, "W");
-      if (k.freckles) [[8, 10], [9, 11], [15, 10], [14, 11]].forEach(([x, y]) => set(x, y, "F"));
+      if (k.freckles) [[7, 11], [8, 12], [16, 11], [15, 12]].forEach(([x, y]) => set(x, y, "F"));   // out on the cheeks, clear of eyes and mouth
       else [8, 9, 14, 15].forEach((x) => set(x, 11, "b"));
       set(11, 11, "4"); set(12, 11, "4");
       set(11, 13, "M"); set(12, 13, "M");
       if (k.hoops) { set(7, 14, "O"); set(7, 15, "O"); set(16, 14, "O"); set(16, 15, "O"); }
       // Baby tee: white, round maroon collar, maroon sleeves out past her hair; a watch
       if (k.outfit === "babyTee") {
-        fill(5, 16, 14, waist - 15, "T");
+        const o = k.thin ? 1 : 0;                                            // slimmer: sleeves and arms sit one in
+        fill(5 + o, 16, 14 - 2 * o, waist - 15, "T");
         set(9, 15, "Y"); set(14, 15, "Y"); fill(9, 16, 6, 1, "Y");
-        fill(2, 16, 3, 4, "Y"); fill(19, 16, 3, 4, "Y");
-        fill(2, 20, 2, 3, "S"); fill(20, 20, 2, 3, "S"); set(3, 20, "4"); set(20, 20, "4");
-        fill(20, 21, 2, 1, "X");
+        fill(2 + o, 16, 3, 4, "Y"); fill(19 - o, 16, 3, 4, "Y");
+        fill(2 + o, 20, 2, 3, "S"); fill(20 - o, 20, 2, 3, "S"); set(3 + o, 20, "4"); set(20 - o, 20, "4");
+        fill(20 - o, 21, 2, 1, "X");
       }
       // Two long columns of hair down to the waist
       for (let y = 5; y <= end; y++) {
@@ -460,8 +520,9 @@
       H: s.hair, S: s.skin, E: s.eye || "#2b1a52", M: "#e8607a", T: s.shirt, A: "#5aa83c", G: "#3f8f2e",
       P: s.pants || "#3d5aa8", B: s.shoes || (s.converse ? "#2b2433" : "#5a3a26"), U: s.hat || "#e6c35c", V: s.hat ? shade(s.hat) : "#c9a23c",
       R: s.ribbon || s.band || "#ff8cc6", C: s.cat || "#fff8e4", I: "#5aa8f0", N: "#ff8cc6",
-      F: "#b5734a", O: "#ffd23f", Q: "#c98a4a", W: "#ffffff", J: "#ff8cc6", Y: s.trim || "#7a1f3a", X: "#2b1a52",
+      F: mix(s.skin, "#a0603a", 0.55), O: "#ffd23f", Q: "#c98a4a", W: "#ffffff", J: "#ff8cc6", Y: s.trim || "#7a1f3a", X: "#2b1a52",
       1: tones[0], 2: tones[1], 3: tones[2], 4: s.skinShade || skinShade, q: "#2b1a52", L: "#eaf4ff",
+      v: mix(s.eye || "#2b1a52", "#ffffff", 0.35), n: "#c8f0a0",
       // Detail shades (see refine)
       k: shade(s.hair, 0.85), h: shade(s.hair, 0.7), l: mix(s.hair, "#d8cce8", 0.3),
       s: skinShade, b: mix(s.skin, "#ff6f8f", 0.3),
@@ -469,11 +530,16 @@
       K: s.skirt || "#7d98bd", e: mix(s.skirt || "#7d98bd", "#ffffff", 0.5), f: shade(s.skirt || "#7d98bd", 0.82),
       w: mix(s.shoes || (s.converse ? "#2b2433" : "#5a3a26"), "#ffffff", 0.3), d: mix(s.pants || "#3d5aa8", "#ffffff", 0.35), z: shade("#5a3a26", 0.7),
     };
-    const fine = upscale(kidGrid(s)).map((r) => [...r]);
+    const coarse = kidGrid(s);
+    const fine = upscale(coarse).map((r) => [...r]);
     refine(fine, s);
+    if (s.thin) slim(fine, coarse.body * 2, s);
     if (DETAIL[s.style]) DETAIL[s.style](fine, s);
+    cuteEyes(fine, s);
     if (s.glasses) glasses(fine);
     clothesDetail(fine, s);
+    shirtArt(fine, s, coarse.body * 2);
+    apronSprout(fine);
     return { name: s.name || `Player ${i + 1}`, blurb: s.blurb, img: bakeGrid(fine.map((r) => r.join("")), colors) };
   });
   function shade(hex, by = 0.75) {
