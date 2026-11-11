@@ -6,5 +6,6 @@ exclude:
   - cards
   - images/yvy-feelings
   - posters
+  - proxies
   - society-api
   - tools

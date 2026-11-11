@@ -82,6 +82,21 @@ window.YVY_PLANTS = {
 
     coloring: { page: "coloring.html", pdf: "pumpkin-coloring-page.pdf" },
 
+    // A trading card kids print, cut out and fold (card.html). The creature is an original character
+    // (art made with AI for YvyGrounds), not anyone's Pokémon. Balanced like the Gardenbound crop
+    // cards (cards/cards-data.js): hp + damage + 10 per move with an effect = 110.
+    card: {
+      page: "card.html", pdf: "pumpkling-card.pdf",
+      name: "Pumpkling", art: "../art/pumpkling.jpg", artHd: "../art/pumpkling-hd.jpg", hp: 70, type: "Vine", kind: "Pumpkin sprout",
+      moves: [
+        { name: "Squash Bee Buddy", dmg: 0, effect: true, text: "At sunrise, a squash bee visits its flower. Heal 20 HP." },
+        { name: "Seed Scatter", dmg: 30, text: "Pops open and scatters hundreds of seeds everywhere!" },
+      ],
+      flavor: "Its flowers open at sunrise and close by lunchtime. Scientists say it's a fruit: a kind of berry!",
+      size: "Vine: up to 20 ft · Seeds: about 500",
+      weakness: "Powdery mildew", resist: "Hot summer days",
+    },
+
     // For the poster (posters/, kept off the site): the info box's four ruled lines, in order.
     // Lines 1–3 fit about 34 characters; line 4 is short (about 18), because the QR code sits beside it.
     poster: {

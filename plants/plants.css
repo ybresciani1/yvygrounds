@@ -157,3 +157,72 @@ main { max-width: 980px; margin: 0 auto; padding: 16px 16px 30px; }
   .cp main { max-width: none; padding: 0; }
   .cp-art { break-inside: avoid; }
 }
+
+/* ---------- the printable trading card (card.html): front | fold | back, sized in --u (1% of a card) ---------- */
+.pl-print-card { margin-top: 18px; padding-top: 18px; border-top: 3px dashed var(--ink); }
+.pl-print-card h3 { margin: 0 0 6px; font: 700 20px var(--f-round); }
+.pl-print-card .pl-print-thumb img { display: block; width: 100%; border-radius: 6px; }
+.gc-how { margin: 0 0 14px; font: 600 16px var(--f-round); }
+.gc-sheet { display: grid; justify-content: center; gap: 22px; }
+/* front and back meet edge to edge (fold right on the seam), with the dashed fold line drawn over it */
+.gc-pair { position: relative; display: grid; grid-template-columns: min(300px, 46vw) min(300px, 46vw); }
+.gc-slot { container-type: inline-size; --u: 1cqw; }
+.gc-fold { position: absolute; z-index: 1; top: -8px; bottom: -8px; left: 50%; border-left: 2px dashed #8a7cae; transform: translateX(-1px); }
+.gc {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 63 / 88;
+  overflow: hidden;
+  padding: calc(var(--u) * 2.4) calc(var(--u) * 3) calc(var(--u) * 2.6);
+  border: calc(var(--u) * 2.2) solid var(--green);
+  border-radius: calc(var(--u) * 4);
+  background: linear-gradient(160deg, #f7fdeb, #d9f0c2);
+  color: var(--ink);
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+.gc-banner { margin: 0 0 calc(var(--u) * 1.2); text-align: center; font: calc(var(--u) * 2.4)/1.5 var(--f-pixel); color: #3f7a1f; }
+.gc-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: calc(var(--u) * 1.2); }
+.gc-name { font: 700 calc(var(--u) * 7)/1 var(--f-round); }
+.gc-hp { font: 700 calc(var(--u) * 6)/1 var(--f-round); color: #e0457b; }
+.gc-hp small { font: calc(var(--u) * 2.4) var(--f-pixel); margin-right: calc(var(--u) * .8); }
+.gc-art { flex: none; aspect-ratio: 16 / 10; border: calc(var(--u) * 1.1) solid var(--green-dark); overflow: hidden; background: #dff3ff; }
+.gc-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.gc-type { margin: calc(var(--u) * 1.6) auto calc(var(--u) * 1); padding: calc(var(--u) * .4) calc(var(--u) * 2); background: #fff; border: calc(var(--u) * .6) solid var(--green-dark); font: italic calc(var(--u) * 2.8)/1.3 Verdana, sans-serif; text-align: center; }
+.gc-moves { flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; list-style: none; margin: 0; padding: 0; }
+.gc-moves li { display: grid; grid-template-columns: 1fr auto; padding: calc(var(--u) * 1) calc(var(--u) * 1.2); border-bottom: calc(var(--u) * .6) dotted rgba(63, 143, 46, .5); }
+.gc-moves b { font: 700 calc(var(--u) * 4.4)/1.2 var(--f-round); }
+.gc-moves b::before { content: "▶ "; color: #e0457b; font-size: calc(var(--u) * 3); }
+.gc-dmg { font: 700 calc(var(--u) * 5)/1.1 var(--f-round); color: #e0457b; }
+.gc-text { grid-column: 1 / -1; font-size: calc(var(--u) * 3.3); line-height: 1.3; }
+.gc-flavor { margin: calc(var(--u) * 1.6) 0; padding: calc(var(--u) * 1.2) calc(var(--u) * 2); background: rgba(255, 255, 255, .7); border-radius: calc(var(--u) * 2); font: italic calc(var(--u) * 3)/1.3 var(--f-round); }
+.gc-foot { display: grid; grid-template-columns: 1fr auto; gap: calc(var(--u) * .3) calc(var(--u) * 2); font-size: calc(var(--u) * 2.8); line-height: 1.3; }
+.gc-size { font-size: calc(var(--u) * 2.5); }
+.gc-num { text-align: right; font: calc(var(--u) * 2) var(--f-pixel); align-self: end; }
+/* the back (the same one as the YvyGrounds trading cards) */
+.gc-back {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-color: var(--yellow);
+  background: radial-gradient(circle at 50% 46%, transparent 0 calc(var(--u) * 30), rgba(43, 26, 82, .35) calc(var(--u) * 80)),
+    repeating-conic-gradient(from 0deg at 50% 46%, #a98fe6 0 7.5deg, #c9b8f2 7.5deg 15deg);
+}
+.gb-oval { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: calc(var(--u) * 1.6); width: calc(var(--u) * 74); height: calc(var(--u) * 92); margin-top: calc(var(--u) * -6); border-radius: 50%; background: var(--cream); border: calc(var(--u) * 1.4) dashed var(--pink); box-shadow: 0 0 0 calc(var(--u) * 1.4) #fff, 0 0 0 calc(var(--u) * 2.6) var(--ink); }
+.gb-chicken svg { display: block; width: calc(var(--u) * 22); height: auto; }
+.gb-logo { font: 400 calc(var(--u) * 12)/1 var(--f-logo); white-space: nowrap; }
+.gb-ltr { display: inline-block; color: var(--c); -webkit-text-stroke: calc(var(--u) * 1.2) var(--ink); paint-order: stroke fill; text-shadow: calc(var(--u) * .8) calc(var(--u) * .8) 0 #fff, calc(var(--u) * 1.6) calc(var(--u) * 1.8) 0 var(--ink); transform: rotate(var(--r)); }
+.gb-sub { margin-top: calc(var(--u) * 1.4); padding: calc(var(--u) * 1) calc(var(--u) * 2.6); background: var(--yellow); border: calc(var(--u) * .8) solid var(--ink); border-radius: 99px; font: calc(var(--u) * 2.5)/1.5 var(--f-pixel); transform: rotate(-3deg); }
+.gb-collect { position: absolute; bottom: calc(var(--u) * 5); left: 0; right: 0; margin: 0; text-align: center; font: 400 calc(var(--u) * 6)/1 var(--f-hand); color: #fff; text-shadow: calc(var(--u) * .6) calc(var(--u) * .6) 0 var(--ink); }
+.gb-corner { position: absolute; line-height: 0; }
+.gb-corner svg { width: calc(var(--u) * 9); height: auto; }
+.gb-tl { top: calc(var(--u) * 3.5); left: calc(var(--u) * 3.5); } .gb-tr { top: calc(var(--u) * 3.5); right: calc(var(--u) * 3.5); }
+.gb-bl { bottom: calc(var(--u) * 3.5); left: calc(var(--u) * 3.5); } .gb-br { bottom: calc(var(--u) * 3.5); right: calc(var(--u) * 3.5); }
+@media print {
+  /* real card size: 63 × 88 mm each, side by side, two pairs to a page */
+  .gc-slot { --u: .63mm; width: 63mm; }
+  .gc-pair { grid-template-columns: 63mm 63mm; break-inside: avoid; }
+  .gc-fold { top: -3mm; bottom: -3mm; }
+  .gc-sheet { gap: 14mm; }
+}

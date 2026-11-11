@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Proxy card face</title>
+  <!-- One card face, print-shop ready: proxies/?plant=pumpkin&side=front|back (&guides=1 shows the cut and
+       safe lines). 822 × 1122 CSS px = poker size (2.5 × 3.5 in) at 300 dpi plus 0.12 in of bleed on every
+       side, the size MakePlayingCards asks for. Made into PNGs by headless Chrome (see proxies/README.md).
+       The base points into plants/ so the card's own paths (../art/...) work unchanged. -->
+  <base href="../plants/pumpkin/">
+  <link rel="stylesheet" href="../../css/fonts.css">
+  <link rel="stylesheet" href="../plants.css">
+  <style>
+    html, body { margin: 0; width: 822px; height: 1122px; overflow: hidden; background: #fff; }
+    main { padding: 0 !important; max-width: none !important; }
+    /* the frame color fills the bleed; the card (722 × 1008) sits in the middle, so the cut line
+       (36 px in) falls inside the frame and the text stays about 30 px (2.5 mm) inside it */
+    .gc-proxy { --u: 7.22px; position: relative; display: grid; place-items: center; width: 822px; height: 1122px; background: var(--green); }
+    .gc-proxy-back { background: var(--yellow); }
+    .gc-proxy .gc { width: 722px; }
+    .guides .gc-proxy::before, .guides .gc-proxy::after { content: ""; position: absolute; z-index: 9; pointer-events: none; }
+    .guides .gc-proxy::before { inset: 36px; border: 2px solid red; }          /* cut line */
+    .guides .gc-proxy::after { inset: 66px; border: 2px dashed #0a7cff; }      /* safe area */
+  </style>
+</head>
+<body data-page="proxy">
+  <main id="plant"></main>
+  <script>
+    const q = new URLSearchParams(location.search);
+    document.body.dataset.plant = q.get("plant") || "pumpkin";
+    document.body.dataset.side = q.get("side") || "front";
+    if (q.get("guides")) document.documentElement.classList.add("guides");
+  </script>
+  <script src="../../js/pixels.js"></script>
+  <script src="../plants-data.js"></script>
+  <script src="../plants.js"></script>
+</body>
+</html>
