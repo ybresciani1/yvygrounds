@@ -23,6 +23,7 @@
   const canvas = document.getElementById("game");
   const ctx = canvas.getContext("2d");
   const muteBtn = document.getElementById("mute");
+  const dropBtn = document.getElementById("dropBtn");      // empty hands, for touch screens (same as X)
   const titleMenu = document.getElementById("titleMenu");
   const selectMenu = document.getElementById("select");
   const daysMenu = document.getElementById("days");
@@ -1218,6 +1219,7 @@
 
   /* ---------- Input ---------- */
   function syncMenus() {
+    dropBtn.hidden = state !== "play";
     titleMenu.hidden = state !== "title";
     selectMenu.hidden = state !== "select";
     daysMenu.hidden = state !== "days";
@@ -1259,6 +1261,7 @@
     if (t) queueUp(t);
   });
 
+  dropBtn.addEventListener("click", () => { emptyHands(); canvas.focus({ preventScroll: true }); });
   document.getElementById("startBtn").addEventListener("click", () => { audio(); showSelect(); });
   selectMenu.addEventListener("click", (e) => {
     const b = e.target.closest("button[data-pick]");
@@ -1312,6 +1315,10 @@
     const dt = Math.min(50, now - last);
     last = now;
     if (state !== "paused") update(dt);
+    if (state === "play") {                                   // the empty-hands button only works with tools in hand
+      const tools = kid.hands.some((h) => !CROPS.includes(h));
+      if (dropBtn.disabled === tools) dropBtn.disabled = !tools;
+    }
     draw(now);
     requestAnimationFrame(frame);
   }

@@ -15,6 +15,13 @@
     #select button { font-size: 1.4cqw; padding: 1.1cqw 1.4cqw; }
     #select button[aria-pressed="true"] { background: #fff8e4; outline: .6cqw dashed #3f8f2e; outline-offset: .3cqw; }
     #days button[disabled] { opacity: .45; cursor: not-allowed; filter: grayscale(.6); }
+    /* Empty hands (same as X): sits next to the mute button while playing */
+    .drop { position: absolute; bottom: 8px; right: 54px; height: 38px; padding: 0 12px; border: 3px solid #2b1a52; border-radius: 19px;
+      background: #ffd23f; color: #2b1a52; font: 9px/1 "Press Start 2P", monospace; box-shadow: 0 3px 0 #2b1a52; cursor: pointer; }
+    .drop[hidden] { display: none; }
+    .drop:disabled { opacity: .55; cursor: default; }
+    .drop:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 1px 0 #2b1a52; }
+    .drop:focus-visible { outline: 3px dashed #ff8a1e; outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -56,11 +63,12 @@
       <button type="button" id="retryBtn" class="alt2">Try again</button>
       <button type="button" id="menuBtn" class="alt">Days</button>
     </div>
+    <button class="drop" id="dropBtn" type="button" hidden>✋ Empty hands</button>
     <button class="mute" id="mute" type="button" aria-pressed="false" aria-label="Mute sound">🔊</button>
   </div>
 
-  <p class="arcade-help">The garden beds need help! Tap a tool in the shed (🌱 seeds, 💧 water, 🌿 weeding, 🪱 compost), then tap the bed that's asking for it. Tap a ripe bed to pick the harvest 🧺 and bring it to the farm stand. You can hold two things at once, and you can line up several taps. Same job in a row = combo! Keys: <kbd>1</kbd>–<kbd>4</kbd> tools, <kbd>5</kbd> farm stand, <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> / <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> beds, <kbd>X</kbd> empties your hands. <kbd>P</kbd> pauses, <kbd>M</kbd> mutes.</p>
+  <p class="arcade-help">The garden beds need help! Tap a tool in the shed (🌱 seeds, 💧 water, 🌿 weeding, 🪱 compost), then tap the bed that's asking for it. Tap a ripe bed to pick the harvest 🧺 and bring it to the farm stand. You can hold two things at once, and you can line up several taps. Same job in a row = combo! Keys: <kbd>1</kbd>–<kbd>4</kbd> tools, <kbd>5</kbd> farm stand, <kbd>Q</kbd> <kbd>W</kbd> <kbd>E</kbd> / <kbd>A</kbd> <kbd>S</kbd> <kbd>D</kbd> beds, <kbd>X</kbd> (or the ✋ Empty hands button) puts your tools back. <kbd>P</kbd> pauses, <kbd>M</kbd> mutes.</p>
 
-  <script src="game.js?v=2026-11-09d"></script>
+  <script src="game.js?v=2026-11-11"></script>
 </body>
 </html>
