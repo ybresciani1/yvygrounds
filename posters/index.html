@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Garden Poster</title>
+  <link rel="stylesheet" href="../css/fonts.css?v=2026-11-11a">
+  <style>
+    /* Yvy's "Who's That…?" garden posters (kept off the site, see _config.yml). The background is Yvy's
+       blank template (art/template-blank.jpg); the plant's details come from plants/plants-data.js → poster,
+       placed over the template's blanks. Everything is in --u (1% of the poster's width), so it prints true. */
+    :root { --ink: #2b1a52; --brown: #3d2a17; --u: 1cqw; --f-logo: "Chewy", cursive; --f-round: "Fredoka", sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 16px; background: #c9b8f2; color: var(--ink); font: 16px/1.4 var(--f-round); }
+    .tools { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px 12px; max-width: 760px; margin: 0 auto 14px; }
+    .tools button, .tools select { padding: 6px 14px; border: 3px solid var(--ink); border-radius: 12px; background: #fff; color: var(--ink); font: 600 15px var(--f-round); box-shadow: 0 3px 0 var(--ink); cursor: pointer; }
+    .tools button { background: #ffb53d; }
+    .tools p { flex-basis: 100%; margin: 0; text-align: center; font-size: 14px; }
+    .wrap { max-width: 760px; margin: 0 auto; container-type: inline-size; }
+    .poster { position: relative; aspect-ratio: 981 / 1078; }
+    .poster > img { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .poster > * { position: absolute; }
+    /* positions are the template's pixels (981 × 1078) as percentages */
+    .p-name { left: 49%; width: 46%; top: 22.3%; height: 8.6%; display: grid; place-items: center; font: 400 calc(var(--u) * 6.6)/1 var(--f-logo); color: #8a3a0f; letter-spacing: calc(var(--u) * .3); text-shadow: 0 calc(var(--u) * .25) 0 #fff3cf; white-space: nowrap; }
+    .p-num { left: 80%; top: 32%; font: 600 calc(var(--u) * 2.4)/1 var(--f-round); color: var(--brown); }
+    .p-field { font: 600 calc(var(--u) * 2.3)/1 var(--f-round); color: var(--brown); white-space: nowrap; }
+    .p-sci { left: 74.6%; top: 37.6%; font-style: italic; }
+    .p-type { left: 70.6%; top: 41.8%; }
+    .p-season { left: 66.8%; top: 45.9%; }
+    .p-info { font: 500 calc(var(--u) * 1.95)/1 var(--f-round); color: var(--brown); white-space: nowrap; }
+    .p-l1 { left: 53.8%; top: 58.5%; } .p-l2 { left: 53.8%; top: 61.6%; }
+    .p-l3 { left: 53.8%; top: 64.8%; } .p-l4 { left: 53.8%; top: 68.9%; }
+    .p-qr { left: 72.9%; top: 70.6%; width: 14.6%; aspect-ratio: 1; background: #fff; border-radius: calc(var(--u) * 1); padding: calc(var(--u) * .4); box-shadow: 0 0 0 calc(var(--u) * .35) #fff; }
+    .p-qr img { display: block; width: 100%; height: 100%; }
+    @media print {
+      @page { size: letter portrait; margin: 10mm; }
+      :root { --u: 1.958mm; } /* 195.8 mm wide: fits a letter page, and the card spot holds a real 63 × 88 mm card */
+      body { padding: 0; background: #fff; }
+      .tools { display: none; }
+      .wrap { width: 195.8mm; max-width: none; }
+      .poster { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <div class="tools">
+    <label>Plant <select id="pick"></select></label>
+    <button type="button" id="print">🖨️ Print poster</button>
+    <p>Prints on letter paper, with room in the card spot for a real trading card. The QR code opens the plant's page on yvygrounds.com.</p>
+  </div>
+  <div class="wrap"><div class="poster" id="poster"></div></div>
+  <script src="../plants/plants-data.js?v=2026-11-11a"></script>
+  <script>
+    (function () {
+      const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+      const plants = window.YVY_PLANTS || {};
+      const pick = document.getElementById("pick");
+      pick.innerHTML = Object.entries(plants).map(([id, p]) => `<option value="${id}">${esc(p.name)}</option>`).join("");
+      const show = (id) => {
+        const P = plants[id];
+        if (!P) return;
+        pick.value = id;
+        document.title = `${P.name} poster`;
+        // poster: up to four ruled lines; the last one is short (the QR code sits beside it)
+        const lines = P.poster.lines;
+        document.getElementById("poster").innerHTML = `
+          <img src="art/template-blank.jpg" alt="">
+          <div class="p-name">${esc(P.name.toUpperCase())}</div>
+          <div class="p-num">${esc(P.number)}</div>
+          <div class="p-field p-sci">${esc(P.sci)}</div>
+          <div class="p-field p-type">${esc(P.type)}</div>
+          <div class="p-field p-season">${esc(P.season)}</div>
+          ${lines.map((l, i) => `<div class="p-info p-l${i + 1}">${esc(l)}</div>`).join("")}
+          <div class="p-qr"><img src="art/qr-${esc(id)}.svg" alt="QR code: yvygrounds.com/plants/${esc(id)}/"></div>`;
+      };
+      pick.addEventListener("change", () => { history.replaceState(null, "", `?p=${pick.value}`); show(pick.value); });
+      document.getElementById("print").addEventListener("click", () => window.print());
+      show(new URLSearchParams(location.search).get("p") || Object.keys(plants)[0]);
+    })();
+  </script>
+</body>
+</html>
