@@ -9,6 +9,15 @@
   const P = (window.YVY_PLANTS || {})[id];
   const root = $("#plant");
   if (!P || !root) return;
+  // Section titles, nav buttons and icons: plant wording unless the entry says otherwise (labels),
+  // so a critter (the garden spider) can use the same page: e.g. "How it builds a web" for pollination
+  const low = P.name.toLowerCase();
+  const L = {
+    parts: { icon: "🌱", nav: "Parts", title: `Parts of a ${P.name} Plant` },
+    pollination: { icon: "🐝", nav: "Pollination", title: `Pollination: how a flower becomes a ${low}` },
+    grow: { icon: "🪴", nav: "How to grow", title: `How to Grow a ${P.name}` },
+    ...Object.fromEntries(Object.entries(P.labels || {}).map(([k, v]) => [k, { icon: "", nav: "", title: "", ...v }])),
+  };
 
   // The diagram is one SVG (plants/art/): colored here, outlines on the coloring page
   const drawing = (box) => fetch(P.art).then((r) => r.ok ? r.text() : Promise.reject(r.status))
@@ -19,11 +28,11 @@
     document.title = `${P.name} Coloring Page`;
     root.innerHTML = `
       <header class="cp-head">
-        <h1>Parts of a ${esc(P.name)} Plant</h1>
+        <h1>${esc(L.parts.title)}</h1>
         <p class="cp-name">Name: <span></span></p>
       </header>
       <div class="cp-art" id="cpArt"></div>
-      <p class="cp-foot">Color every part! Can you find the tiny baby ${esc(P.name.toLowerCase())}? · yvygrounds.com/plants/${esc(id)}/</p>
+      <p class="cp-foot">${esc(P.coloring.foot || "Color every part!")} · yvygrounds.com/plants/${esc(id)}/</p>
       <p class="cp-tools no-print">
         <button type="button" class="pl-btn" id="cpPrint">🖨️ Print it</button>
         <a class="pl-btn" href="${esc(P.coloring.pdf)}" download>📥 Download the PDF</a>
@@ -45,7 +54,7 @@
       <article class="gc">
         <p class="gc-banner">★ Garden Card ★</p>
         <header class="gc-top"><span class="gc-name">${esc(K.name)}</span><span class="gc-hp"><small>HP</small>${esc(K.hp)}</span></header>
-        <div class="gc-art"><img src="${esc(page === "proxy" && K.artHd ? K.artHd : K.art)}" alt="${esc(K.name)}, a little pumpkin creature with a squash bee"></div>
+        <div class="gc-art"><img src="${esc(page === "proxy" && K.artHd ? K.artHd : K.art)}" alt="${esc(K.alt || K.name)}"></div>
         <p class="gc-type">${esc(K.type)} type · ${esc(K.kind)} · <i>${esc(P.sci)}</i></p>
         <ul class="gc-moves">${K.moves.map((m) => `
           <li><b>${esc(m.name)}</b><span class="gc-dmg">${m.dmg ? esc(m.dmg) : "★"}</span><span class="gc-text">${esc(m.text)}</span></li>`).join("")}
@@ -106,25 +115,25 @@
     </header>
 
     <nav class="pl-jump" aria-label="On this page">
-      <a href="#parts">🌱 Parts</a><a href="#pollination">🐝 Pollination</a><a href="#grow">🪴 How to grow</a>
+      <a href="#parts">${L.parts.icon} ${esc(L.parts.nav)}</a><a href="#pollination">${L.pollination.icon} ${esc(L.pollination.nav)}</a><a href="#grow">${L.grow.icon} ${esc(L.grow.nav)}</a>
       <a href="#activities">🎨 Activities</a><a href="#print">🖨️ Printables</a>
     </nav>
 
-    ${section("parts", "🌱", `Parts of a ${P.name} Plant`, `
+    ${section("parts", L.parts.icon, L.parts.title, `
       <div class="pl-art pp-colored" id="plArt"></div>
       ${tiles(P.parts)}`)}
 
-    ${section("pollination", "🐝", `Pollination: how a flower becomes a ${P.name.toLowerCase()}`, `
+    ${section("pollination", L.pollination.icon, L.pollination.title, `
       <ol class="pl-steps">${P.pollination.steps.map((s) => `
         <li><span class="pl-step-icon" aria-hidden="true">${s.icon}</span><p>${esc(s.text)}</p></li>`).join("")}
       </ol>
       <div class="pl-two">
-        <aside class="pl-note"><h3>🐝 ${esc(P.pollination.fact.title)}</h3><p>${esc(P.pollination.fact.text)}</p></aside>
-        <aside class="pl-note pl-note-try"><h3>🖌️ ${esc(P.pollination.hand.title)}</h3>
+        <aside class="pl-note"><h3>${P.pollination.fact.icon || "🐝"} ${esc(P.pollination.fact.title)}</h3><p>${esc(P.pollination.fact.text)}</p></aside>
+        <aside class="pl-note pl-note-try"><h3>${P.pollination.hand.icon || "🖌️"} ${esc(P.pollination.hand.title)}</h3>
           <ol>${P.pollination.hand.steps.map((s) => `<li>${esc(s)}</li>`).join("")}</ol></aside>
       </div>`)}
 
-    ${section("grow", "🪴", `How to Grow a ${P.name}`, tiles(P.grow))}
+    ${section("grow", L.grow.icon, L.grow.title, tiles(P.grow))}
 
     ${section("facts", "✨", "Fun Facts", `
       <ul class="pl-facts">${P.facts.map((f) => `<li>${esc(f)}</li>`).join("")}</ul>`)}
@@ -135,7 +144,7 @@
       <div class="pl-print">
         <a class="pl-print-thumb" href="${esc(P.coloring.page)}" aria-label="Open the coloring page"><span id="plThumb"></span></a>
         <div>
-          <p>Print the ${esc(P.name.toLowerCase())} plant and color in every part: roots, vine, leaves, tendrils, both kinds of flowers and the ${esc(P.name.toLowerCase())}!</p>
+          <p>${esc(P.coloring.text || `Print the ${low} and color in every part!`)}</p>
           <p class="pl-print-btns">
             <a class="pl-btn" href="${esc(P.coloring.pdf)}" download>📥 Download the PDF</a>
             <a class="pl-btn pl-btn-plain" href="${esc(P.coloring.page)}">🖨️ Open &amp; print</a>

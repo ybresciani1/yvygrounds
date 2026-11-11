@@ -50,7 +50,7 @@
     <p>Prints on letter paper, with room in the card spot for a real trading card. The QR code opens the plant's page on yvygrounds.com.</p>
   </div>
   <div class="wrap"><div class="poster" id="poster"></div></div>
-  <script src="../plants/plants-data.js?v=2026-11-11a"></script>
+  <script src="../plants/plants-data.js?v=2026-11-11f"></script>
   <script>
     (function () {
       const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -65,15 +65,31 @@
         // poster: up to four ruled lines; the last one is short (the QR code sits beside it)
         const lines = P.poster.lines;
         document.getElementById("poster").innerHTML = `
-          <img src="art/template-blank.jpg" alt="">
-          <div class="p-name">${esc(P.name.toUpperCase())}</div>
+          <img src="${esc(P.poster.template || "art/template-blank.jpg")}" alt="">
+          <div class="p-name" data-fit="35 6.6"><span>${esc(P.name.toUpperCase())}</span></div>
           <div class="p-num">${esc(P.number)}</div>
-          <div class="p-field p-sci">${esc(P.sci)}</div>
-          <div class="p-field p-type">${esc(P.type)}</div>
-          <div class="p-field p-season">${esc(P.season)}</div>
-          ${lines.map((l, i) => `<div class="p-info p-l${i + 1}">${esc(l)}</div>`).join("")}
+          <div class="p-field p-sci" data-fit="20 2.3">${esc(P.sci)}</div>
+          <div class="p-field p-type" data-fit="24 2.3">${esc(P.type)}</div>
+          <div class="p-field p-season" data-fit="27.5 2.3">${esc(P.season)}</div>
+          ${lines.map((l, i) => `<div class="p-info p-l${i + 1}" data-fit="${i === 3 ? 15.5 : 39} 1.95">${esc(l)}</div>`).join("")}
           <div class="p-qr"><img src="art/qr-${esc(id)}.svg" alt="QR code: yvygrounds.com/plants/${esc(id)}/"></div>`;
+        fitAll();
       };
+      // Long words shrink to fit their blank: data-fit="<max width, % of the poster> <font size, in --u>".
+      // The size is set in --u too, so the printed poster shrinks the same way.
+      const fitAll = () => document.fonts.ready.then(() => {
+        const poster = document.getElementById("poster");
+        poster.querySelectorAll("[data-fit]").forEach((el) => {
+          const [max, size] = el.dataset.fit.split(" ").map(Number);
+          const box = el.firstElementChild || el;
+          let k = 1;
+          el.style.fontSize = `calc(var(--u) * ${size})`;
+          while (k > 0.5 && box.scrollWidth > poster.clientWidth * max / 100) {
+            k -= 0.03;
+            el.style.fontSize = `calc(var(--u) * ${(size * k).toFixed(3)})`;
+          }
+        });
+      });
       pick.addEventListener("change", () => { history.replaceState(null, "", `?p=${pick.value}`); show(pick.value); });
       document.getElementById("print").addEventListener("click", () => window.print());
       show(new URLSearchParams(location.search).get("p") || Object.keys(plants)[0]);

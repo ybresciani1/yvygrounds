@@ -172,7 +172,7 @@ main { max-width: 980px; margin: 0 auto; padding: 16px 16px 30px; }
   position: relative;
   display: flex;
   flex-direction: column;
-  aspect-ratio: 63 / 88;
+  aspect-ratio: 2.5 / 3.5;
   overflow: hidden;
   padding: calc(var(--u) * 2.4) calc(var(--u) * 3) calc(var(--u) * 2.6);
   border: calc(var(--u) * 2.2) solid var(--green);
@@ -220,9 +220,46 @@ main { max-width: 980px; margin: 0 auto; padding: 16px 16px 30px; }
 .gb-tl { top: calc(var(--u) * 3.5); left: calc(var(--u) * 3.5); } .gb-tr { top: calc(var(--u) * 3.5); right: calc(var(--u) * 3.5); }
 .gb-bl { bottom: calc(var(--u) * 3.5); left: calc(var(--u) * 3.5); } .gb-br { bottom: calc(var(--u) * 3.5); right: calc(var(--u) * 3.5); }
 @media print {
-  /* real card size: 63 × 88 mm each, side by side, two pairs to a page */
-  .gc-slot { --u: .63mm; width: 63mm; }
-  .gc-pair { grid-template-columns: 63mm 63mm; break-inside: avoid; }
+  /* real card size: 2.5 × 3.5 in (63.5 × 88.9 mm) each, side by side, two pairs to a page */
+  .gc-slot { --u: .635mm; width: 63.5mm; }
+  .gc-pair { grid-template-columns: 63.5mm 63.5mm; break-inside: avoid; }
   .gc-fold { top: -3mm; bottom: -3mm; }
   .gc-sheet { gap: 14mm; }
 }
+
+/* garden spider drawing (plants/art/garden-spider.svg) */
+.pp-colored .c-silk { stroke: #8fa3bf; }
+.pp-colored .c-marigold { fill: #ff9f1c; }
+.pp-colored .c-marigold-mid { fill: #e86a10; }
+.pp-colored .c-sunpetal { fill: #ffd23f; }
+.pp-colored .c-suncenter { fill: #7a4b1e; }
+.pp-colored .c-leg { stroke: #9a6a3a; }
+.pp-colored .c-abdomen { fill: #c8955a; }
+.pp-colored .c-pattern { fill: #8d5a2b; }
+.pp-colored .c-spot { fill: #f6e3b8; }
+.pp-colored .c-spinneret { fill: #6e4520; }
+.pp-colored .c-ceph { fill: #a8743f; }
+.pp-colored .c-eye { fill: #1d1530; }
+.pp-colored .c-shine { fill: #fff; }
+.pp-colored .c-fang { fill: #5a3a1f; }
+.pp-colored .c-palp { stroke: #b07d48; }
+.pp-colored .c-fly { fill: #4a4f5c; }
+.pp-colored .c-flyeye { fill: #c2332b; }
+.pp-colored .c-wing { fill: #e6f2ff; }
+.pp .c-shine { fill: #fff; }
+/* (the garden spider is a silver argiope: silver body, brown and gold lobes, silver legs banded in black, zigzag silk) */
+.pp-colored .c-ceph { fill: #dfe3e9; }
+.pp-colored .c-abdomen { fill: #f4f5f7; }
+.pp-colored .c-pattern { fill: #3e2512; }
+.pp-colored .c-gold { fill: #d6a12a; }
+.pp-colored .c-stripe { stroke: #fff; }
+.pp-colored .c-spot { fill: #4a2c14; }
+.pp-colored .c-dimple { fill: #9aa1ad; }
+.pp-colored .c-leg { stroke: #c4c9d1; }
+.pp-colored .c-femur { stroke: #b8722e; }
+.pp-colored .c-legband { stroke: #24202a; }
+.pp-colored .c-palp { stroke: #9aa1ad; }
+.pp-colored .c-spinneret { fill: #24202a; }
+.pp-colored .c-zig { stroke: #ffffff; }
+.pp-colored .c-zig-out { stroke: #8fa3bf; }
+.pp-colored .c-hairline { stroke: #b9bfc8; }

@@ -80,14 +80,16 @@ window.YVY_PLANTS = {
       { icon: "🖍️", title: "Color the parts", text: "Print the coloring page and color every part of the pumpkin plant." },
     ],
 
-    coloring: { page: "coloring.html", pdf: "pumpkin-coloring-page.pdf" },
+    coloring: { page: "coloring.html", pdf: "pumpkin-coloring-page.pdf",
+      text: "Print the pumpkin plant and color in every part: roots, vine, leaves, tendrils, both kinds of flowers and the pumpkin!",
+      foot: "Color every part! Can you find the tiny baby pumpkin?" },
 
     // A trading card kids print, cut out and fold (card.html). The creature is an original character
     // (art made with AI for YvyGrounds), not anyone's Pokémon. Balanced like the Gardenbound crop
     // cards (cards/cards-data.js): hp + damage + 10 per move with an effect = 110.
     card: {
       page: "card.html", pdf: "pumpkling-card.pdf",
-      name: "Pumpkling", art: "../art/pumpkling.jpg", artHd: "../art/pumpkling-hd.jpg", hp: 70, type: "Vine", kind: "Pumpkin sprout",
+      name: "Pumpkling", art: "../art/pumpkling.jpg", artHd: "../art/pumpkling-hd.jpg", alt: "Pumpkling, a little pumpkin creature with a squash bee", hp: 70, type: "Vine", kind: "Pumpkin sprout",
       moves: [
         { name: "Squash Bee Buddy", dmg: 0, effect: true, text: "At sunrise, a squash bee visits its flower. Heal 20 HP." },
         { name: "Seed Scatter", dmg: 30, text: "Pops open and scatters hundreds of seeds everywhere!" },
@@ -105,6 +107,119 @@ window.YVY_PLANTS = {
         "on a long, sprawling vine.",
         "Squash bees love its flowers!",
         "Botanically a fruit!",
+      ],
+    },
+  },
+
+  // Not a plant, but a garden friend: the poster pairs it with a spider card. labels swaps the plant
+  // section titles (pollination → how it builds a web, grow → garden helper).
+  "garden-spider": {
+    name: "Garden Spider",
+    sci: "Argiope argentata",
+    family: "The silver argiope: a silvery orb weaver that lives in sunny San Diego gardens and canyons (orb-weaver family, Araneidae)",
+    number: "025",
+    type: "Not a plant: an arachnid!",
+    season: "Summer – Fall",
+    quick: [
+      ["🕷️", "8 legs", "an arachnid, not an insect"],
+      ["☀️", "Day shift", "sits in its web all day"],
+      ["✖️", "Zigzag X", "decorates its web with silk"],
+      ["🤲", "Gentle", "look, don't touch"],
+    ],
+    art: "../art/garden-spider.svg",
+    labels: {
+      parts: { icon: "🕷️", nav: "Parts", title: "Parts of a Garden Spider" },
+      pollination: { icon: "🕸️", nav: "Web building", title: "How a Spider Builds Its Web" },
+      grow: { icon: "🌻", nav: "Garden helper", title: "A Helper in the Garden" },
+    },
+
+    parts: [
+      { icon: "⚪", name: "Cephalothorax", text: "The front part of the body: head and chest joined together, covered in shiny silver hairs. The legs, eyes and mouth are all attached here." },
+      { icon: "🔶", name: "Abdomen", text: "Silvery white in front with tiny dimples. At the back it has bumpy lobes, dark brown speckled with gold, with white stripes between them. It holds the silk glands, the heart and, in a mother spider, her eggs." },
+      { icon: "🦵", name: "8 legs", text: "Silvery gray with black bands, and orange-brown near the body, with seven parts each and tiny hairs that feel the smallest wiggle in the web. It holds them together in pairs, making an X. Insects only have 6 legs!" },
+      { icon: "👀", name: "Eyes", text: "Most spiders have 8 eyes, but orb weavers can't see very well. They 'see' with their feet, by feeling the web shake." },
+      { icon: "🦷", name: "Fangs", text: "Two small fangs (chelicerae) for catching food. Garden spiders are gentle and almost never bite people." },
+      { icon: "✋", name: "Pedipalps", text: "Two short 'feelers' next to the mouth, for touching, tasting and holding food." },
+      { icon: "🧵", name: "Spinnerets", text: "Little nozzles at the tip of the abdomen that squeeze out silk. A spider can make several different kinds of silk." },
+      { icon: "🕸️", name: "The web", text: "Spokes run out from the middle like a bicycle wheel, and a sticky spiral goes round and round to catch flying insects." },
+      { icon: "〰️", name: "Zigzag silk", text: "Thick zigzag ribbons of white silk in an X (scientists call it a stabilimentum). Nobody knows for sure why: maybe to warn birds not to fly through, or to lure in insects." },
+    ],
+
+    // (shown in the "pollination" spot, titled by labels)
+    pollination: {
+      steps: [
+        { icon: "🌬️", text: "Often early in the morning, the spider lets a silk thread float away on the breeze until it sticks to something. That's the bridge line." },
+        { icon: "🔺", text: "It walks across and adds a Y shape and an outside frame, like the edges of a picture." },
+        { icon: "☸️", text: "It adds spokes from the middle out to the frame, like a bicycle wheel." },
+        { icon: "🌀", text: "It lays a temporary spiral to walk on, then replaces it with a sticky spiral, from the outside in." },
+        { icon: "〰️", text: "It weaves zigzag ribbons of silk across the middle in an X." },
+        { icon: "🪰", text: "Then it sits head-down in the center, legs lined up along the X, and feels for a bug shaking the web. Dinner!" },
+      ],
+      fact: { icon: "💪", title: "Super silk", text: "Ounce for ounce, spider silk is stronger than steel, and it stretches without snapping. When a web gets torn up, the spider eats the old silk to recycle it and spins a fresh web, in about an hour." },
+      hand: { icon: "🔍", title: "Web watch (look, don't touch!)", steps: [
+        "Go out early in the morning, when dew makes the webs sparkle.",
+        "No dew? Ask a grown-up to mist a web very gently with a spray bottle.",
+        "Count the spokes. Then count the rings of the spiral.",
+        "Can you find the zigzag X? Are the spider's legs lined up on it?",
+        "Draw the web. Don't break it: the spider worked hard!",
+      ] },
+    },
+
+    // (shown in the "grow" spot, titled by labels)
+    grow: [
+      { icon: "🍽️", title: "What it eats", text: "Flies, moths, grasshoppers, gnats and other flying and jumping insects, including pests that nibble our plants." },
+      { icon: "📍", title: "Where to look", text: "In sunny spots between shrubs, tall flowers and fences, about knee to waist high. Look for the white zigzag X first!" },
+      { icon: "☀️", title: "Day hunter", text: "It sits right in the middle of its web in broad daylight. Bother it and it may shake the web so hard it turns into a blur!" },
+      { icon: "🌱", title: "How to help spiders", text: "Don't spray bug poison, leave some tall plants and mulch, and walk around webs instead of through them." },
+      { icon: "🥚", title: "Life cycle", text: "The mother wraps her eggs in a silky sac and hangs it near her web. Tiny spiderlings hatch and float away on silk threads ('ballooning'). The boys stay tiny: only about a quarter of a mom's size." },
+      { icon: "🐞", title: "Spider or insect?", text: "Insects have 6 legs, 3 body parts, antennae and often wings. Spiders have 8 legs, 2 body parts, and no antennae or wings." },
+      { icon: "🤲", title: "Stay safe", text: "Garden spiders are shy and gentle. Look closely but don't touch, and tell a grown-up if anyone gets bitten." },
+    ],
+
+    facts: [
+      "Spiders aren't insects. They're arachnids, like scorpions and ticks.",
+      "Baby spiders can travel for miles by floating on silk threads in the wind. It's called ballooning.",
+      "The silver argiope lives from the southern United States all the way down to South America.",
+      "Spiders live on every continent except Antarctica.",
+      "A spider's legs are moved partly by pumping fluid into them, a bit like a water balloon.",
+    ],
+
+    activities: [
+      { icon: "💧", title: "Dewy web hunt", text: "On a misty morning, see how many webs you can find in the garden. Which plant has the most?" },
+      { icon: "✖️", title: "Find the X", text: "Look for webs with zigzag silk. Is it a full X, or just one or two arms? Draw what you see." },
+      { icon: "🐜", title: "Spider or insect?", text: "Find small critters in the garden (look, don't grab!) and sort them: 8 legs or 6 legs?" },
+      { icon: "🧶", title: "Be the spider", text: "With yarn, make a giant web between chairs: bridge line, frame, spokes, then the spiral." },
+      { icon: "✏️", title: "Draw a web", text: "Draw the spokes first, then the spiral from the outside in, just like a real spider." },
+      { icon: "🖍️", title: "Color the parts", text: "Print the coloring page and color every part of the spider and its web." },
+    ],
+
+    coloring: { page: "coloring.html", pdf: "garden-spider-coloring-page.pdf",
+      text: "Print the garden spider in its web and color every part: its silvery body, striped legs, eyes, fangs, the zigzag silk, and its lunch!",
+      foot: "Color every part! How many legs did you color?" },
+
+    // The printable fold-over card (card.html) and print-shop proxies (proxies/): Argie is an original
+    // character (art made with AI for YvyGrounds), not anyone's Pokémon. Balanced like Pumpkling: 110.
+    card: {
+      page: "card.html", pdf: "argie-card.pdf",
+      name: "Argie", art: "../art/argie.jpg", artHd: "../art/argie-hd.jpg", hp: 60, type: "Silk", kind: "Garden spider",
+      alt: "Argie, a little silver spider with striped legs in its zigzag web",
+      moves: [
+        { name: "Zigzag X", dmg: 0, effect: true, text: "Weaves zigzag silk across its web. Birds see it and swerve: the next attack misses." },
+        { name: "Web Shake", dmg: 40, text: "Shakes its web so fast it turns into a silvery blur!" },
+      ],
+      flavor: "It sits head-down in its web all day, holding its eight legs in pairs to make an X.",
+      size: "Legs out: about 2 in · Eyes: 8",
+      weakness: "Hungry birds", resist: "Wind (its web bends, not breaks)",
+    },
+
+    // For the poster (posters/): the template with a spider-web bottom, and the info box's four ruled lines
+    poster: {
+      template: "art/template-spider.jpg",
+      lines: [
+        "Sits head-down in its web all day,",
+        "legs held in pairs to make an X.",
+        "Weaves zigzag silk ribbons!",
+        "Not an insect!",
       ],
     },
   },
