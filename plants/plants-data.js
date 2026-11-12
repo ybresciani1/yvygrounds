@@ -223,4 +223,117 @@ window.YVY_PLANTS = {
       ],
     },
   },
+  honeybee: {
+    name: "Honeybee",
+    sci: "Apis mellifera",
+    family: "The western honeybee: a hard-working pollinator that lives in big families called colonies (bee family, Apidae)",
+    number: "026",
+    type: "Not a plant: an insect!",
+    season: "All year (busiest in spring)",
+    quick: [
+      ["🐝", "6 legs", "3 body parts: an insect"],
+      ["🌼", "Pollinator", "carries pollen flower to flower"],
+      ["💃", "Waggle dance", "tells friends where food is"],
+      ["🤲", "Gentle", "stay calm, don't swat"],
+    ],
+    art: "../art/honeybee.svg",
+    labels: {
+      parts: { icon: "🐝", nav: "Parts", title: "Parts of a Honeybee" },
+      pollination: { icon: "🌼", nav: "Pollination", title: "How Bees Pollinate Flowers" },
+      grow: { icon: "🍯", nav: "Bee garden", title: "Bees in the Garden" },
+    },
+
+    parts: [
+      { icon: "🟤", name: "Head", text: "Holds the eyes, antennae and mouth. A bee's brain is smaller than a sesame seed, but she can learn and remember which flowers have food." },
+      { icon: "📡", name: "Antennae", text: "Two bendy feelers with an elbow in the middle. Bees smell and touch with them, and can smell flowers from far away." },
+      { icon: "👀", name: "Compound eyes", text: "Two big eyes made of thousands of tiny lenses. Bees see ultraviolet light, which makes hidden patterns on flowers glow, but they can't see the color red." },
+      { icon: "⚫", name: "Simple eyes", text: "Three tiny eyes (ocelli) on top of the head. They sense light and help the bee fly straight." },
+      { icon: "🦷", name: "Mandibles", text: "Jaws for biting, carrying, and shaping wax to build honeycomb." },
+      { icon: "🥤", name: "Proboscis", text: "A long, hairy tongue that works like a straw to sip nectar and water. It folds up underneath when she's not using it." },
+      { icon: "🟡", name: "Thorax", text: "The fuzzy middle part, packed with flying muscles. All 6 legs and 4 wings are attached here. Pollen sticks to its fuzzy hairs." },
+      { icon: "🪽", name: "4 wings", text: "On each side, the front and back wings hook together with tiny hooks so they flap as one. They beat about 200 times a second: that's the buzz!" },
+      { icon: "🦵", name: "6 legs", text: "Six legs with little combs and brushes for cleaning pollen off her body. Bees can even taste with their feet!" },
+      { icon: "🟠", name: "Pollen baskets", text: "A smooth spot on each back leg, ringed with stiff hairs (the corbicula). She packs pollen there in two bright balls to carry home." },
+      { icon: "🐝", name: "Abdomen", text: "The striped back part. Inside is a honey stomach for carrying nectar, and glands that make wax." },
+      { icon: "📍", name: "Stinger", text: "Only female bees have one, to guard the hive. A worker's stinger is barbed, so if she stings a person she dies. Bees don't want to sting!" },
+    ],
+
+    // (shown in the "pollination" spot, titled by labels)
+    pollination: {
+      steps: [
+        { icon: "🌸", text: "A worker bee lands on a flower and sips sweet nectar with her proboscis." },
+        { icon: "✨", text: "Dusty pollen sticks to her fuzzy body hairs." },
+        { icon: "🧹", text: "She brushes the pollen down with her legs and packs it into the baskets on her back legs." },
+        { icon: "🌼", text: "At the next flower of the same kind, some pollen rubs off onto its stigma. That's pollination: now the flower can make seeds and fruit!" },
+        { icon: "🏠", text: "Back at the hive, she passes the nectar to other bees. They fan it with their wings until it thickens into honey." },
+        { icon: "💃", text: "Found lots of flowers? She does a waggle dance. Which way she wiggles, and for how long, tells the others where to fly." },
+      ],
+      fact: { icon: "🍎", title: "Thank a bee", text: "About one out of every three bites of food we eat comes from plants that need pollinators like bees: apples, almonds, berries, squash, pumpkins and more." },
+      hand: { icon: "🖌️", title: "Be a bee (no stinger needed!)", steps: [
+        "Find two flowers of the same kind, like squash or sunflowers.",
+        "Gently roll a cotton swab or a small paintbrush in the middle of the first flower to pick up yellow pollen.",
+        "Dab the pollen onto the middle of the second flower.",
+        "Look closely: is pollen sticking to your swab, like it sticks to a bee's fuzz?",
+        "Watch the flower over the next few weeks. Did it make seeds or fruit?",
+      ] },
+    },
+
+    // (shown in the "grow" spot, titled by labels)
+    grow: [
+      { icon: "🍯", title: "What bees eat", text: "Nectar (for energy, and to make honey) and pollen (for protein, to feed the babies). On hot days they need water too." },
+      { icon: "🌿", title: "Plants bees love", text: "Lavender, rosemary, sage, sunflowers, California buckwheat, borage and fruit tree blossoms. Bees love blue, purple and yellow flowers." },
+      { icon: "💧", title: "Bee water bar", text: "Put pebbles in a shallow dish of water so bees can land and drink without falling in." },
+      { icon: "👑", title: "The colony", text: "One queen lays up to 1,500 eggs a day. Thousands of female worker bees do all the jobs. A few hundred boy bees (drones) don't work, and they can't sting." },
+      { icon: "🧹", title: "Bee jobs", text: "A worker's job changes as she grows up: cleaner, nurse, wax builder, guard, and last of all forager, flying out for nectar and pollen." },
+      { icon: "🥚", title: "Life cycle", text: "Egg → larva → pupa → adult, in about 21 days for a worker. In summer, a worker bee lives only about 6 weeks." },
+      { icon: "🤲", title: "Stay safe", text: "Bees busy on flowers almost never sting. Stay calm and still, don't swat, and never go near a hive or a swarm: tell a grown-up instead." },
+    ],
+
+    facts: [
+      "A worker bee makes only about 1/12 of a teaspoon of honey in her whole life.",
+      "To make one pound of honey, bees visit about 2 million flowers.",
+      "A colony can have 20,000 to 60,000 bees in the summer.",
+      "Honeybees aren't from the Americas: settlers brought them from Europe in the 1600s. California has about 1,600 kinds of native bees too!",
+      "Kept sealed, honey hardly ever spoils.",
+    ],
+
+    activities: [
+      { icon: "🔍", title: "Bee watch", text: "Pick one plant and count how many bees visit in 5 minutes. Try a different color flower. Which do bees like best?" },
+      { icon: "💃", title: "Waggle dance", text: "Hide a paper 'flower', then do a waggle dance to show a friend which way to go. Can they find it?" },
+      { icon: "🖌️", title: "Be a pollinator", text: "Use a cotton swab to move pollen between squash flowers, just like a bee." },
+      { icon: "🌻", title: "Plant for bees", text: "Plant lavender, sunflowers or buckwheat in a sunny spot and see who comes to visit." },
+      { icon: "🔶", title: "Honeycomb shapes", text: "Draw a honeycomb of hexagons. Why do you think bees build six-sided cells?" },
+      { icon: "🖍️", title: "Color the parts", text: "Print the coloring page and color every part of the honeybee." },
+    ],
+
+    coloring: { page: "coloring.html", pdf: "honeybee-coloring-page.pdf",
+      text: "Print the honeybee and color every part: her stripes, four wings, six legs, pollen baskets, the honeycomb and the flowers!",
+      foot: "Color every part! How many legs and wings did you color?" },
+
+    // The printable fold-over card (card.html) and print-shop proxies (proxies/): Pollie is an original
+    // character (art made with AI for YvyGrounds), not anyone's Pokémon. Balanced like Pumpkling: 110.
+    card: {
+      page: "card.html", pdf: "pollie-card.pdf",
+      name: "Pollie", art: "../art/pollie.jpg", artHd: "../art/pollie-hd.jpg", hp: 60, type: "Pollen", kind: "Honeybee",
+      alt: "Pollie, a fuzzy little honeybee with orange pollen on her legs, over a lavender patch",
+      moves: [
+        { name: "Waggle Dance", dmg: 0, effect: true, text: "Dances a figure eight to show her sisters the way: your next attack does 20 more damage." },
+        { name: "Pollen Puff", dmg: 40, text: "Shakes a cloud of golden pollen all over the flowers!" },
+      ],
+      flavor: "She visits up to a hundred flowers on one trip, then dances to tell her sisters where to find them.",
+      size: "About ½ in long · 4 wings",
+      weakness: "Rainy days", resist: "Cold (the hive huddles to stay warm)",
+    },
+
+    // For the poster (posters/): the template with a bee-garden bottom, and the info box's four ruled lines
+    poster: {
+      template: "art/template-bee.jpg",
+      lines: [
+        "Sips nectar from flowers and",
+        "carries pollen home on her legs.",
+        "Dances to share flower spots!",
+        "Makes honey!",
+      ],
+    },
+  },
 };

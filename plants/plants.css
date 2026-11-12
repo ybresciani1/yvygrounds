@@ -263,3 +263,27 @@ main { max-width: 980px; margin: 0 auto; padding: 16px 16px 30px; }
 .pp-colored .c-zig { stroke: #ffffff; }
 .pp-colored .c-zig-out { stroke: #8fa3bf; }
 .pp-colored .c-hairline { stroke: #b9bfc8; }
+
+/* honeybee drawing (plants/art/honeybee.svg); bee parts are c-bee-* so they don't take the spider's colors */
+.pp-colored .c-comb { fill: #ffd56b; }
+.pp-colored .c-comb-honey { fill: #f5a623; }
+.pp-colored .c-comb-cap { fill: #fff0c2; }
+.pp-colored .c-cosmos { fill: #f49ac8; }
+.pp-colored .c-cosmos-mid { fill: #ffcf33; }
+.pp-colored .c-lavender { fill: #9b7fd4; }
+.pp-colored .c-bee-head { fill: #4a3422; }
+.pp-colored .c-bee-face { fill: #7a5634; }
+.pp-colored .c-bee-eye { fill: #231a20; }
+.pp-colored .c-eyehex { stroke: #6f6280; }
+.pp-colored .c-bee-thorax { fill: #c98b2e; }
+.pp-colored .c-fuzz { stroke: #e6b35a; }
+.pp-colored .c-bee-abd { fill: #f4b62c; }
+.pp-colored .c-bee-band { fill: #3a2614; }
+.pp-colored .c-bee-sting { fill: #3a2614; }
+.pp-colored .c-bee-wing { fill: #e6f3ff; fill-opacity: .7; }
+.pp-colored .c-bee-vein { stroke: #9fb4c8; }
+.pp-colored .c-bee-leg, .pp-colored .c-bee-antenna { stroke: #3a2614; }
+.pp-colored .c-pollen { fill: #ff9a1f; }
+.pp-colored .c-ocellus { fill: #120c10; }
+.pp-colored .c-mandible { fill: #7a4a1e; }
+.pp-colored .c-tongue { stroke: #b8642d; }
