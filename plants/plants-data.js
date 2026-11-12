@@ -336,4 +336,123 @@ window.YVY_PLANTS = {
       ],
     },
   },
+
+  // Three root vegetables on one page (the poster pairs it with one card): carrot, radish and beet.
+  // labels swaps the section titles (pollination → their flowers and seeds, in the second year).
+  "root-veggies": {
+    name: "Root Veggies",
+    sci: "Daucus carota · Raphanus sativus · Beta vulgaris",
+    family: "Carrots, radishes and beets: three plant families! Carrots are cousins of celery and parsley, radishes of broccoli and cabbage, and beets of spinach and chard",
+    number: "027",
+    type: "Roots (cool-season veggies)",
+    season: "Fall – Spring",
+    quick: [
+      ["🌞", "Full sun", "6+ hours (beets take a little shade)"],
+      ["📅", "25–75 days", "radish fastest, carrot slowest"],
+      ["❄️", "Cool season", "plant Sept – March in San Diego"],
+      ["🪱", "Loose soil", "no rocks, so roots grow straight"],
+    ],
+    art: "../art/root-veggies.svg",
+    labels: {
+      parts: { icon: "🥕", nav: "Parts", title: "Parts of Root Veggies" },
+      pollination: { icon: "🌼", nav: "Flowers & seeds", title: "The Secret Second Year: flowers and seeds" },
+      grow: { icon: "🪴", nav: "How to grow", title: "How to Grow Root Veggies" },
+    },
+
+    parts: [
+      { icon: "🍃", name: "Leaves", text: "They catch sunlight and make the plant's food (sugar), then send it down to the root. Carrot leaves are lacy like feathers, radish leaves are rough and wavy, and beet leaves are big and shiny with red veins." },
+      { icon: "🌿", name: "Leaf stalks", text: "They carry water up to the leaves and food down to the root. Beet stalks are bright red, just like their cousin, rainbow chard." },
+      { icon: "👑", name: "Crown", text: "The very top of the root, where all the leaves grow out. Set a carrot's crown in a dish of water and it grows new leaves!" },
+      { icon: "➖", name: "Soil line", text: "The top of the ground: leaves grow up into the sunshine above it, roots grow down into the dark below it." },
+      { icon: "🟣", name: "Shoulder", text: "The top of the root, often peeking out of the soil. The round part of a radish or beet is the top of the root and the bottom of the stem swollen up together. Carrot shoulders turn green in the sun, so cover them with soil." },
+      { icon: "🥕", name: "Taproot", text: "One thick main root growing straight down. It's the plant's lunchbox: it stores sugar and water for later. That's the part we eat!" },
+      { icon: "〰️", name: "Root hairs", text: "Tiny, thin roots all over the taproot. They drink water and food from the soil. Radishes and beets also have a skinny tail reaching down for water." },
+      { icon: "🪱", name: "Earthworm (a helper!)", text: "Not part of the plant, but a great friend: earthworms dig tunnels that loosen the soil so roots can push down, and their poop (castings) feeds the plants." },
+      { icon: "🟠", name: "Carrot core", text: "Cut a carrot across and you'll see a lighter middle. The core carries water up to the leaves. The orange outside stores most of the sugar, so it's the sweetest part." },
+      { icon: "🔴", name: "Radish skin", text: "A thin red (or pink, purple or white) skin around crisp white inside. The spicy taste is the radish's way of keeping bugs away, and it gets spicier when the weather is hot." },
+      { icon: "🎯", name: "Beet rings", text: "Cut a beet across and you'll find light and dark rings, like a tree trunk. The rings are bundles of little tubes that move water and food, with sugar stored between them." },
+      { icon: "🌰", name: "Seeds", text: "Carrot seeds are tiny and fuzzy, radish seeds are round and brown, and a bumpy beet seed is really a cluster of 2 to 4 seeds stuck together!" },
+    ],
+
+    // (shown in the "pollination" spot, titled by labels): we pick them in year one, before they flower
+    pollination: {
+      steps: [
+        { icon: "🥕", text: "In their first season, carrots and beets grow leaves and fill their roots with sugar, like packing a lunchbox. That's when we pull them up and eat them." },
+        { icon: "🗓️", text: "Left in the ground, the plant uses that stored sugar to grow a tall flower stalk. Gardeners call it bolting. Carrots and beets usually do this in their second year; radishes do it the same year, when the weather gets hot." },
+        { icon: "🌼", text: "Carrot flowers are flat white umbrellas of tiny flowers, loved by little helpful wasps and flies. Radish flowers are white or pink with four petals, and bees visit them." },
+        { icon: "🌬️", text: "Beet flowers are small and green. The wind carries their pollen, so they don't need bees at all." },
+        { icon: "🫛", text: "Once pollinated, the flowers make seeds. Radishes grow crunchy green seed pods, and you can eat them!" },
+        { icon: "🌱", text: "The root is used up by now, so it's tough and woody. But the seeds can grow a whole new garden." },
+      ],
+      fact: { icon: "🍱", title: "Why store food in a root?", text: "Carrots and beets are biennials: they take two years to finish their life. The root is their lunchbox for the second year, full of the sugar the plant needs to grow flowers. We get to eat it first!" },
+      hand: { icon: "🥕", title: "Grow a carrot top", steps: [
+        "Ask a grown-up to cut the top inch off a carrot (leave a bit of the crown).",
+        "Set it cut side down in a shallow dish with a little water.",
+        "Put it on a sunny windowsill and add water every day or two.",
+        "In about a week, new leaves will sprout from the crown!",
+        "It won't grow a new carrot, but keep it going and it may even flower.",
+      ] },
+    },
+
+    grow: [
+      { icon: "📅", title: "When to plant", text: "Root veggies love cool weather. In San Diego, plant carrots and beets from September to March. Radishes grow almost all year, but they get too spicy in the summer heat." },
+      { icon: "🌞", title: "Where", text: "A sunny spot with at least 6 hours of sun. Beets and radishes are OK with a little shade." },
+      { icon: "🪱", title: "Soil", text: "Loose, deep soil with no rocks or clumps, so the roots can grow straight down. Rocks make forked, twisty carrots! Mix in compost, but no fresh manure." },
+      { icon: "🌱", title: "Planting", text: "Plant seeds right where they'll grow; root veggies don't like being moved. Carrots go just ¼ inch deep, radishes and beets about ½ inch." },
+      { icon: "⏱️", title: "Sprouting", text: "Radishes pop up in 3 to 5 days, beets in about a week, and carrots slowly, in 1 to 3 weeks. Keep carrot seeds damp the whole time!" },
+      { icon: "✂️", title: "Thin them out", text: "When the seedlings are a few inches tall, pull extras so the rest have room: about 2 inches apart for carrots and radishes, 3 to 4 inches for beets. Eat the baby greens!" },
+      { icon: "💧", title: "Water", text: "Keep the soil evenly damp. If it dries out and then gets soaked, the roots can crack open." },
+      { icon: "🔍", title: "Harvest", text: "Radishes in about 25 days, when they're the size of a big marble. Beets in 50 to 70 days, when they're 1½ to 3 inches wide. Carrots in 60 to 80 days: brush back the soil and peek at the shoulder." },
+      { icon: "🤲", title: "Pull them up", text: "Water first so the soil is soft, hold the leaves right at the crown and wiggle as you pull. Twist the leaves off so the roots stay crisp longer." },
+    ],
+
+    facts: [
+      "The first carrots were purple and yellow! Orange carrots got popular in the Netherlands about 400 years ago.",
+      "Radishes are one of the fastest veggies you can grow: seed to snack in about 25 days.",
+      "One bumpy beet seed is really a little cluster of seeds, so it can sprout 2 to 4 beets at once.",
+      "Beet juice is so red that people use it to color food. Eating lots of beets can even turn your pee pink for a day (it's harmless!).",
+      "You can eat the leaves too: beet greens, radish greens and carrot-top pesto.",
+    ],
+
+    activities: [
+      { icon: "🔍", title: "Root detectives", text: "Pull up a carrot, a radish and a beet. Which is longest? Which has the most root hairs? Measure and draw each one." },
+      { icon: "🔪", title: "Slice and see", text: "With a grown-up, cut each one across the middle. Find the carrot's core, the beet's rings and the radish's thin skin." },
+      { icon: "🎨", title: "Veggie stamps", text: "Dip the slices in paint and stamp them on paper. A beet slice doesn't even need paint!" },
+      { icon: "🏁", title: "Sprout race", text: "Plant radish, beet and carrot seeds on the same day. Guess which comes up first, then check every morning." },
+      { icon: "🥕", title: "Carrot top garden", text: "Set carrot tops in a dish of water on a sunny windowsill and watch new leaves grow (see Flowers & seeds)." },
+      { icon: "🖍️", title: "Color the parts", text: "Print the coloring page and color every part of the carrot, radish and beet." },
+    ],
+
+    coloring: { page: "coloring.html", pdf: "root-veggies-coloring-page.pdf",
+      text: "Print the carrot, radish and beet and color every part: leaves, stalks, roots, root hairs, the slices and the earthworm!",
+      foot: "Color every part! Can you find the earthworm?" },
+
+    // The printable fold-over card (card.html) and print-shop proxies (proxies/): Bunchling is an original
+    // character (art made with AI for YvyGrounds), not anyone's Pokémon. Balanced like Pumpkling: 110.
+    card: {
+      page: "card.html", pdf: "bunchling-card.pdf",
+      name: "Bunchling", art: "../art/bunchling.jpg", artHd: "../art/bunchling-hd.jpg", hp: 70, type: "Root", kind: "Root trio",
+      sci: "Daucus, Raphanus & Beta",
+      alt: "Bunchling: a carrot, a radish and a beet with happy faces, their leaves tied together with twine, in a garden bed with an earthworm",
+      moves: [
+        { name: "Leafy Lunchbox", dmg: 0, effect: true, text: "Its leaves make sugar from sunshine and pack it into its roots. Heal 20 HP." },
+        { name: "Triple Pop", dmg: 30, text: "Carrot, radish and beet all pop out of the ground at once!" },
+      ],
+      flavor: "Three plant families, best friends underground. Their roots are lunchboxes full of sugar, and that's the part we eat!",
+      size: "Ready in: 25 to 75 days · Roots: 3",
+      weakness: "Rocky soil", resist: "Chilly nights (they get sweeter!)",
+    },
+
+    // For the poster (posters/): the template with a root-veggie bottom, and the info box's four ruled lines
+    poster: {
+      template: "art/template-roots.jpg",
+      sci: "Daucus, Raphanus & Beta",
+      lines: [
+        "Roots that grow underground",
+        "and store sugar for the plant.",
+        "The leaves up top make it!",
+        "We eat the roots!",
+      ],
+    },
+  },
 };

@@ -287,3 +287,28 @@ main { max-width: 980px; margin: 0 auto; padding: 16px 16px 30px; }
 .pp-colored .c-ocellus { fill: #120c10; }
 .pp-colored .c-mandible { fill: #7a4a1e; }
 .pp-colored .c-tongue { stroke: #b8642d; }
+
+/* root vegetables drawing (plants/art/root-veggies.svg): a carrot, a radish and a beet */
+.pp-colored .c-pebble { fill: #8a5a38; }
+.pp-colored .c-worm { stroke: #f2a0a8; }
+.pp-colored .c-wormring { stroke: #c96a78; }
+.pp-colored .c-carrot { fill: #f5862a; }
+.pp-colored .c-carrot-top { fill: #e0731a; }
+.pp-colored .c-carrot-ring { stroke: #c4600f; }
+.pp-colored .c-carrot-core { fill: #ffb24f; }
+.pp-colored .c-carrot-stalk { stroke: #6fae3c; }
+.pp-colored .c-carrot-leaf { fill: #5fa848; }
+.pp-colored .c-roothair { stroke: #e8d6b0; }
+.pp-colored .c-radish { fill: #e8344e; }
+.pp-colored .c-radish-tip, .pp-colored .c-radish-flesh { fill: #fffaf2; }
+.pp-colored .c-radish-tail { stroke: #f4ead8; }
+.pp-colored .c-radish-leaf { fill: #6cb24e; }
+.pp-colored .c-radish-vein { stroke: #c9e6a8; }
+.pp-colored .c-beet { fill: #8e1f4a; }
+.pp-colored .c-beet-ring { fill: #c8457a; }
+.pp-colored .c-beet-line { stroke: #b23a6a; }
+.pp-colored .c-beet-tail { stroke: #a8325e; }
+.pp-colored .c-beet-leaf { fill: #3f8a3a; }
+.pp-colored .c-beet-vein, .pp-colored .c-beet-stalk { stroke: #c2265a; }
+.pp-colored .c-board { fill: #e2b07a; }
+.pp-colored .c-boardhole { fill: #fff8e4; }

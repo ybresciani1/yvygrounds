@@ -50,7 +50,7 @@
     <p>Prints on letter paper, with room in the card spot for a real trading card. The QR code opens the plant's page on yvygrounds.com.</p>
   </div>
   <div class="wrap"><div class="poster" id="poster"></div></div>
-  <script src="../plants/plants-data.js?v=2026-11-11f"></script>
+  <script src="../plants/plants-data.js?v=2026-11-11j"></script>
   <script>
     (function () {
       const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
@@ -68,7 +68,7 @@
           <img src="${esc(P.poster.template || "art/template-blank.jpg")}" alt="">
           <div class="p-name" data-fit="35 6.6"><span>${esc(P.name.toUpperCase())}</span></div>
           <div class="p-num">${esc(P.number)}</div>
-          <div class="p-field p-sci" data-fit="20 2.3">${esc(P.sci)}</div>
+          <div class="p-field p-sci" data-fit="20 2.3">${esc(P.poster.sci || P.sci)}</div>
           <div class="p-field p-type" data-fit="24 2.3">${esc(P.type)}</div>
           <div class="p-field p-season" data-fit="27.5 2.3">${esc(P.season)}</div>
           ${lines.map((l, i) => `<div class="p-info p-l${i + 1}" data-fit="${i === 3 ? 15.5 : 39} 1.95">${esc(l)}</div>`).join("")}

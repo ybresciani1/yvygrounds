@@ -55,7 +55,7 @@
         <p class="gc-banner">★ Garden Card ★</p>
         <header class="gc-top"><span class="gc-name">${esc(K.name)}</span><span class="gc-hp"><small>HP</small>${esc(K.hp)}</span></header>
         <div class="gc-art"><img src="${esc(page === "proxy" && K.artHd ? K.artHd : K.art)}" alt="${esc(K.alt || K.name)}"></div>
-        <p class="gc-type">${esc(K.type)} type · ${esc(K.kind)} · <i>${esc(P.sci)}</i></p>
+        <p class="gc-type">${esc(K.type)} type · ${esc(K.kind)} · <i>${esc(K.sci || P.sci)}</i></p>
         <ul class="gc-moves">${K.moves.map((m) => `
           <li><b>${esc(m.name)}</b><span class="gc-dmg">${m.dmg ? esc(m.dmg) : "★"}</span><span class="gc-text">${esc(m.text)}</span></li>`).join("")}
         </ul>

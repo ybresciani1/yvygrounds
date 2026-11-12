@@ -10,6 +10,8 @@ Print-shop images of the garden cards (kept off the live site, see `_config.yml`
 | `argie-front-600dpi.png`, `argie-back-600dpi.png` | 1644 × 2244 px |
 | `pollie-front-300dpi.png`, `pollie-back-300dpi.png` | 822 × 1122 px (the honeybee's card: `?plant=honeybee`) |
 | `pollie-front-600dpi.png`, `pollie-back-600dpi.png` | 1644 × 2244 px |
+| `bunchling-front-300dpi.png`, `bunchling-back-300dpi.png` | 822 × 1122 px (the root veggies' card: `?plant=root-veggies`) |
+| `bunchling-front-600dpi.png`, `bunchling-back-600dpi.png` | 1644 × 2244 px |
 
 Every file is **poker size** (2.5 × 3.5 in, like Pokémon cards) **plus 0.12 in of bleed** on each side. The bleed is the
 extra frame color past the cut line, so a slightly off cut never leaves a white edge. The text stays at least
