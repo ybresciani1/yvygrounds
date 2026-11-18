@@ -48,17 +48,17 @@ window.YVY = {
   // MUSIC PLAYER in Yvy's Extras (js/extras.js → buildMusic). The tracks stream from each game's own
   // site, so nothing here adds to this site's size. Plays in this order and loops back to the top.
   music: [
-    { game: "Rabbit & Frog: Gardenbound", title: "Seed Quest Theme", src: "https://seed-game-pi.vercel.app/music/theme.mp3" },
-    { game: "Rabbit & Frog: Gardenbound", title: "Seed Quest Activities", src: "https://seed-game-pi.vercel.app/music/activities.mp3" },
-    { game: "Rabbit & Frog: Gardenbound", title: "Sailing", src: "https://seed-game-pi.vercel.app/music/sailing.mp3" },
-    { game: "Rabbit & Frog: Gardenbound", title: "Rot & Roll Theme", src: "https://seed-game-pi.vercel.app/music/rot-theme.mp3" },
-    { game: "Rabbit & Frog: Gardenbound", title: "Rot & Roll Activities", src: "https://seed-game-pi.vercel.app/music/rot-activities.mp3" },
-    { game: "Rabbit & Frog: Gardenbound", title: "Blossom Theme", src: "https://seed-game-pi.vercel.app/music/blossom-theme.mp3" },
-    { game: "Rabbit & Frog: Gardenbound", title: "Blossom Activities", src: "https://seed-game-pi.vercel.app/music/blossom-activities.mp3" },
-    { game: "Rabbit & Frog: Gardenbound", title: "Rotation Nation Theme", src: "https://seed-game-pi.vercel.app/music/rotation-theme.mp3" },
-    { game: "Rabbit & Frog: Gardenbound", title: "Rotation Nation Activities", src: "https://seed-game-pi.vercel.app/music/rotation-activities.mp3" },
-    { game: "Rabbit & Frog: Gardenbound", title: "Spooky Theme", src: "https://seed-game-pi.vercel.app/music/spooky-theme.mp3" },
-    { game: "Rabbit & Frog: Gardenbound", title: "Spooky Activities", src: "https://seed-game-pi.vercel.app/music/spooky-activities.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Seed Quest Theme", src: "https://gardenbound.vercel.app/music/theme.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Seed Quest Activities", src: "https://gardenbound.vercel.app/music/activities.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Sailing", src: "https://gardenbound.vercel.app/music/sailing.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Rot & Roll Theme", src: "https://gardenbound.vercel.app/music/rot-theme.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Rot & Roll Activities", src: "https://gardenbound.vercel.app/music/rot-activities.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Blossom Theme", src: "https://gardenbound.vercel.app/music/blossom-theme.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Blossom Activities", src: "https://gardenbound.vercel.app/music/blossom-activities.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Rotation Nation Theme", src: "https://gardenbound.vercel.app/music/rotation-theme.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Rotation Nation Activities", src: "https://gardenbound.vercel.app/music/rotation-activities.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Spooky Theme", src: "https://gardenbound.vercel.app/music/spooky-theme.mp3" },
+    { game: "Rabbit & Frog: Gardenbound", title: "Spooky Activities", src: "https://gardenbound.vercel.app/music/spooky-activities.mp3" },
     { game: "Master Composter Quest", title: "Intro Anxiety", src: "https://master-composter.vercel.app/assets/Intro%20anxiety.mp3" },
     { game: "Master Composter Quest", title: "Background Music", src: "https://master-composter.vercel.app/assets/nastelbom-background-music-486996.mp3" },
     { game: "Master Composter Quest", title: "Spooky Theme 1", src: "https://master-composter.vercel.app/assets/Spooky%20Theme%201.mp3" },
@@ -478,7 +478,7 @@ window.YVY = {
    */
   games: [
     { title: "Rabbit & Frog: Gardenbound", type: "garden", date: "2026-10-18", featured: true, badge: "still updating ✨",
-      url: "https://seed-game-pi.vercel.app/", thumb: "images/games/rabbit-and-frog.webp",
+      url: "https://gardenbound.vercel.app/", thumb: "images/games/rabbit-and-frog.webp",
       blurb: "A watercolor garden adventure all about seeds: how they pop, travel and get saved for next year. Play in English or Español!" },
     { title: "Tomato Tussle", type: ["garden", "silly"], date: "2026-10-18", play: "arcade/tomato-tussle/", icon: "tomato",
       blurb: "Squirrels, crows and raccoons are raiding the garden. Splat them with tomatoes, but don't splat Riot or Beyonce!" },
@@ -1017,7 +1017,7 @@ window.YVY = {
   // When a lesson is done, move it from now into done (newest first) and set its did.
   lessons: {
     quarter: "Fall 2026",
-    game: { name: "Rabbit & Frog: Gardenbound", url: "https://seed-game-pi.vercel.app/" },
+    game: { name: "Rabbit & Frog: Gardenbound", url: "https://gardenbound.vercel.app/" },
     now: {
       unit: 2, lesson: 3, title: "How Do We Grow Crops?",
       world: "Blossom Islands: the Plant Part-tay", island: "Sprout Springs", islandNo: 3,
