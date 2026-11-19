@@ -312,3 +312,16 @@ main { max-width: 980px; margin: 0 auto; padding: 16px 16px 30px; }
 .pp-colored .c-beet-vein, .pp-colored .c-beet-stalk { stroke: #c2265a; }
 .pp-colored .c-board { fill: #e2b07a; }
 .pp-colored .c-boardhole { fill: #fff8e4; }
+
+/* Pixel emoji, like the main page (js/pixel-emoji.js swaps every emoji for a 12×12 sprite from
+   js/emoji-sprites.js and plants/emoji-sprites.js). Sized like text, 1.15em of the font around it. */
+img.px-emoji {
+  display: inline-block;
+  width: calc(1.15em * var(--px-ratio, 1));
+  height: 1.15em;
+  margin: 0 .03em;
+  vertical-align: -.2em;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
