@@ -1115,7 +1115,7 @@ window.YVY = {
             at: ["sink", "ms5", "ms6"] },
           { what: "Chicken care", how: "Fill their water and food, collect the eggs and check the auto water feeder. Then initial today on the Monthly Chicken Care Schedule on the shed.",
             at: ["coop", "run"], howto: "chickens" },
-          { what: "Feed the worms", share: "worms", how: "The worm bins in Bed #9, MS Beds #4 and #6, and Kinder Bed #8.", at: ["bed9", "ms4", "ms6", "k8"] },
+          { what: "Feed the worms", share: "worms", how: "The worm bins in Beds #9 and #6, MS Beds #4 and #6, and Kinder Bed #8.", at: ["bed9", "bed6", "ms4", "ms6", "k8"] },
           { what: "Clean the chicken coop", share: "coop", at: ["coop"], howto: "chickens" },
           { what: "Rinse the Grub Tub", at: ["bed6"] },
           { what: "Pest patrol", how: "Aphids under the nasturtium leaves in Bed #4, cabbage worms on the collards in #5, and snails and slugs under the strawberries in #2 after rain.",
@@ -1152,7 +1152,7 @@ window.YVY = {
     // (list one per olla). Each gets a little marker in a corner of the bed (emoji: drawn as that pixel emoji,
     // otherwise a colored dot), and its name in the speech box opens about. hasLayout: "stacked" on a bed puts
     // its markers top-center and bottom-center instead, with the bed's number between them (Bed #4's ollas);
-    // hasLayout: "right" starts them on the right side (Bed #9's worm bin).
+    // hasLayout: "right" starts them on the right side (the worm bins in Beds #9 and #6).
     // chore: a job that comes back every so many days (every), listed under the bed's Chores. Crossing it off
     // counts for that many days, then it's due again. Changing a chore's text starts it fresh.
     features: {
@@ -1285,7 +1285,7 @@ window.YVY = {
         feedPlan: [], // nothing needs feeding
         fed: [], // feeding log, e.g. { date: "2026-11-02", id: "greens" } (id from feedPlan)
       },
-      { kind: "bed", text: "#6", x: 12, y: 6, w: 6, h: 2, id: "bed6", name: "Grub Tub (Bed #6)",
+      { kind: "bed", text: "#6", x: 12, y: 6, w: 6, h: 2, id: "bed6", name: "Grub Tub (Bed #6)", has: ["wormbin"], hasLayout: "right",
         about: "Our Grub Tub! This is where the food scraps for the chickens go 🐔",
         todo: [
           "Chicken-safe scraps only: no avocado skins or pits, no raw or dried beans, nothing moldy or salty.",
@@ -1298,6 +1298,9 @@ window.YVY = {
       { kind: "sink", text: "SINK", x: 10, y: 10, w: 5, h: 3,
         id: "sink", name: "Sink", about: "Wash your hands, then wash your veggies. In that order, please 💧",
         fix: ["Leaky faucet.", "Broken plumbing underneath."], howto: "central" },
+      // Right above the Farm Cart, its top lined up with the grapevines' corner
+      { kind: "soil", text: "EXTRA SOIL", x: 20, y: 17, w: 3, h: 3,
+        id: "soil", name: "Extra Soil", about: "Our pile of extra soil, for topping up the beds." },
       { kind: "cart", x: 20, y: 20, w: 3, h: 6,
         id: "cart", name: "Farm Cart", about: "Our white and brown farm cart. It's getting a makeover!",
         fix: ["The wheels need fixing, and it needs fresh paint on the wood and the white metal."],
