@@ -1317,7 +1317,8 @@ window.YVY = {
         fix: ["Vines (passionfruit or grape) are climbing on it. Untangle them and cut them back so the tree gets its light back."],
         todo: ["Fig trees drop their leaves in winter. Do any big pruning while they're bare (December to February)."] },
       { kind: "succulents", x: 1, y: 10, w: 5, h: 4,
-        name: "Succulent Garden", about: "Plants that don't mind if we forget to water them. Look for the little rosettes." },
+        id: "succulents", name: "Succulent Garden", about: "Plants that don't mind if we forget to water them. Look for the little rosettes.",
+        fix: ["Empty the water from the wagon."] },
       { kind: "tree", tone: "avocado", x: 0.5, y: 14.5, w: 2, h: 2,
         name: "Avocado Tree", about: "Takes forever to grow avocados. Worth it 🥑" },
       // The pomegranate and fig #2 both fit inside the succulent garden (cols 1-5, rows 10-13): the bigger
